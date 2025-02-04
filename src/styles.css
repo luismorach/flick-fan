@@ -1,1 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base{
+    @font-face {
+        font-family: 'racing sans one';
+        src: url('./assets/fonts/racing-sans-one/RacingSansOne-Regular.ttf')
+      }
+}

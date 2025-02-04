@@ -4,8 +4,9 @@ import { registerLocaleData } from '@angular/common';
 import localeVE from '@angular/common/locales/es-VE'
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { apiInterceptor } from './shared/interceptors/api.interceptor';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 registerLocaleData(localeVE,'es-VE')
 
@@ -14,6 +15,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     {provide:LOCALE_ID,useValue:'es-VE'},
     provideRouter(routes), provideClientHydration(),
-    provideHttpClient(withInterceptors([apiInterceptor]))
+    provideAnimations(),
+    provideHttpClient(withInterceptors([apiInterceptor]),withFetch())
   ]
 };
