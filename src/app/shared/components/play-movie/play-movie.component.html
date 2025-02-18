@@ -1,0 +1,77 @@
+<!-- <div class="w-full  absolute after:w-full 
+            after:absolute after:top-0 after:h-screen after:bg-black after:bg-opacity-80">
+    <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie()?.poster_path}}" fill #img
+        class="object-cover object-center w-full h-full">
+</div>
+ -->
+
+<div class="w-full h-full bg-zinc-600  bg-cover bg-center relative after:w-full 
+after:absolute after:top-0 after:h-full after:bg-black after:bg-opacity-80 after:z-0"
+    [ngStyle]="{'background-image':'url(http://image.tmdb.org/t/p/original'+movie()?.poster_path+')'}">
+
+    <div class="w-full h-screen flex items-end">
+        <div
+            class="z-10 relative flex flex-grow bg-red-700 self-end ml-8 mb-8 w-1/5 h-2/4 rounded-xl shadow-sm shadow-white">
+            <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie()?.poster_path}}" fill priority #img
+                class="object-cover object-center rounded-xl ">
+        </div>
+
+        <div class="z-10 w-full m-8 md:px-12 relative self-end text-zinc-300 ">
+            <h1 class="font-racing uppercase text-3xl text-left sm:text-4xl lg:text-5xl relative" id="title">
+                {{movie()?.title}}
+            </h1>
+
+            <!-- <app-rating class="flex pt-4 left-[-150%]" [rating]="movie()?.vote_average" id="rating"></app-rating> -->
+
+            <p class="font-serif pt-2 text-justify max-h-[43vh] overflow-scroll">{{movie()?.overview}}</p>
+
+            <div class="flex pt-4 font-serif " id="genres">
+                @for(genre of movie()?.genres;track genre){
+                <p>{{genre.name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+                }
+            </div>
+
+            <div class="flex py-2 font-serif items-center" id="release">
+                <p>Duración {{movie()?.runtime}} minutos&nbsp;</p>
+                <i class="fa-solid fa-clock">&nbsp;&nbsp;&nbsp;</i>
+                <p class="">{{movie()?.release_date|date:'longDate'}}</p>
+            </div>
+        </div>
+
+        <div class="z-10 absolute right-20 top-20 text-zinc-300 flex-grow flex flex-col justify-end font-racing">
+            <div class="flex justify-start items-center font-racing">
+                <i class="fa solid fa-star text-[#e50914]"></i>
+                <p class="text-2xl px-2"> {{movie()?.vote_average | number:'1.1-1'}}</p>
+                <p class="text-base ">/&nbsp;10</p>
+
+            </div>
+
+            <p class="pl-6">{{movie()?.vote_count}} calificaciones</p>
+        </div>
+    </div>
+
+     <div class="w-full h-screen z-10 relative flex justify-center items-center my-20">
+        <iframe [src]="url_movie() | urlSafe" class="w-[90%] h-[90%] "></iframe>
+    </div>
+    <div class="z-10 font-racing text-4xl text-zinc-300 relative m-8 ">
+        <p class="border-b clip-ellipse border-[hsla(0,0%,100%,.4)] p-2">Peliculas similares</p>
+    </div>
+    <div class="w-full h-auto flex flex-wrap justify-center" >
+        @for(similarMovie of similarMovies();track similarMovie){
+        <a class="z-10 flex flex-col font-racing text-zinc-300 m-4 cursor-pointer"
+        routerLink="/watch-movie/{{similarMovie.id}}">
+            <div class="relative flex items-end bg-black w-48 h-72  rounded-xl shadow-sm shadow-white">
+                <img ngSrc="{{'http://image.tmdb.org/t/p/original'+similarMovie.poster_path}}" fill #img
+                   alt="Imagen no disponible" class="object-cover object-center rounded-xl flex items-center justify-center">
+
+            </div>
+            <p class="w-48">{{similarMovie.title}}&nbsp;&nbsp;&nbsp;
+                <i class="font-serif ">{{similarMovie.release_date|date:'yyyy'}}</i>
+            </p>
+           
+        </a>
+        }
+    </div>
+
+
+</div>

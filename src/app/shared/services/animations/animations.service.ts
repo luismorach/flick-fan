@@ -12,26 +12,26 @@ export class AnimationsService {
   moveX(duration: string, delay: string, start: string, end:string): AnimationFactory {
       return this._builder.build([
         style({ transform: `translateX(${start})` }),
-        animate(duration + ' ' + delay, style({ transform: `translateX(${end})`}))
+        animate(duration + ' ' + delay+' ease', style({ transform: `translateX(${end})`}))
       ])
     }
   
     moveY(duration: string, delay: string, start: string,end:string): AnimationFactory {
       return this._builder.build([
         style({ transform: `translateY(${start})`, opacity: '0' }),
-        animate(duration + ' ' + delay, style({ transform: `translateY(${end})`, opacity: '1' }))
+        animate(duration + ' ' + delay+' ease', style({ transform: `translateY(${end})`, opacity: '1' }))
       ])
     }
     changeX(duration: string, delay: string, start: string, end:string): AnimationFactory {
       return this._builder.build([
         style({ left: start }),
-        animate(duration + ' ' + delay, style({ left:end}))
+        animate(duration + ' ' + delay+' ease', style({ left:end}))
       ])
     }
     changeY(duration: string, delay: string, start: string, end:string): AnimationFactory {
       return this._builder.build([
         style({ top: start }),
-        animate(duration + ' ' + delay, style({ top:end}))
+        animate(duration + ' ' + delay+' ease', style({ top:end}))
       ])
     }
 
@@ -39,7 +39,7 @@ export class AnimationsService {
       endWidth:string,endHeight:string){
       return this._builder.build([
         style({ width: startWidth, height: startHeight}),
-        animate(duration + ' ' + delay, style({ width:endWidth, height: endHeight}))
+        animate(duration + ' ' + delay+' ease', style({ width:endWidth, height: endHeight}))
       ])
     }
 

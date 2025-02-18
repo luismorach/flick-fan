@@ -1,13 +1,16 @@
+
+
 <div class="bg-transparent after:bg-black after:w-full after:h-full after:opacity-70
- after:absolute absolute flex justify-center items-center z-50 w-full h-full top-0"
-  [ngClass]="{
+ after:absolute absolute flex justify-center items-center z-50 w-full h-full top-0" [ngClass]="{
   'invisible':isClosed(),
   'visible':!isClosed(),
   
 }" #trailer (click)="minimize()">
   <i (click)="close()" class="fa-solid fa-xmark z-50 text-neutral-300 text-xl absolute right-0 top-0 
   py-5 px-2 cursor-pointer"></i>
-  <iframe [src]="urlSafe() | urlSafe" class="rounded-md z-10 w-[70%] h-[90%]" #video allowfullscreen
-  ></iframe>
-  <div>{{render()}}</div>
+  
+  <lite-youtube  class="rounded-md z-10 w-[70%] h-[90%]" #video></lite-youtube>
+  <!-- <iframe [src]="urlSafe() | urlSafe" class="rounded-md z-10 w-[70%] h-[90%]" #video allowfullscreen></iframe>
+  <div>{{render()}}</div> -->
 </div>
+{{videoKey()}}

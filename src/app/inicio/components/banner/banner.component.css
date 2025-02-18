@@ -1,0 +1,16 @@
+
+
+swiper-container:part(pagination) {
+  position: absolute;
+  margin: 0;
+  padding: 0%;
+}
+swiper-container::part(bullet) {
+  background-color: white;
+  opacity: .8;
+}
+swiper-container::part(bullet-active) {
+    background-color: #e50914;
+    opacity: 1;
+  }
+ 

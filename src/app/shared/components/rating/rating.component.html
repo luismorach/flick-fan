@@ -1,0 +1,11 @@
+<div class="flex">
+    @for (char of "12345";track char;let index=$index){
+        
+        <i class="fa solid fa-star bg-gradient-to-r from-[#e50914]
+         to-zinc-300 bg-clip-text text-transparent text-sm px-[.15rem]" 
+         [ngClass]="calculatePercent(index)"></i>
+         
+    }
+    <p class="px-2 py-0.5 text-sm font-racing">{{rating}} / 10</p>
+    
+</div>

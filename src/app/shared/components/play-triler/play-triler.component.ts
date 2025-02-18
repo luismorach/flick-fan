@@ -1,19 +1,20 @@
-import { AfterViewInit, Component, ElementRef, Injector, Renderer2, Signal, WritableSignal, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { AfterViewInit, CUSTOM_ELEMENTS_SCHEMA, Component, ElementRef, Injector, Renderer2, Signal, WritableSignal, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UrlSafePipe } from '../../pipes/url-safe.pipe';
 import { NgClass } from '@angular/common';
-import { AnimationsService } from '../../services/animations.service';
+import { AnimationsService } from '../../services/animations/animations.service';
 
 @Component({
-  selector: 'app-play-triler',
-  standalone: true,
-  imports: [UrlSafePipe, NgClass],
-  templateUrl: './play-triler.component.html',
-  styleUrl: './play-triler.component.css'
+    selector: 'app-play-triler',
+    imports: [UrlSafePipe, NgClass],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    templateUrl: './play-triler.component.html',
+    styleUrl: './play-triler.component.css'
 })
-export default class PlayTrilerComponent implements AfterViewInit {
-  animations = inject(AnimationsService)
 
+export default class PlayTrilerComponent implements AfterViewInit {
+  url='TBd2xLdeNdk'
+  animations = inject(AnimationsService)
   videoKey = input<string>();
   trailerElement = viewChild<ElementRef>('trailer')
   videoElement = viewChild<ElementRef>('video')
@@ -25,7 +26,7 @@ export default class PlayTrilerComponent implements AfterViewInit {
   constructor() { }
 
   ngAfterViewInit(): void {
-    // this.trailerElement()?.nativeElement.showModal()
+   console.log(this.videoKey())
   }
 
   render() {
@@ -49,7 +50,7 @@ export default class PlayTrilerComponent implements AfterViewInit {
     changeSizeTrailer.play()
   }
   maximize() {
-    if ((!this.isClosed())) {
+    
       let changeSizeTrailer = this.animations.changeSize('100ms', '0ms', '35%', '45%', '100%', '100%')
         .create(this.trailerElement()?.nativeElement)
       changeSizeTrailer.play()
@@ -65,7 +66,7 @@ export default class PlayTrilerComponent implements AfterViewInit {
       changeSizeTrailer = this.animations.changeY('100ms', '0ms', '55%', '0')
         .create(this.trailerElement()?.nativeElement)
       changeSizeTrailer.play()
-    }
+    
     this.isClosed.set(false)
   }
   close() {

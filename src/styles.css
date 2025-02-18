@@ -9,3 +9,8 @@
         src: url('./assets/fonts/racing-sans-one/RacingSansOne-Regular.ttf')
       }
 }
+@layer components{
+  .clip-ellipse{
+    clip-path: ellipse(300% 100% at top);
+  }
+}
