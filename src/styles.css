@@ -14,3 +14,7 @@
     clip-path: ellipse(300% 100% at top);
   }
 }
+
+body,html{
+  scroll-behavior: smooth;
+}

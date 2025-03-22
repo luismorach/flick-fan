@@ -19,7 +19,7 @@ export class ApiService {
     return this.http.get(this.API+'movie/now_playing?language=es-VE&page=1') 
   }
   getPopular(){
-    return this.http.get(' https://api.themoviedb.org/3/movie/popular?language=es-VE&page=1')
+    return this.http.get(this.API+'movie/popular?language=es-VE&page=1')
   }
   getDetailsMovie(movie_id:number){
     

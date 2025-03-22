@@ -8,14 +8,15 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../../shared/services/API/api.service';
 import { AllMovies, Movie } from '../../../shared/interfaces/interfaces';
 import { RouterLink } from '@angular/router';
-import PlayTrilerComponent from '../../../shared/components/play-triler/play-triler.component';
+import PlayTrailerComponent from '../../../shared/components/play-triler/play-triler.component';
 import { AnimationsService } from '../../../shared/services/animations/animations.service';
 import { RatingComponent } from '../../../shared/components/rating/rating.component';
+import { ComunicatorService } from '../../../shared/services/comunicator/comunicator.service';
 register()
 
 @Component({
   selector: 'app-banner',
-  imports: [DatePipe, NgOptimizedImage, RouterLink, PlayTrilerComponent, NgClass, RatingComponent],
+  imports: [DatePipe, NgOptimizedImage, RouterLink, PlayTrailerComponent, NgClass, RatingComponent],
   templateUrl: './banner.component.html',
   styleUrl: './banner.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -23,22 +24,25 @@ register()
   encapsulation: ViewEncapsulation.None
 
 })
+
 export default class BannerComponent {
+
   @ViewChild('swiper') swiperContainer!: ElementRef<SwiperContainer>
   api = inject(ApiService)
-  animations = inject(AnimationsService)
+  animationsService = inject(AnimationsService)
   indexCurrentElement: number = 0
   allElements: number = 0
   
 
-  playThrilerComponent = viewChild(PlayTrilerComponent)
+  playTrailerComponent = viewChild(PlayTrailerComponent)
   allMovies: Signal<AllMovies | undefined> = toSignal(this.api.getNowPlaying() as Observable<AllMovies>)
   id_movie: WritableSignal<any> = signal(this.allMovies()?.results[0].id)
   movie: WritableSignal<any> = signal(undefined)
   showTrailer: WritableSignal<boolean> = signal(false)
 
-  constructor(@Inject(DOCUMENT) private document: Document) {
+  constructor(@Inject(DOCUMENT) private document: Document,public comunicatorService:ComunicatorService) {
 
+    this.comunicatorService.setBackgroundNav(false)
     effect(() => {
       let results = this.allMovies()?.results.length
       this.id_movie.set(this.allMovies()?.results[0].id)
@@ -95,22 +99,22 @@ export default class BannerComponent {
     const release = this.document.getElementById('release')
     const buttons = this.document.getElementById('buttons')
 
-    let playerTitle = this.animations.moveX('400ms', '700ms', '-150%', '0').create(title)
+    let playerTitle = this.animationsService.moveX('400ms', '700ms', '-150%', '0').create(title)
     playerTitle.play()
 
-    let playerRating = this.animations.moveX('400ms', '700ms', '-150%', '0').create(rating)
+    let playerRating = this.animationsService.moveX('400ms', '700ms', '-150%', '0').create(rating)
     playerRating.play()
 
-    let playerOverview = this.animations.moveY('400ms', '500ms', '100%', '0').create(overview)
+    let playerOverview = this.animationsService.moveY('400ms', '500ms', '100%', '0').create(overview)
     playerOverview.play()
 
-    let playerGenres = this.animations.moveY('400ms', '1s', '50%', '0').create(genres)
+    let playerGenres = this.animationsService.moveY('400ms', '1s', '50%', '0').create(genres)
     playerGenres.play()
 
-    let playerRelease = this.animations.moveY('400ms', '1s', '50%', '0').create(release)
+    let playerRelease = this.animationsService.moveY('400ms', '1s', '50%', '0').create(release)
     playerRelease.play()
 
-    let playerButtons = this.animations.moveY('200ms', '1.3s', '3%', '0').create(buttons)
+    let playerButtons = this.animationsService.moveY('200ms', '1.3s', '3%', '0').create(buttons)
     playerButtons.play() 
 
     /* runInInjectionContext(this.injector, (() => {
@@ -127,8 +131,8 @@ export default class BannerComponent {
     console.log('ya cargo')
   }
   playTrailer() {
-    this.playThrilerComponent()?.minimized.set(false)
-    this.playThrilerComponent()?.maximize()
+    this.playTrailerComponent()?.openTrailer()
+    
     this.showTrailer.set(true)
   }
 

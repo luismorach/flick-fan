@@ -1,0 +1,22 @@
+<div class=" w-full h-screen relative bg-neutral-950">
+
+    <div class="z-0 w-full justify-center self-center absolute p-2 ">
+        <swiper-container init="false" class="p-2" #swiper>
+            @for(movie of popularMovies()?.results;track movie){
+            <swiper-slide class="w-80 h-auto p-2">
+                <div class="w-full h-48 relative rounded-md shadow-sm shadow-white">
+                    <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie.backdrop_path}}" fill #img
+                        class="object-cover object-center rounded-md text-white flex justify-center items-center" alt="imagen no disponible">
+                    <div class="p-4 text-white absolute flex flex-col justify-end z-10 w-full h-full
+                    bg-gradient-to-t from-[rgba(0,0,0,1)] from-0% via-[rgba(20,20,20,0.8)] via-35% 
+                    to-[rgba(83,200,141,0)] to-100% rounded-md">
+                        <h1 class="font-racing">{{movie.title}}</h1>
+                        <p class="font-serif">{{movie.release_date | date:'longDate'}}</p>
+                    </div>
+                </div>
+
+            </swiper-slide>
+            }
+        </swiper-container>
+    </div>
+</div>
