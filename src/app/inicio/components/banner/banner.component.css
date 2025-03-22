@@ -1,6 +1,7 @@
 
 
 swiper-container:part(pagination) {
+  z-index: 20;
   position: absolute;
   margin: 0;
   padding: 0%;

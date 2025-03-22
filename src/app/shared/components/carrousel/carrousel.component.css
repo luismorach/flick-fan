@@ -1,0 +1,12 @@
+swiper-container::part(button-prev),
+swiper-container::part(button-next) {
+    color: white;
+    width: .5rem;
+    transition:all cubic-bezier(0.4, 0, 1, 1) 0.3s;
+}
+
+swiper-container::part(button-prev):hover,
+swiper-container::part(button-next):hover {
+    width: .6rem;
+    
+}

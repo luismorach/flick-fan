@@ -1,23 +1,33 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, Host, HostListener, inject, Input, input, ViewChild } from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle'
-import { ApiService } from '../../../shared/services/API/api.service';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { Observable } from 'rxjs';
-import { AllMovies } from '../../../shared/interfaces/interfaces';
+import { AllMovies } from '../../interfaces/interfaces';
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { SwiperOptions } from 'swiper/types';
+import { ComunicatorService } from '../../services/comunicator/comunicator.service';
 register()
 @Component({
-  selector: 'app-popular',
-  imports: [NgOptimizedImage,DatePipe],
-  templateUrl: './popular.component.html',
-  styleUrl: './popular.component.css',
+  selector: 'app-carrousel',
+  imports: [NgOptimizedImage, DatePipe],
+  templateUrl: './carrousel.component.html',
+  styleUrl: './carrousel.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class PopularComponent {
-  api = inject(ApiService)
+export class carrouselComponent {
   @ViewChild('swiper') swiperContainer!: ElementRef<SwiperContainer>
-  popularMovies = toSignal(this.api.getPopular() as Observable<AllMovies>)
+  movies=input.required<AllMovies | undefined>()
+  title=input.required<string>()
+
+  constructor(private comunicatorService: ComunicatorService) { }
+
+  @HostListener("window:scroll", ['$event'])
+  enableBackgroundNav(event: any) {
+    let offset = event.srcElement.children[0].scrollTop
+    if (offset > 20) {
+      this.comunicatorService.setBackgroundNav(true)
+    } else {
+      this.comunicatorService.setBackgroundNav(false)
+    }
+  }
 
   ngAfterViewInit() {
     this.initSwiper()
@@ -29,10 +39,7 @@ export class PopularComponent {
       slidesPerView: 4,
       allowTouchMove: false,
       spaceBetween: 5,
-      pagination: {
-        enabled: true,
-        dynamicBullets: true
-      },
+      slidesPerGroup: 4,
       navigation: {
         enabled: true,
         /* nextEl: '.swiper-next',
