@@ -1,28 +1,57 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap'); 
+@import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap')
+layer(utilities);
 
+@theme {
+  --font-racing: 'racing sans one';
+  --font-roboto: Roboto;
+
+  @keyframes leftToRight {
+    0% {
+      left: -1000;
+    }
+    100% {
+      left: 0;
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility clip-ellipse {
+  clip-path: ellipse(300% 100% at top);
+}
+
+@utility clip-circle {
+  clip-path: circle(6rem);
+}
 
 @layer base {
   @font-face {
     font-family: 'racing sans one';
-    src: url('./assets/fonts/racing-sans-one/RacingSansOne-Regular.ttf')
+    src: url('./assets/fonts/racing-sans-one/RacingSansOne-Regular.ttf');
   }
   @font-face {
     font-family: 'Roboto';
-    src: url('./assets/fonts/roboto/Roboto-Regular.ttf')
+    src: url('./assets/fonts/roboto/Roboto-Regular.ttf');
   }
  
-}
-
-@layer components {
-  .clip-ellipse {
-    clip-path: ellipse(300% 100% at top);
-  }
-  .clip-circle {
-    clip-path: circle(6rem);
-  }
 }
 
 body,

@@ -8,7 +8,7 @@
             class="w-80 py-6 px-1 transition-transform duration-300 hover:scale-125 hover:z-20 "
             [ngClass]="{'origin-left':i%numSlides==0,'origin-right':i%numSlides==3}">
 
-            <section class="rounded-md h-48 shadow-sm shadow-white relative rounded-t-md">
+            <section class="rounded-md h-48 shadow-xs shadow-white relative rounded-t-md">
 
                 <div class="rounded-t-md absolute z-20" [hidden]="!hoverStates[i]">
                     <!--elemento que contendra el reproductor del trailer -->
@@ -28,7 +28,7 @@
 
                     @if(!hoverStates[i]){
                     <figcaption class="p-4 text-white absolute  flex flex-col justify-end z-10 w-full h-full
-                        bg-gradient-to-t from-[rgba(0,0,0,1)] from-0% via-[rgba(20,20,20,0.8)] via-35% 
+                        bg-linear-to-t from-[rgba(0,0,0,1)] from-0% via-[rgba(20,20,20,0.8)] via-35% 
                         to-[rgba(83,200,141,0)] to-100% rounded-md">
                         <h1 class="font-racing text-lg">{{movie.title}}</h1>
                         <p class="font-roboto text-[12px]">{{movie.release_date | date:'longDate'}}</p>

@@ -4,7 +4,7 @@ after:absolute after:top-0 after:h-full after:bg-black after:bg-opacity-80 after
 
     <div class="w-full h-screen flex items-end mb-20">
         <div
-            class="z-10 relative flex flex-grow bg-zinc-500  self-end ml-8 mb-8 w-1/5 h-2/4 rounded-xl shadow-sm shadow-white">
+            class="z-10 relative flex grow bg-zinc-500  self-end ml-8 mb-8 w-1/5 h-2/4 rounded-xl shadow-xs shadow-white">
             <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie()?.poster_path}}" fill priority #img
                 class="object-cover object-center rounded-xl ">
         </div>
@@ -31,7 +31,7 @@ after:absolute after:top-0 after:h-full after:bg-black after:bg-opacity-80 after
             </div>
         </div>
 
-        <div class="z-10 absolute right-20 top-20 text-zinc-300 flex-grow flex flex-col justify-end font-racing">
+        <div class="z-10 absolute right-20 top-20 text-zinc-300 grow flex flex-col justify-end font-racing">
             <div class="flex justify-start items-center font-racing">
                 <i class="fa solid fa-star text-[#e50914]"></i>
                 <p class="text-2xl px-2"> {{movie()?.vote_average | number:'1.1-1'}}</p>
@@ -60,7 +60,7 @@ after:absolute after:top-0 after:h-full after:bg-black after:bg-opacity-80 after
             @for(similarMovie of similarMovies();track similarMovie){
             <a class="z-10 flex flex-col font-racing text-zinc-300 m-4 cursor-pointer"
                 routerLink="/watch-movie/{{similarMovie.id}}">
-                <div class="relative flex items-end bg-black w-48 h-72  rounded-xl shadow-sm shadow-white">
+                <div class="relative flex items-end bg-black w-48 h-72  rounded-xl shadow-xs shadow-white">
                     <img ngSrc="{{'http://image.tmdb.org/t/p/original'+similarMovie.poster_path}}" fill #img
                         alt="Imagen no disponible"
                         class="object-cover object-center rounded-xl flex items-center justify-center">

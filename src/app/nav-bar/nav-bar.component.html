@@ -6,11 +6,11 @@
     <i class="fa fa-bars visible md:invisible hover:text-[#e50914] hover:cursor-pointer" 
     (click)="show=!show" ></i>
 
-    <div class="flex flex-grow flex-col bg-black absolute -right-72 top-0 h-screen md:visible 
+    <div class="flex grow flex-col bg-black absolute -right-72 top-0 h-screen md:visible 
     md:static md:flex-row md:bg-transparent md:h-auto transition-all ease-in-out duration-500"
         [ngClass]="{'right-0':show}" >
 
-        <ul class='flex flex-col md:flex-row justify-start md:items-center md:justify-center md:flex-grow  font-bold'>
+        <ul class='flex flex-col md:flex-row justify-start md:items-center md:justify-center md:grow  font-bold'>
             <li class="md:invisible m-2 self-end">
                 <i class="fa fa-xmark hover:text-[#e50914] hover:cursor-pointer" (click)="show=false"></i>
             </li>
@@ -29,7 +29,7 @@
         items-center rounded-lg focus-within:bg-neutral-800 shadow-md shadow-[#e50914]">
             <i class="fas fa-search text-neutral-300 px-4 text-sm"></i>
             <input placeholder="¿Qué estas buscando?" type="text"
-             class="text-neutral-300 bg-transparent flex-grow text-sm h-10 outline-none
+             class="text-neutral-300 bg-transparent grow text-sm h-10 outline-hidden
              placeholder-neutral-300">
         </div>
     </div>

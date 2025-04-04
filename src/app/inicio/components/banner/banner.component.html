@@ -10,7 +10,7 @@
 
                 <div class="w-full h-screen relative after:w-full 
                 after:absolute after:top-0 after:h-screen 
-                after:bg-gradient-to-r after:from-[rgba(0,0,0,1)] after:from-0% after:via-[rgba(20,20,20,1)]
+                after:bg-linear-to-r after:from-[rgba(0,0,0,1)] after:from-0% after:via-[rgba(20,20,20,1)]
                 after:via-35% after:to-[rgba(83,200,141,0)] after:to-100% mask-linear-50%">
                     <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie.backdrop_path}}" fill #img
                         class="object-cover object-center mask-linear-80%" (focus)="load()">
@@ -62,7 +62,7 @@
             </div>
         </div>
         @if(movie()){
-        <div class="flex-grow text-center self-center">
+        <div class="grow text-center self-center">
             <a routerLink="/watch-movie/{{movie().id}}">
                 <i class="fa-regular fa-circle-play text-6xl transition-all ease-in-out duration-300
             self-center hover:text-[#e50914] hover:cursor-pointer"
