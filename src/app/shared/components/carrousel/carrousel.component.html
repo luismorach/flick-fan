@@ -1,25 +1,74 @@
-<div class=" w-full h-screen relative bg-[#0f0f0f]">
-    <div class="p-6 pt-32 text-white text-2xl">
+<main class=" w-full bg-[#0f0f0f]">
+    <header class="p-6 pt-32 text-white text-2xl">
         <p class="border-b clip-ellipse border-[hsla(0,0%,100%,.4)] pb-2 font-racing">{{title()}}</p>
-    </div>
-    <div class="z-0 w-full justify-center self-center absolute p-2">
-        <swiper-container init="false" class="p-2" #swiper>
-            @for(movie of movies()?.results;track movie){
-            <swiper-slide class="w-80 h-auto p-2">
-                <div class="w-full h-48 relative rounded-md shadow-sm shadow-white">
-                    <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie.backdrop_path}}" fill #img
-                        class="object-cover object-center rounded-md text-white flex justify-center items-center"
-                        alt="imagen no disponible">
-                    <div class="p-4 text-white absolute flex flex-col justify-end z-10 w-full h-full
-                    bg-gradient-to-t from-[rgba(0,0,0,1)] from-0% via-[rgba(20,20,20,0.8)] via-35% 
-                    to-[rgba(83,200,141,0)] to-100% rounded-md">
-                        <h1 class="font-racing">{{movie.title}}</h1>
-                        <p class="font-serif">{{movie.release_date | date:'longDate'}}</p>
-                    </div>
+    </header>
+    <swiper-container init="false" class="px-5 h-60" #swiper>
+        @for(movie of movies();track movie;let i = $index){
+        <swiper-slide (mouseenter)="mouseEnter(i)" (mouseleave)="mouseLeave(i)"
+            class="w-80 py-6 px-1 transition-transform duration-300 hover:scale-125 hover:z-20 "
+            [ngClass]="{'origin-left':i%numSlides==0,'origin-right':i%numSlides==3}">
+
+            <section class="rounded-md h-48 shadow-sm shadow-white relative rounded-t-md">
+
+                <div class="rounded-t-md absolute z-20" [hidden]="!hoverStates[i]">
+                    <!--elemento que contendra el reproductor del trailer -->
+                    <div class="rounded-t-md pointer-events-none" id="trailer{{i}}"></div>
+                    <i class=" fa solid cursor-pointer hover:scale-110 rounded-full bg-neutral-800/80 
+                    text-white p-3 w-10 h-10 mr-1.5 transition-transform duration-300 hover:bg-white 
+                    hover:text-black absolute z-20 bottom-0 right-[3%]" (click)="changeMuted(i)"
+                    [ngClass]="{'fa-volume-xmark':mutedStates[i], 'fa-volume-high':!mutedStates[i]}"></i>
                 </div>
 
-            </swiper-slide>
-            }
-        </swiper-container>
-    </div>
-</div>
+                <figure class="w-full h-48 relative cursor-pointer z-10" [class.rounded-t-md]="hoverStates[i]"
+                    [class.rounded-b-none]="hoverStates[i]" [class.rounded-md]="!hoverStates[i]">
+                    <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie.backdrop_path}}" fill #img
+                        class="object-cover object-center text-white bg-black" alt="imagen no disponible"
+                        [class.rounded-t-md]="hoverStates[i]" [class.rounded-b-none]="hoverStates[i]"
+                        [class.rounded-md]="!hoverStates[i]">
+
+                    @if(!hoverStates[i]){
+                    <figcaption class="p-4 text-white absolute  flex flex-col justify-end z-10 w-full h-full
+                        bg-gradient-to-t from-[rgba(0,0,0,1)] from-0% via-[rgba(20,20,20,0.8)] via-35% 
+                        to-[rgba(83,200,141,0)] to-100% rounded-md">
+                        <h1 class="font-racing text-lg">{{movie.title}}</h1>
+                        <p class="font-roboto text-[12px]">{{movie.release_date | date:'longDate'}}</p>
+                        <p>{{mutedStates[i]}}</p>
+                    </figcaption>
+                    }
+                </figure>
+
+                <article class="text-white p-4 bg-black z-50 rounded-b-md" [hidden]="!hoverStates[i]">
+                    <header class="flex flex-col justify-end text-[12px]">
+                        <p>{{playerStates[i]}}</p>
+                        <h1 class="font-racing text-lg">{{movie.title}}</h1>
+                        <div class="flex items-center">
+                            <p class="font-roboto ">{{movie.release_date | date:'longDate'}} &nbsp;&nbsp;&nbsp;</p>
+                            @if(movie.runtime>0){
+                            <p class="font-roboto">Duración {{movie.runtime}} minutos&nbsp;</p>
+                            <i class="fa-solid fa-clock"></i>
+                            }
+                            @else{
+                            <p class="font-roboto">video no disponible</p>
+                            }
+                        </div>
+                        <div class="text-[16px] py-2">
+                            <i class="fa-solid fa-plus cursor-pointer hover:scale-110 rounded-full bg-neutral-700 
+                            text-white p-3 w-10 h-10 mr-1.5 transition-transform duration-300 hover:bg-white 
+                            hover:text-black"></i>
+                            <i class="fa-solid fa-film cursor-pointer hover:scale-110 rounded-full bg-neutral-700 
+                            text-white p-3 w-10 h-10 ml-1.5 transition-transform duration-300 hover:bg-white 
+                            hover:text-black"></i>
+                        </div>
+                    </header>
+
+                    <p class="font-roboto text-[12px] text-justify max-h-[15vh] w-full line-clamp-5">
+                        {{movie.overview}}
+                    </p>
+
+                </article>
+
+            </section>
+        </swiper-slide>
+        }
+    </swiper-container>
+</main>

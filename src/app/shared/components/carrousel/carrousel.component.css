@@ -10,3 +10,14 @@ swiper-container::part(button-next):hover {
     width: .6rem;
     
 }
+
+swiper-container::part(container){
+    overflow-y: visible;
+    overflow-x: clip;
+}
+
+/* swiper-slide {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    will-change: transform;
+} */

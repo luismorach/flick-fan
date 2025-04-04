@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { AllMovies, Movie } from '../../interfaces/interfaces';
-import { map, Observable } from 'rxjs';
+import { concat, concatAll, concatMap, map, mergeMap, Observable, toArray } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
@@ -19,7 +19,16 @@ export class ApiService {
     return this.http.get(this.API+'movie/now_playing?language=es-VE&page=1') 
   }
   getPopular(){
-    return this.http.get(this.API+'movie/popular?language=es-VE&page=1')
+    let popularMovies=this.http.get(this.API+'movie/popular?language=es-VE&page=1')
+    
+    return popularMovies.pipe(
+      map((data:any)=>data.results),
+      mergeMap((data:any)=>data),
+      concatMap((movie:any)=>{
+        console.log(movie.id);
+        return this.http.get(this.API+'movie/'+movie.id+'?append_to_response=videos&language=es-VE') }),
+        toArray()
+    )
   }
   getDetailsMovie(movie_id:number){
     

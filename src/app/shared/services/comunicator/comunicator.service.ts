@@ -9,11 +9,9 @@ export class ComunicatorService {
   constructor() { }
 
   setBackgroundNav(state: boolean) {
-    console.log('establecienod fondo')
     this.backgroundNavSignal.set(state);
   }
   getBackgroundNav():WritableSignal<boolean>{
-    console.log('retornando faondo')
     return this.backgroundNavSignal
   }
 }

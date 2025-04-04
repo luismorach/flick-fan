@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       fontFamily: {
         racing: ['"racing sans one"'],
+        roboto: ['Roboto'],
       },
       keyframes: {
         leftToRight: {

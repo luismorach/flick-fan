@@ -1,20 +1,31 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap'); 
 
-@layer base{
-    @font-face {
-        font-family: 'racing sans one';
-        src: url('./assets/fonts/racing-sans-one/RacingSansOne-Regular.ttf')
-      }
+
+@layer base {
+  @font-face {
+    font-family: 'racing sans one';
+    src: url('./assets/fonts/racing-sans-one/RacingSansOne-Regular.ttf')
+  }
+  @font-face {
+    font-family: 'Roboto';
+    src: url('./assets/fonts/roboto/Roboto-Regular.ttf')
+  }
+ 
 }
-@layer components{
-  .clip-ellipse{
+
+@layer components {
+  .clip-ellipse {
     clip-path: ellipse(300% 100% at top);
+  }
+  .clip-circle {
+    clip-path: circle(6rem);
   }
 }
 
-body,html{
+body,
+html {
   scroll-behavior: smooth;
 }
