@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PlayTrilerComponent } from './play-triler.component';
+import { CarouselSeriesComponent } from './carousel-series.component';
 
-describe('PlayTrilerComponent', () => {
-  let component: PlayTrilerComponent;
-  let fixture: ComponentFixture<PlayTrilerComponent>;
+describe('CarouselSeriesComponent', () => {
+  let component: CarouselSeriesComponent;
+  let fixture: ComponentFixture<CarouselSeriesComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PlayTrilerComponent]
+      imports: [CarouselSeriesComponent]
     })
     .compileComponents();
-    
-    fixture = TestBed.createComponent(PlayTrilerComponent);
+
+    fixture = TestBed.createComponent(CarouselSeriesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

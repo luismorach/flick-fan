@@ -1,4 +1,14 @@
-<app-nav-bar ></app-nav-bar>
-<app-banner></app-banner> 
-<app-carrousel [movies]="popularMovies()" title="Peliculas populares" class="overflow-visible"></app-carrousel>
- <!-- <app-top-rated [movies]="popularMovies()"></app-top-rated> -->
+
+<app-banner [listMovies]="nowPlaying()" (onPlayTrailer)="playTrailer($event)"></app-banner>
+<app-carrousel [listMovies]="popularMovies()" title="populares" [importance]="3" (onPlayTrailer)="playTrailer($event)"></app-carrousel>
+<app-carrousel [listMovies]="upcomingMovies()" title="recientes" [importance]="2" (onPlayTrailer)="playTrailer($event)"></app-carrousel>
+<app-banner-series [listSeries]="airingToday()"></app-banner-series>
+<app-carousel-series [listSeries]="airingToday()" title="populares" [importance]="2"></app-carousel-series>
+ 
+@defer(when player.isPlaying){
+<app-play-trailer [videoKey]="player.videoId"></app-play-trailer>
+}
+@placeholder{
+<span></span>
+}
+

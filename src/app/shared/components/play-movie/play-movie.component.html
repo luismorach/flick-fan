@@ -1,83 +1,46 @@
-<div class="w-full h-full bg-zinc-600  bg-cover bg-center relative after:w-full 
-after:absolute after:top-0 after:h-full after:bg-black after:bg-opacity-80 after:z-0 "
-    [ngStyle]="{'background-image':'url(http://image.tmdb.org/t/p/original'+movie()?.poster_path+')'}">
-
-    <div class="w-full h-screen flex items-end mb-20">
-        <div
-            class="z-10 relative flex grow bg-zinc-500  self-end ml-8 mb-8 w-1/5 h-2/4 rounded-xl shadow-xs shadow-white">
-            <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie()?.poster_path}}" fill priority #img
-                class="object-cover object-center rounded-xl ">
-        </div>
-
-        <div class="z-10 w-full m-8 md:px-12 relative self-end text-zinc-300 ">
-            <h1 class="font-racing uppercase text-3xl text-left sm:text-4xl lg:text-5xl relative" id="title">
-                {{movie()?.title}}
-            </h1>
-
-            <!-- <app-rating class="flex pt-4 left-[-150%]" [rating]="movie()?.vote_average" id="rating"></app-rating> -->
-
-            <p class="font-serif pt-2 text-justify max-h-[43vh] overflow-scroll">{{movie()?.overview}}</p>
-
-            <div class="flex pt-4 font-serif " id="genres">
-                @for(genre of movie()?.genres;track genre){
-                <p>{{genre.name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-                }
-            </div>
-
-            <div class="flex py-2 font-serif items-center" id="release">
-                <p>Duración {{movie()?.runtime}} minutos&nbsp;</p>
-                <i class="fa-solid fa-clock">&nbsp;&nbsp;&nbsp;</i>
-                <p class="">{{movie()?.release_date|date:'longDate'}}</p>
-            </div>
-        </div>
-
-        <div class="z-10 absolute right-20 top-20 text-zinc-300 grow flex flex-col justify-end font-racing">
-            <div class="flex justify-start items-center font-racing">
-                <i class="fa solid fa-star text-[#e50914]"></i>
-                <p class="text-2xl px-2"> {{movie()?.vote_average | number:'1.1-1'}}</p>
-                <p class="text-base ">/&nbsp;10</p>
-
-            </div>
-
-            <p class="pl-6">{{movie()?.vote_count}} calificaciones</p>
-        </div>
-    </div>
-
-   <!--  @defer{ -->
-    <div class="w-full h-screen z-10 relative flex justify-center items-center ">
-        <iframe [src]="url_movie() | urlSafe" class="w-[90%] h-[90%] " allowfullscreen></iframe>
-    </div>
-    <!-- } -->
-
-    @if(similarMovies().length>0){
-    @defer(on viewport){
-    <div>
-        <div class="z-10 font-racing text-4xl text-zinc-300 relative m-8 ">
-            <p class="border-b clip-ellipse border-[hsla(0,0%,100%,.4)] p-2">Peliculas similares</p>
-        </div>
-        
-        <div class="w-full h-auto flex flex-wrap justify-center">
-            @for(similarMovie of similarMovies();track similarMovie){
-            <a class="z-10 flex flex-col font-racing text-zinc-300 m-4 cursor-pointer"
-                routerLink="/watch-movie/{{similarMovie.id}}">
-                <div class="relative flex items-end bg-black w-48 h-72  rounded-xl shadow-xs shadow-white">
-                    <img ngSrc="{{'http://image.tmdb.org/t/p/original'+similarMovie.poster_path}}" fill #img
-                        alt="Imagen no disponible"
-                        class="object-cover object-center rounded-xl flex items-center justify-center">
-
+<main class="w-full">
+    <section class="w-full h-auto flex justify-center">
+        <div class="w-1/5 flex flex-col  px-6 pt-20 pb-4 mb-32">
+            <figure class="z-10 relative w-full h-96 rounded-xl shadow-xs shadow-white">
+                <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie()?.poster_path}}" fill priority #img
+                    class="object-cover object-center rounded-xl ">
+            </figure>
+            <header class="text-white text-2xl font-racing pt-1">
+                <h1>{{movie()?.title}}</h1>
+                <app-rating class="flex pt-4 left-[-150%] font-roboto" [rating]="movie()?.vote_average"></app-rating>
+                <div class="flex justify-between gap-6 items-end">
+                    <div class="h-8 mt-4 px-2 max-w-40 lg:w-40 flex bg-neutral-900 justify-center 
+                items-center rounded-lg focus-within:bg-neutral-800 shadow-md shadow-[#e50914]">
+                        <input placeholder="Calificacion" type="text" class="text-neutral-300 bg-transparent grow text-sm h-8 outline-hidden w-full
+                     placeholder-neutral-300">
+                    </div>
+                    <button class="border border-white rounded-xl px-4 text-sm hover:scale-110 h-6 mb-1
+            hover:border-[#e50914] hover:text-[#e50914] cursor-pointer"> Calificar&nbsp;
+                    </button>
                 </div>
-                <p class="w-48">{{similarMovie.title}}&nbsp;&nbsp;&nbsp;
-                    <i class="font-serif ">{{similarMovie.release_date|date:'yyyy'}}</i>
-                </p>
-
-            </a>
-            }
-            
+            </header>
+            <article class="text-white font-roboto pt-14 flex flex-col">
+                <h1 class="text-xl font-racing py-4"><i class="fa-solid fa-message text-[#e50914]"></i> &nbsp; Deja un comentario</h1>
+                <textarea class="bg-black w-full h-48 outline-hidden placeholder:text-neutral-400 p-2" 
+                rows="5" cols="33" placeholder="Tu comentario..." ></textarea>
+                <button class="border border-white rounded-sm px-4 w-44 my-4 font-racing text-sm  self-center
+                hover:scale-110 h-6 mb-1 hover:border-[#e50914] hover:text-[#e50914] cursor-pointer">
+                    publicar comentario&nbsp;
+                    </button>
+            </article>
         </div>
-    </div>
-    }@placeholder{
-        <div class="w-full h-screen"></div>
-    }
-    }
-
-</div>
+        <div class="w-4/5 z-10 relative ">
+            <div class="w-full h-screen px-6 pt-20 pb-4">
+                <iframe [src]="url_movie() | urlSafe" class="w-full h-full shadow-xs shadow-white outline-hidden"
+                    allowfullscreen></iframe>
+            </div>
+            @if(similarMovies()){
+                <app-carrousel [listMovies]="similarMovies()" title="similares" [importance]="2"></app-carrousel>
+            }
+           
+           @if(recomendedMovies()){
+             <app-carrousel [listMovies]="recomendedMovies()" title="recomendadas" [importance]="1"></app-carrousel> 
+           } 
+        </div>
+    </section>
+</main>

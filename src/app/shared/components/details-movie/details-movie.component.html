@@ -1,0 +1,132 @@
+<main class="w-full h-full relative ">
+
+    <figure class="w-full h-screen z-0 absolute gradient after:w-full 
+    after:absolute after:top-0 after:h-full after:bg-[#0f0f0f] after:opacity-50 after:z-0 ">
+        <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie()?.backdrop_path}}" fill
+            class="object-cover object-center rounded-xl gradient">
+    </figure>
+
+    <section class="w-full h-screen flex items-end mb-20">
+        <figure
+            class="z-10 relative flex grow bg-zinc-500  self-end ml-8 mb-8 w-1/5 h-2/4 rounded-xl shadow-xs shadow-white">
+            <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie()?.poster_path}}" fill priority #img
+                class="object-cover object-center rounded-xl ">
+        </figure>
+
+        <header class="z-10 w-full m-8 md:px-12 relative self-end text-white text-base">
+            <h1 class="font-racing uppercase text-3xl text-left sm:text-4xl lg:text-5xl relative" id="title">
+                {{movie()?.title}}
+            </h1>
+
+
+            <p class="font-roboto pt-2 text-justify max-h-[43vh] overflow-scroll">{{movie()?.overview}}</p>
+
+            <div class="flex pt-4 font-roboto " id="genres">
+                @for(genre of movie()?.genres;track genre){
+                <p>{{genre.name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+                }
+            </div>
+
+            <div class="flex py-2 font-roboto items-center" id="release">
+                <p>Duración {{movie()?.runtime}} minutos&nbsp;</p>
+                <i class="fa-solid fa-clock">&nbsp;&nbsp;&nbsp;</i>
+                <p class="">{{movie()?.release_date|date:'longDate'}}</p>
+            </div>
+
+            <a routerLink="/watch-movie/{{movie()?.id}}" class="border border-white rounded-xl px-4 py-0.5 text-sm hover:scale-110 
+            hover:border-[#e50914] hover:text-[#e50914] cursor-pointer"> VER AHORA &nbsp;
+                <i class="fa-solid fa-play text-sm"></i>
+            </a>
+        </header>
+
+        <div class="z-10 absolute right-20 top-20 text-white grow flex flex-col justify-end font-racing">
+            <div class="flex justify-start items-center font-racing">
+                <i class="fa solid fa-star text-[#e50914]"></i>
+                <p class="text-2xl px-2"> {{movie()?.vote_average | number:'1.1-1'}}</p>
+                <p class="text-base ">/&nbsp;10</p>
+
+            </div>
+
+            <p class="pl-6">{{movie()?.vote_count}} calificaciones</p>
+        </div>
+    </section>
+
+    <section class="w-full">
+        <header class="px-6 pt-6 text-white text-2xl">
+            <p class=" font-racing">Reparto</p>
+        </header>
+
+        <div class="flex">
+            <div class="w-[70%]">
+                <swiper-container init="true" space-between="10" navigation slides-per-view="4" slides-per-group="4"
+                    speed="800" class="p-4 w-full ">
+
+                    @for(cast of credits()?.cast;track cast){
+                    <swiper-slide class="flex-col  rounded-xl ">
+                        <figure class="w-full h-56 rounded-full  relative text-white ">
+                            <img ngSrc="{{'http://image.tmdb.org/t/p/original'+cast?.profile_path}}"
+                                alt="Imagen no disponible" fill
+                                class="object-cover object-top rounded-full flex items-center justify-center  bg-[rgba(0,5,13,.5)]">
+                        </figure>
+
+                        <div class="w-full text-sm text-white pb-1 flex flex-col items-center">
+                            <h1 class="font-roboto font-extrabold text-base px-2">{{cast.name}}</h1>
+                            <h2 class="font-roboto text-sm px-2 ">{{cast.character}}</h2>
+                        </div>
+                    </swiper-slide>
+                    }
+                </swiper-container>
+                <header class="px-6 pt-6 text-white text-2xl">
+                    <p class=" font-racing">Equipo</p>
+                </header>
+                <swiper-container init="true" space-between="10" navigation slides-per-view="4" slides-per-group="4"
+                    speed="800" class="p-4 w-full">
+
+                    @for(crew of credits()?.crew;track crew){
+                    <swiper-slide class="flex-col  ">
+                        <figure class="w-full h-56 rounded-full  relative text-white ">
+                            <img ngSrc="{{'http://image.tmdb.org/t/p/original'+crew?.profile_path}}"
+                                alt="Imagen no disponible" fill
+                                class="object-cover object-top rounded-full flex items-center justify-center bg-[rgba(0,5,13,.5)]">
+                        </figure>
+
+                        <div class="w-full text-sm text-white pb-1 flex flex-col items-center">
+                            <h1 class="font-roboto font-extrabold text-base px-2">{{crew.name}}</h1>
+                            <h2 class="font-roboto text-sm px-2 ">{{crew.job}}</h2>
+                        </div>
+                    </swiper-slide>
+                    }
+                </swiper-container>
+            </div>
+            <aside class=" rounded-xl text-white w-full font-roboto text-sm p-4 pl-16">
+                <h1 class="text-base font-extrabold">Titulo original</h1>
+                <p class="text-sm pb-4">{{movie()?.original_title}}</p>
+                <h1 class="text-base font-extrabold">Estatus</h1>
+                <p class="text-sm pb-4">{{movie()?.status}}</p>
+                <h1 class="text-base font-extrabold">Compañias de producción</h1>
+                @for(company of movie()?.production_companies;track company){
+                <p>{{company.name}}</p>
+                }
+                <h1 class="text-base font-extrabold pt-4">Paises de producción</h1>
+                @for(country of movie()?.production_countries;track country){
+                <p>{{country.name}}</p>
+                }
+                <h1 class=" text-base font-extrabold pt-4">Presupuesto </h1>
+                @if(movie()?.budget){
+                <p>{{movie()?.budget | currency:'USD':'symbol-narrow':'1.0-0'}}</p>
+                }
+                @else{
+                <p>-</p>
+                }
+                <h1 class="text-base font-extrabold pt-4">Ingresos </h1>
+                @if(movie()?.revenue){
+                <p>{{movie()?.revenue | currency:'USD':'symbol-narrow':'1.0-0'}}</p>
+                }
+                @else{
+                <p>-</p>
+                }
+            </aside>
+        </div>
+        
+    </section>
+</main>

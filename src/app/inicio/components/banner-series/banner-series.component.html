@@ -1,0 +1,91 @@
+<main class="w-full h-screen relative my-12">
+    <figure class="w-full h-[90vh] absolute flex after:w-full 
+    after:absolute after:top-0 after:h-[90vh] after:bg-linear-to-r after:from-[rgba(15,15,15,1)] 
+    after:from-15% after:via-[rgba(15,15,15,.9)] after:via-25% after:to-[rgba(83,200,141,0)] after:to-100% ">
+        <img ngSrc="{{'http://image.tmdb.org/t/p/original'+serie()?.backdrop_path}}" fill
+            class="w-full h-screen object-cover object-center gradient-top" alt="imagen no disponible">
+    </figure>
+
+    <section class="w-full flex pl-36 relative h-[90vh]">
+        <button class=" ml-4 mt-1 self-center absolute top-0 left-2/12 text-white w-10 h-10 bg-black 
+        flex justify-center items-center z-1 hover:cursor-pointer rounded-full transition-all ease-in 
+        hover:text-xl swiper-next-serie text-center text-base ">
+            <i class="fa-solid fa-chevron-up "></i>
+        </button>
+
+        <swiper-container init="false" class="h-[80vh] w-[50%] z-0 self-center" #swiper>
+            @for(serie of listSeries()?.results;track serie;let i=$index){
+            <swiper-slide class="z-0 w-52 h-80 mx-4 rounded-md transition-all duration-500 ease-in bg-[#18212b]"
+                [class.scale-200]="i===indexCurrentElement()" [class.z-40]="i===indexCurrentElement()"
+                [class.scale-150]="i===previousIndex() || i===nextIndex()"
+                [class.z-30]="i===previousIndex() || i===nextIndex()" [class.translate-y-[40%]]="i===previousIndex()-1"
+                [class.-translate-y-[40%]]="i===nextIndex()+1">
+
+                <figure class="w-full h-full  relative cursor-pointer opacity-0 transition-all duration-700 ease-in"
+                    [class.opacity-100]="i==indexCurrentElement()"
+                    [class.opacity-60]="i==previousIndex() || i===nextIndex()"
+                    [class.opacity-40]="i==previousIndex()-1 || i===nextIndex()+1">
+                    <img ngSrc="{{'http://image.tmdb.org/t/p/original'+serie.backdrop_path}}" fill #img
+                        class="w-full h-full object-cover object-center rounded-md text-white bg-black"
+                        alt="imagen no disponible">
+
+                    <!--  <figcaption class="p-4 text-white absolute  flex flex-col justify-end z-10 w-full h-full
+                        bg-linear-to-t from-[rgba(0,0,0,1)] from-0% via-[rgba(20,20,20,0.8)] via-35% 
+                        to-[rgba(83,200,141,0)] to-100% rounded-md">
+                        <h1 class="font-racing text-lg">{{serie.title}}</h1>
+                        <p class="font-roboto text-[12px]">{{serie.release_date | date:'longDate'}}</p>
+                    </figcaption> -->
+                </figure>
+
+            </swiper-slide>
+
+            }
+        </swiper-container>
+
+        <button class=" ml-4 mb-1 self-center absolute bottom-0 left-2/12 text-white w-10 h-10 bg-black 
+        flex justify-center items-center z-1 hover:cursor-pointer rounded-full 
+        text-center text-base transition-all ease-in hover:text-xl swiper-previous-serie">
+            <i class="fa-solid fa-chevron-down "></i>
+        </button>
+
+        <div class="pb-4 text-white flex z-10 w-full md:px-12 justify-start">
+            @if(serie()){
+            <header class="flex flex-col justify-end w-full">
+                <h1 class="font-racing uppercase text-3xl text-left sm:text-4xl lg:text-5xl">{{serie()?.name}}</h1>
+
+                <app-rating class="flex pt-4 left-[-150%] font-roboto" [rating]="serie()?.vote_average"></app-rating>
+
+                <!-- <p class="font-roboto pt-2 text-justify max-h-[43vh] overflow-scroll">{{serie()?.overview}}</p> -->
+                <article class="flex pt-4 font-roboto ">
+                    <p class="text-[#e50914] pr-4">Generos </p>
+                    @for(genre of serie()?.genres;track genre){
+                    <p class="px-2">{{genre.name}}</p>
+                    }
+                </article>
+                <article class="flex pt-2 font-roboto">
+                    <p class="text-[#e50914] pr-4">Primera fecha al aire </p>
+                    <p class="px-2">{{serie()?.first_air_date|date:'longDate'}}</p>
+                </article>
+                <article class="flex pt-2 font-roboto">
+                    <p class="text-[#e50914] pr-4">Última fecha al aire </p>
+                    <p class="px-2">{{serie()?.last_air_date|date:'longDate'}}</p>
+                </article>
+                <article class="flex pt-2 font-roboto">
+                    <p class="text-[#e50914] pr-4">Temporadas </p>
+                    <p class="px-2">{{serie()?.number_of_seasons}}</p>
+
+                    <p class="text-[#e50914] pl-8 pr-4">Capitulos </p>
+                    <p class="px-2">{{serie()?.number_of_episodes}}</p>
+                </article>
+
+                <a routerLink="/watch" class="border border-white rounded-xl px-4 py-0.5 text-sm hover:scale-105 
+            hover:border-[#e50914] hover:text-[#e50914] cursor-pointer w-48 mt-4"> MAS INFORMACIÓN &nbsp;
+                    <i class="fa-solid fa-play text-sm"></i>
+                </a>
+
+            </header>
+            }
+        </div>
+    </section>
+
+</main>

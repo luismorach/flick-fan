@@ -5,4 +5,8 @@ export const routes: Routes = [ {
 },
 {
     path: 'watch-movie/:id_movie', loadComponent: () => import('./shared/components/play-movie/play-movie.component'),
-}];
+},
+{
+    path: 'details-movie/:id_movie', loadComponent: () => import('./shared/components/details-movie/details-movie.component'),
+},
+];

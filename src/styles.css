@@ -57,4 +57,15 @@ layer(utilities);
 body,
 html {
   scroll-behavior: smooth;
+  background-color: #0f0f0f;
+}
+
+.gradient{
+  mask-image: linear-gradient(black 80%,transparent)
+  
+}
+
+.gradient-top{
+  mask-image: linear-gradient(transparent 0%,black 50%,transparent 100%)
+  
 }

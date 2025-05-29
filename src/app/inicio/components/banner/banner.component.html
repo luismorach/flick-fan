@@ -1,67 +1,60 @@
-<div class="bg-black w-full h-screen ">
+<main class="w-full h-full ">
 
-    <div class="z-0 w-full h-[150vh] justify-center self-center absolute ">
+    <section class="z-0 w-full h-[150vh] justify-center self-center absolute ">
         <swiper-container init="false" #swiper>
-
-            @for(movie of allMovies()?.results;track movie){
-
-             
-            <swiper-slide class="w-full h-screen">
-
-                <div class="w-full h-screen relative after:w-full 
-                after:absolute after:top-0 after:h-screen 
-                after:bg-linear-to-r after:from-[rgba(0,0,0,1)] after:from-0% after:via-[rgba(20,20,20,1)]
-                after:via-35% after:to-[rgba(83,200,141,0)] after:to-100% mask-linear-50%">
-                    <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie.backdrop_path}}" fill #img
-                        class="object-cover object-center mask-linear-80%" (focus)="load()">
-                </div>
+            @for(movie of listMovies()?.results;track movie){
+            <swiper-slide
+                class="w-full h-screen relative after:w-full 
+                after:absolute after:top-0 after:h-screen after:bg-linear-to-r after:from-[rgba(15,15,15,1)] 
+                after:from-35% after:via-[rgba(15,15,15,.9)] after:via-50% after:to-[rgba(83,200,141,0)] after:to-100% ">
+                <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie.backdrop_path}}" fill #img
+                    class="object-cover object-center gradient">
             </swiper-slide>
-
             }
-
         </swiper-container>
-    </div>
-
-    <div class="text-white flex flex-wrap flex-row md:py-12 relative w-full h-screen">
+    </section>
+   
+    <section class="text-white flex flex-wrap flex-row md:py-12 relative w-full h-screen mb-24">
 
         <div class="m-12 w-8 self-center" [ngClass]="{'pointer-events-none text-zinc-800':indexCurrentElement==0}">
             <i class="fa-solid fa-chevron-left  hover:cursor-pointer rounded-full
         text-center text-base transition-all ease-in hover:text-xl swiper-previous" (click)="animateElements()"></i>
         </div>
-
-        <div class="sm:max-w-[40%] px-4 md:px-12 relative self-center">
+        @if(movie()){
+        <header class="sm:max-w-[40%] px-4 md:px-12 relative self-center">
             <h1 class="font-racing uppercase text-3xl text-left sm:text-4xl lg:text-5xl relative" id="title">
                 {{movie()?.title}}
             </h1>
+            <app-rating class="flex pt-4 left-[-150%] font-roboto" [rating]="movie().vote_average"
+                id="rating"></app-rating>
 
-            <app-rating class="flex pt-4 left-[-150%]" [rating]="movie()?.vote_average" id="rating"></app-rating>
+            <p class="font-roboto pt-2 text-justify max-h-[43vh] overflow-scroll" id="overview">{{movie()?.overview}}
+            </p>
 
-            <p class="font-serif pt-2 text-justify max-h-[43vh] overflow-scroll" id="overview">{{movie()?.overview}}</p>
-            @if(movie()){
-            <div class="flex pt-4 font-serif " id="genres">
+            <article class="flex pt-4 font-serif " id="genres">
                 <p class="text-[#e50914] pr-4">Generos </p>
                 @for(genre of movie()?.genres;track genre){
                 <p class="px-2">{{genre.name}}</p>
                 }
-            </div>
-            }
-            <div class="flex py-2 font-serif" id="release">
+            </article>
+
+            <article class="flex py-2 font-roboto" id="release">
                 <p class="text-[#e50914] pr-4">Fecha de publicación </p>
                 <p class="px-2">{{movie()?.release_date|date:'longDate'}}</p>
-            </div>
-            <div class="flex justify-start " id="buttons">
+            </article>
+            <section class="flex justify-start " id="buttons">
                 <button class="bg-[#f80000] p-2 px-4 rounded-md font-racing text-lg mr-4 my-4
-                hover:shadow-md hover:shadow-white transition-all ease-in" (click)="playTrailer()"
-                    [ngClass]="{'bg-zinc-800 pointer-events-none':movie()?.videos.results.length==0}">
+                hover:shadow-md hover:shadow-white transition-all ease-in cursor-pointer" (click)="playTrailer()"
+                    [ngClass]="{'bg-zinc-800 pointer-events-none':movie().videos.results.length==0}">
                     <i class="fa-solid fa-play"></i>&nbsp; &nbsp;Trailer
                 </button>
                 <button class="bg-white text-[#f80000] p-2 px-4 rounded-md font-racing text-lg ml-4 my-4
-                hover:shadow-md hover:shadow-[#f80000] transition-all ease-in">
+                hover:shadow-md hover:shadow-[#f80000] transition-all ease-in cursor-pointer">
                     <i class="fa-regular fa-bookmark"></i>&nbsp; &nbsp;Lista
                 </button>
-            </div>
-        </div>
-        @if(movie()){
+            </section>
+        </header>
+        
         <div class="grow text-center self-center">
             <a routerLink="/watch-movie/{{movie().id}}">
                 <i class="fa-regular fa-circle-play text-6xl transition-all ease-in-out duration-300
@@ -78,14 +71,6 @@
         text-center text-base transition-all ease-in hover:text-xl swiper-next" (click)="animateElements()"></i>
         </div>
 
-    </div>
+    </section>
 
-</div>
-
-@defer(when showTrailer()){
-<app-play-triler [videoKey]="getKeyTrailer()"></app-play-triler>
-}
-@placeholder{
-<span></span>
-}
-<p>{{render()}}</p>
+</main>

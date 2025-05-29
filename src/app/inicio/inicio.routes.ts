@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 const routes: Routes = [
     {
-        path: '', loadComponent: () => import('./components/banner/banner.component')
+        path: 'details-movie/:id_movie', loadComponent: () => import('../shared/components/details-movie/details-movie.component'),
     },
     {
         path: 'watch-movie/:id_movie', loadComponent: () => import('../shared/components/play-movie/play-movie.component'),
