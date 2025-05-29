@@ -1,11 +1,9 @@
-import { Component, inject, CUSTOM_ELEMENTS_SCHEMA, Signal, signal, WritableSignal, Inject, ChangeDetectionStrategy, viewChild, computed, effect, Injector, runInInjectionContext, Renderer2, ViewEncapsulation, ViewChild, ElementRef, output, HostListener, Input, input } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop'
+import { Component, inject, CUSTOM_ELEMENTS_SCHEMA, signal, WritableSignal, Inject, ChangeDetectionStrategy, 
+   effect,  ViewEncapsulation, ViewChild, ElementRef, output, HostListener, input } from '@angular/core';
 import { DOCUMENT, DatePipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { register, SwiperContainer } from 'swiper/element/bundle'
 import { SwiperOptions } from 'swiper/types';
 import 'swiper/css'
-import { Observable } from 'rxjs';
-import { ApiService } from '../../../shared/services/API/api.service';
 import { listMovies, playerTrailer } from '../../../shared/interfaces/interfaces';
 import { RouterLink } from '@angular/router';
 import { AnimationsService } from '../../../shared/services/animations/animations.service';
@@ -29,10 +27,12 @@ export default class BannerComponent {
   onPlayTrailer = output<playerTrailer>()
   animationsService = inject(AnimationsService)
   indexCurrentElement: number = 0
-  allElements: number = 0
   listMovies = input.required<listMovies | undefined>()
   movie: WritableSignal<any>= signal(undefined)
   isSwiperRegistered = false
+  isBeginning=signal(true)
+  isEnd=signal(false)
+  trailerID=signal('')
 
    @HostListener("window:scroll", ['$event'])
   enableBackgroundNav(event: any) {
@@ -51,20 +51,19 @@ export default class BannerComponent {
     
     this.comunicatorService.setBackgroundNav(false)
     effect(() => {
-      console.log(this.listMovies())
-      let results = this.listMovies()?.results.length
       this.movie.set(this.listMovies()?.results[this.indexCurrentElement])
-      if (results)
-        this.allElements = results
+       this.animateElements()  
     })
-
-    effect(() => {
-       /* this.animateElements()  */
+    effect(()=>{
+      console.log(this.trailerID())
+      this.onPlayTrailer.emit({
+        videoId:this.trailerID,
+        isPlaying:false
+      })
     })
   }
 
   ngAfterViewInit() {
-    console.log('despues de la vista')
     this.initSwiper()
   }
 
@@ -81,15 +80,19 @@ export default class BannerComponent {
         dynamicBullets: true
       },
       navigation: {
+        enabled:true,
         nextEl: '.swiper-next',
         prevEl: '.swiper-previous'
       },
     }
+
+   
     this.swiperContainer.nativeElement.addEventListener('swiperslidechange', (event: any) => {
-      console.log('cambio')
-      console.log(event.detail[0].activeIndex)
+      this.isBeginning.set(event.detail[0].isBeginning)
+      this.isEnd.set(event.detail[0].isEnd)
       this.indexCurrentElement = event.detail[0].activeIndex
       this.movie.set(this.listMovies()?.results[this.indexCurrentElement]) 
+      this.trailerID.set(this.getKeyTrailer())
     })
 
     if (this.swiperContainer) {
@@ -131,7 +134,7 @@ export default class BannerComponent {
 
   playTrailer() {
     this.onPlayTrailer.emit({
-      videoId: this.getKeyTrailer(),
+      videoId: signal(this.getKeyTrailer()),
       isPlaying: true
     });
   }

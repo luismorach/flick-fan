@@ -6,7 +6,7 @@
 <app-carousel-series [listSeries]="airingToday()" title="populares" [importance]="2"></app-carousel-series>
  
 @defer(when player.isPlaying){
-<app-play-trailer [videoKey]="player.videoId"></app-play-trailer>
+<app-play-trailer [videoKey]="player.videoId()"></app-play-trailer>
 }
 @placeholder{
 <span></span>

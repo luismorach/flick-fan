@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, viewChild, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, viewChild, HostListener, signal } from '@angular/core';
 import { RouterOutlet, provideRouter } from '@angular/router';
 import { NavBarComponent } from '../nav-bar/nav-bar.component';
 import BannerComponent from './components/banner/banner.component';
@@ -13,8 +13,8 @@ import { CarouselSeriesComponent } from '../shared/components/carousel-series/ca
 
 @Component({
     selector: 'app-inicio',
-    imports: [RouterOutlet, NavBarComponent, BannerComponent, carrouselComponent, 
-        PlayTrailerComponent,BannerSeriesComponent,CarouselSeriesComponent
+    imports: [RouterOutlet, NavBarComponent, BannerComponent, carrouselComponent,
+        PlayTrailerComponent, BannerSeriesComponent, CarouselSeriesComponent
     ],
     templateUrl: './inicio.component.html',
     styleUrl: './inicio.component.css',
@@ -28,11 +28,12 @@ export default class InicioComponent {
     upcomingMovies = toSignal(this.API.getUpcoming() as Observable<listMovies>)
     nowPlaying = toSignal(this.API.getNowPlaying() as Observable<listMovies>)
     airingToday = toSignal(this.API.getAiringTodaySeries() as Observable<listSeries>)
-    player: playerTrailer = { videoId: '', isPlaying: false }
+    player: playerTrailer = { videoId: signal(''), isPlaying: false }
 
     playTrailer(player: playerTrailer) {
         this.player = player
-        this.playTrailerComponent()?.openTrailer()
+        if (player.isPlaying)
+            this.playTrailerComponent()?.openTrailer()
     }
 
 }

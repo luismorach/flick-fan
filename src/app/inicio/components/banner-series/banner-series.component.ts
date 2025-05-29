@@ -54,7 +54,6 @@ export class BannerSeriesComponent {
       observer: true,
       centeredSlides: true,
       loop: true,
-      initialSlide: this.indexCurrentElement(),
       navigation: {
         enabled: true,
          nextEl: '.swiper-next-serie',
@@ -62,7 +61,7 @@ export class BannerSeriesComponent {
       },
     }
     this.swiperContainer.nativeElement.addEventListener('swiperslidechange', (event: any) => {
-      console.log('cambio')
+      console.log('pasando cambnoio banner series')
       console.log(event.detail[0].slides.length)
       console.log(this.listSeries())
       this.indexCurrentElement.set(event.detail[0].realIndex)

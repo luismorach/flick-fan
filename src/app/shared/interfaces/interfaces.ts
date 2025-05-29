@@ -1,3 +1,5 @@
+import { WritableSignal } from "@angular/core"
+
 export interface listMovies {
     page: number
     results: Movie[]
@@ -96,7 +98,7 @@ export interface genre {
 }
 
 export interface playerTrailer {
-    videoId: string,
+    videoId: WritableSignal<string>,
     isPlaying: boolean,
 }
 

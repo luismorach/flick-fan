@@ -6,17 +6,18 @@ import { AnimationsService } from '../../services/animations/animations.service'
   selector: 'app-play-trailer',
   imports: [UrlSafePipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  templateUrl: './play-triler.component.html',
-  styleUrl: './play-triler.component.css'
+  templateUrl: './play-trailer.component.html',
+  styleUrl: './play-trailer.component.css'
 })
 
 
 export default class PlayTrailerComponent {
   animationsService = inject(AnimationsService)
-  videoKey = input.required<string>();
+  videoKey = input<string>();
   trailerElement = viewChild<ElementRef>('trailer')
   videoElement = viewChild<ElementRef>('video')
   urlSafe = computed(() => {
+    console.log(this.videoKey())
     return 'https://www.youtube.com/embed/' + this.videoKey() + '?rel=0'
   })
 
@@ -60,16 +61,15 @@ export default class PlayTrailerComponent {
   }
 
   openTrailer() {
-    if(this.trailerElement()!==undefined){
-    this.renderer2.removeClass(this.trailerElement()?.nativeElement, 'invisible')
-    this.maximize()
+    if (!document.contains(this.videoElement()?.nativeElement)) {
+      this.renderer2.removeClass(this.trailerElement()?.nativeElement, 'invisible')
+      this.renderer2.appendChild(this.trailerElement()?.nativeElement, this.videoElement()?.nativeElement)
     }
+    this.maximize()
   }
 
   closeTrailer() {
     this.renderer2.addClass(this.trailerElement()?.nativeElement, 'invisible')
+    this.renderer2.removeChild(this.trailerElement()?.nativeElement, this.videoElement()?.nativeElement)
   }
-
-  
-
 }

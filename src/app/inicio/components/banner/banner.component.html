@@ -16,7 +16,7 @@
    
     <section class="text-white flex flex-wrap flex-row md:py-12 relative w-full h-screen mb-24">
 
-        <div class="m-12 w-8 self-center" [ngClass]="{'pointer-events-none text-zinc-800':indexCurrentElement==0}">
+        <div class="m-12 w-8 self-center" [ngClass]="{'pointer-events-none, text-gray-800':isBeginning()}">
             <i class="fa-solid fa-chevron-left  hover:cursor-pointer rounded-full
         text-center text-base transition-all ease-in hover:text-xl swiper-previous" (click)="animateElements()"></i>
         </div>
@@ -65,10 +65,11 @@
         </div>
         }
 
-        <div class="m-12 w-8 self-center  text-right"
-            [ngClass]="{'pointer-events-none text-zinc-800':indexCurrentElement==allElements-1}">
+        <div class="m-12 w-8 self-center  text-right">
             <i class="fa-solid fa-chevron-right hover:cursor-pointer rounded-full 
-        text-center text-base transition-all ease-in hover:text-xl swiper-next" (click)="animateElements()"></i>
+        text-center text-base transition-all ease-in hover:text-xl swiper-next" 
+        [ngClass]="{'pointer-events-none, text-gray-800':isEnd()}"
+        (click)="animateElements()"></i>
         </div>
 
     </section>

@@ -20,22 +20,24 @@
                 <section class="h-48 shadow-xs shadow-white relative" [class.rounded-t-md]="hoverStates[i]"
                     [class.rounded-md]="!hoverStates[i]">
 
-                    @if(movie.videos.results.length>0){
-                    <div class="rounded-t-md absolute z-20 cursor-pointer" [ngClass]="{'opacity-0 ':!hoverStates[i],
+                   <!--  @if(movie.videos.results.length>0){ -->
+                    <!-- <div class="rounded-t-md absolute z-10 cursor-pointer" [ngClass]="{'opacity-0 ':!hoverStates[i],
                 'opacity-100 transition-opacity ease-in duration-500 delay-[3S]':hoverStates[i]}"
                         (click)="redirectDetailsMovie(i)">
-                        <!--elemento que contendra el reproductor del trailer -->
+
                         <div class="rounded-t-md pointer-events-none" id="{{title()}}{{i}}"></div>
                         <i class=" fa solid cursor-pointer hover:scale-110 rounded-full bg-neutral-800/80 
                     text-white p-3 w-10 h-10 mr-1.5 transition-transform duration-300 hover:bg-white 
-                    hover:text-black absolute z-20 bottom-0 right-[3%]" (click)="changeMuted(i)"
+                    hover:text-black absolute z-20 bottom-0 right-[3%]" (click)="changeMuted(i,$event)"
                             [ngClass]="{'fa-volume-xmark':mutedStates[i], 'fa-volume-high':!mutedStates[i]}"></i>
-                    </div>
-                    }
+                    </div> -->
+                    <app-play-trailer-embeed [title]="title()" [index]="i" [id]="movie.id" 
+                    [hoverState]="hoverStates[i]"></app-play-trailer-embeed>
+                    <!-- } -->
 
                     <figure class="w-full h-48 relative cursor-pointer" [class.rounded-t-md]="hoverStates[i]"
                         [class.rounded-b-none]="hoverStates[i]" [class.rounded-md]="!hoverStates[i]"
-                        (click)="redirectDetailsMovie(i)">
+                        (click)="trailerEmbeed.redirectDetailsMovie(movie.id)">
                         <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie.backdrop_path}}" fill #img
                             class="object-cover object-center text-white bg-black" alt="imagen no disponible"
                             [class.rounded-t-md]="hoverStates[i]" [class.rounded-b-none]="hoverStates[i]"
