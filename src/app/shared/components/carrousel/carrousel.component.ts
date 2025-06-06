@@ -1,4 +1,7 @@
-import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, input, output, Renderer2, signal, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectionStrategy, Component, ContentChild, contentChild, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, input, output,
+  Renderer2, signal, viewChild, ViewChild, ViewContainerRef, ViewEncapsulation
+} from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle'
 import { listMovies, playerTrailer } from '../../interfaces/interfaces';
 import { DatePipe, NgClass, NgOptimizedImage } from '@angular/common';
@@ -6,6 +9,7 @@ import { SwiperOptions } from 'swiper/types';
 import { UrlSafePipe } from '../../pipes/url-safe.pipe';
 import { Router } from '@angular/router';
 import { PlayTrailerEmbeedComponent } from '../play-trailer-embeed/play-trailer-embeed.component';
+import { YouTubePlayer } from '@angular/youtube-player';
 
 @Component({
   selector: 'app-carrousel',
@@ -19,9 +23,11 @@ import { PlayTrailerEmbeedComponent } from '../play-trailer-embeed/play-trailer-
 
 export class carrouselComponent {
 
-  @ViewChild(PlayTrailerEmbeedComponent) trailerEmbeed!: PlayTrailerEmbeedComponent
   @ViewChild('swiper') swiperContainer!: ElementRef<SwiperContainer>
   @ViewChild('main') mainContainer!: ElementRef<HTMLElement>
+  @ViewChild('parent') parentContainer!: ElementRef<HTMLElement>
+  @ViewChild(PlayTrailerEmbeedComponent) trailerEmbeed!: PlayTrailerEmbeedComponent
+  @ViewChild(PlayTrailerEmbeedComponent, { read: ElementRef }) trailerEmbeedElement !: ElementRef
   onPlayTrailer = output<playerTrailer>()
   listMovies = input.required<listMovies | undefined>()
   title = input.required<string>()
@@ -31,17 +37,22 @@ export class carrouselComponent {
   isBeginning = signal(true)
   gap = 0
   hoverStates: { [key: number]: boolean } = {};
+  currentIndex = 0
   isSwiperRegistered = false
+  trailer
 
   constructor(private renderer2: Renderer2, private router: Router) {
     if (!this.isSwiperRegistered) {
       register(); // Registra Swiper solo una vez
       this.isSwiperRegistered = true;
     }
+    this.trailer = this.renderer2.createElement('YouTubePlayer')
+
   }
 
   ngAfterViewInit() {
-    this.initSwiper()
+    this.initSwiper()/* 
+   this.renderer2.removeChild(this.mainContainer.nativeElement,this.trailerEmbeedElement.nativeElement)   */
   }
 
   initSwiper() {
@@ -88,17 +99,34 @@ export class carrouselComponent {
   mouseEnter(index: number) {
     let videoId = this.getKeyTrailer(index);
     this.hoverStates[index] = true;
+    this.currentIndex = index
     if (videoId !== '') {
-      this.trailerEmbeed.createPlayer(index, videoId);
+
+      this.renderer2.appendChild(this.swiperContainer.nativeElement.swiper.slides[index].firstChild,
+        this.trailerEmbeedElement.nativeElement)
+      this.trailerEmbeed.createPlayer(videoId)
+
+      requestAnimationFrame(() => {
+        this.renderer2.addClass(this.trailerEmbeedElement.nativeElement, 'active')
+      })
     }
   }
 
+
   mouseLeave(index: number) {
+    console.log('saklienod')
     let videoId = this.getKeyTrailer(index);
     this.hoverStates[index] = false;
     if (videoId !== '') {
-      this.trailerEmbeed.player.destroy()
+      this.closeTrailerPlayer()
     }
+  }
+
+  closeTrailerPlayer() {
+    this.renderer2.removeClass(this.trailerEmbeedElement.nativeElement, 'active')
+    this.renderer2.removeChild(this.swiperContainer.nativeElement.swiper.slides[this.currentIndex].firstChild,
+      this.trailerEmbeedElement.nativeElement)
+    this.trailerEmbeed.destroy()
   }
 
   playTrailer(index: number) {

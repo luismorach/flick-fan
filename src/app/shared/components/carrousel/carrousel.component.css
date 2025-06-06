@@ -16,3 +16,10 @@ swiper-container::part(container){
     overflow-y: visible;
     overflow-x: clip;
 }
+
+
+.active{
+    opacity: 100%;
+     transition: opacity 0.5s ease-in;
+     transition-delay: 3s;
+}

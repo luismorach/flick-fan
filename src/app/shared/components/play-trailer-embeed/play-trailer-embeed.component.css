@@ -1,0 +1,4 @@
+.efect{
+    transition: opacity .5s cubic-bezier(.2,.45,0,1);
+    transition: delay 3s;
+}

@@ -1,10 +1,11 @@
-<div class=" absolute rounded-t-md z-10 cursor-pointer" [ngClass]="{'opacity-0 ':!hoverState(),
-                'opacity-100 transition-opacity ease-in duration-500 delay-[3S]':hoverState()}"
-    (click)="redirectDetailsMovie(id())">
-    <!--elemento que contendra el reproductor del trailer -->
-    <div class="rounded-t-md pointer-events-none" id="{{title()}}{{index()}}"></div> 
-    <i class=" fa solid cursor-pointer hover:scale-110 rounded-full bg-neutral-800/80 
+<div class="absolute top-0 rounded-t-md z-10 cursor-pointer overflow-hidden " (click)="redirectDetailsMovie(id)">
+  
+  <youtube-player [videoId]="videoID()" [height]="192" [width]="316" [playerVars]="playerVars"
+    (stateChange)="onStateChange($event)" class="pointer-events-none">
+  </youtube-player>
+
+  <i class=" fa solid cursor-pointer hover:scale-110 rounded-full bg-neutral-800/80 
                     text-white p-3 w-10 h-10 mr-1.5 transition-transform duration-300 hover:bg-white 
-                    hover:text-black absolute z-20 bottom-0 right-[3%]" (click)="changeMuted($event)"
-        [ngClass]="{'fa-volume-xmark':mutedState, 'fa-volume-high':!mutedState}"></i>
+                    hover:text-black absolute z-20 bottom-2 right-[3%]" (click)="changeMuted($event)"
+    [ngClass]="{'fa-volume-xmark':mutedState, 'fa-volume-high':!mutedState}"></i>
 </div>
