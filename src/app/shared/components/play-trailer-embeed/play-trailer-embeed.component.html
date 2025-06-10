@@ -1,7 +1,7 @@
-<div class="absolute top-0 rounded-t-md z-10 cursor-pointer overflow-hidden " (click)="redirectDetailsMovie(id)">
+<div class="absolute top-0 rounded-t-md z-10 cursor-pointer overflow-hidden w-80 h-48 bg-amber-500" (click)="redirectDetailsMovie(id)">
   
-  <youtube-player [videoId]="videoID()" [height]="192" [width]="316" [playerVars]="playerVars"
-    (stateChange)="onStateChange($event)" class="pointer-events-none">
+ <youtube-player [videoId]="videoID" [height]="192" [width]="320" [playerVars]="playerVars"
+    (stateChange)="onStateChange($event)" class="pointer-events-none w-80 h-48">
   </youtube-player>
 
   <i class=" fa solid cursor-pointer hover:scale-110 rounded-full bg-neutral-800/80 

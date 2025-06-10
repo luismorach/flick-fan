@@ -1,21 +1,21 @@
 <main class=" w-full bg-[#0f0f0f] pb-8" #main>
-    <header class="px-6 text-white text-2xl">
+    <header class="p-6 text-white text-2xl">
         <p class=" font-racing">Películas {{title()}}</p>
     </header>
 
     <section class="relative">
-        <button class=" group ml-6 w-8 h-32 z-50 absolute left-0 top-1/4 text-white bg-[rgba(0,5,13,.5)] 
+        <button class=" group w-8 h-32 z-50 absolute left-0 top-1/5 text-white bg-[rgba(0,5,13,.5)] 
     flex items-center justify-center rounded-tr-lg rounded-br-lg swiper-previous-{{title()}} cursor-pointer"
             [hidden]="isBeginning()">
             <i class="fa-solid fa-chevron-left text-base transition-all ease-in delay-200 group-hover:text-xl "></i>
         </button>
 
-        <swiper-container init="false" class="w-full px-5 h-60 z-0 relative" #swiper>
+        <swiper-container init="false" class="w-full h-60 z-0 relative" #swiper>
 
-            @for(movie of listMovies()?.results;track movie;let i = $index){
+            @for(movie of listMovies()?.results;track movie;let i = $index;){
             <swiper-slide (mouseenter)="mouseEnter(i)" (mouseleave)="mouseLeave(i)"
-                class="z-0 w-80 py-6 px-0.5 transition-transform duration-300 hover:scale-125 hover:z-20 "
-                [ngClass]="{'origin-left':(i+gap)% numSlides==0,'origin-right':(i+gap)% numSlides==numSlides-1}">
+                class="z-0 w-80 transition-transform duration-300 hover:scale-125 hover:z-20" 
+                [ngClass]="{'origin-left':i % numSlides==0,'origin-right':i % numSlides==numSlides-1}">
 
                 <section class="h-48 shadow-xs shadow-white relative" [class.rounded-t-md]="hoverStates[i]"
                     [class.rounded-md]="!hoverStates[i]">
@@ -74,9 +74,9 @@
             }
         </swiper-container>
 
-        <button class="group mr-6 w-8 h-32 z-50 absolute right-0 top-1/4 text-white bg-[rgba(0,5,13,.5)] 
+        <button class="group w-8 h-32 z-50 absolute right-0 top-1/5 text-white bg-[rgba(0,5,13,.5)] 
     flex items-center justify-center rounded-tl-lg rounded-bl-lg swiper-next-{{title()}} cursor-pointer"
-            [hidden]="isEnd()">
+            [hidden]="isEnd()" >
             <i class="fa-solid fa-chevron-right text-base  group-hover:scale-125 "></i>
         </button>
 
@@ -84,4 +84,4 @@
     
 </main>
 
- <app-play-trailer-embeed #trailer class="opacity-0" (isEnded)="closeTrailerPlayer()"></app-play-trailer-embeed>
+ <app-play-trailer-embeed #trailer class="opacity-0 w-80 h-48" (isEnded)="closeTrailerPlayer()"></app-play-trailer-embeed>

@@ -3,23 +3,22 @@ swiper-container::part(button-next) {
     color: white;
     width: .5rem;
     height: 4rem;
-    transition:all cubic-bezier(0.4, 0, 1, 1) 0.3s;
+    transition: all cubic-bezier(0.4, 0, 1, 1) 0.3s;
 }
 
 swiper-container::part(button-prev):hover,
 swiper-container::part(button-next):hover {
     width: .6rem;
-    
 }
 
-swiper-container::part(container){
+swiper-container::part(container) {
     overflow-y: visible;
     overflow-x: clip;
 }
 
 
-.active{
+.active {
     opacity: 100%;
-     transition: opacity 0.5s ease-in;
-     transition-delay: 3s;
+    transition: opacity 0.5s ease-in;
+    transition-delay: 3s;
 }

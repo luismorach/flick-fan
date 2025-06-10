@@ -20,27 +20,29 @@
                 </div>
             </header>
             <article class="text-white font-roboto pt-14 flex flex-col">
-                <h1 class="text-xl font-racing py-4"><i class="fa-solid fa-message text-[#e50914]"></i> &nbsp; Deja un comentario</h1>
-                <textarea class="bg-black w-full h-48 outline-hidden placeholder:text-neutral-400 p-2" 
-                rows="5" cols="33" placeholder="Tu comentario..." ></textarea>
+                <h1 class="text-xl font-racing py-4"><i class="fa-solid fa-message text-[#e50914]"></i> &nbsp; Deja un
+                    comentario</h1>
+                <textarea class="bg-black w-full h-48 outline-hidden placeholder:text-neutral-400 p-2" rows="5"
+                    cols="33" placeholder="Tu comentario..."></textarea>
                 <button class="border border-white rounded-sm px-4 w-44 my-4 font-racing text-sm  self-center
                 hover:scale-110 h-6 mb-1 hover:border-[#e50914] hover:text-[#e50914] cursor-pointer">
                     publicar comentario&nbsp;
-                    </button>
+                </button>
             </article>
         </div>
-        <div class="w-4/5 z-10 relative ">
-            <div class="w-full h-screen px-6 pt-20 pb-4">
+        <div class="w-4/5 z-10 relative pl-6 ">
+            <div class="w-full h-screen pr-6 pt-20 pb-4">
                 <iframe [src]="url_movie() | urlSafe" class="w-full h-full shadow-xs shadow-white outline-hidden"
                     allowfullscreen></iframe>
             </div>
-            @if(similarMovies()){
-                <app-carrousel [listMovies]="similarMovies()" title="similares" [importance]="2"></app-carrousel>
+
+            @defer(when similarMovies()){
+            <app-carrousel [listMovies]="similarMovies()" title="similares" [importance]="2"></app-carrousel>
             }
-           
-           @if(recomendedMovies()){
-             <app-carrousel [listMovies]="recomendedMovies()" title="recomendadas" [importance]="1"></app-carrousel> 
-           } 
+
+            @defer(when recomendedMovies()){
+            <app-carrousel [listMovies]="recomendedMovies()" title="recomendadas" [importance]="1"></app-carrousel>
+            }
         </div>
     </section>
 </main>

@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, effect, output, signal, ViewChild, viewChild } from '@angular/core';
+import { Component, output, signal, ViewChild} from '@angular/core';
 import { Router } from '@angular/router';
 import { YouTubePlayer } from '@angular/youtube-player';
 
@@ -14,7 +14,7 @@ export class PlayTrailerEmbeedComponent {
   @ViewChild(YouTubePlayer) youtubePlayer!: YouTubePlayer;
   mutedState = true
   id = 0
-  videoID = signal<string>('')
+  videoID = ''
   isEnded=output<void>()
   playerVars: YT.PlayerVars = {
     autoplay:1,
@@ -46,24 +46,18 @@ export class PlayTrailerEmbeedComponent {
   }
 
   createPlayer(videoId: string) {
-    this.videoID.set(videoId)
+    this.videoID=videoId
     this.mutedState=true
   }
 
   onStateChange(event: any) {
-    console.log('changing',event.data)
-    
-      
     if (event.data == YT.PlayerState.ENDED) {
-      
-      console.log('tferminado')
       this.isEnded.emit()
-      
     }
   }
 
   destroy() {
-    this.videoID.set('')
+    this.videoID=''
     this.mutedState = true
   }
 
