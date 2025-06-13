@@ -1,71 +1,70 @@
 import {
-  ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, input, output,
-  Renderer2, signal, ViewChild, ViewEncapsulation
+  ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, effect, ElementRef, input, output,
+  Renderer2, signal, ViewChild, ViewEncapsulation,
+  WritableSignal
 } from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle'
 import { listMovies, playerTrailer } from '../../interfaces/interfaces';
-import { DatePipe, NgClass, NgOptimizedImage, NgStyle } from '@angular/common';
+import { DatePipe, NgClass, NgOptimizedImage} from '@angular/common';
 import { SwiperOptions } from 'swiper/types';
-import { UrlSafePipe } from '../../pipes/url-safe.pipe';
-import { NavigationEnd, Router } from '@angular/router';
 import { PlayTrailerEmbeedComponent } from '../play-trailer-embeed/play-trailer-embeed.component';
-import { filter } from 'rxjs';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { SlideSkeletonComponent } from './carousel-skeleton/slide-skeleton/slide-skeleton.component';
+import { fade } from '../../animations/animations';
+
+register(); 
 
 @Component({
-  selector: 'app-carrousel',
-  imports: [NgOptimizedImage, DatePipe, NgClass, NgStyle, UrlSafePipe, PlayTrailerEmbeedComponent],
-  templateUrl: './carrousel.component.html',
-  styleUrl: './carrousel.component.css',
+  selector: 'app-carousel',
+  imports: [NgOptimizedImage, DatePipe, NgClass, PlayTrailerEmbeedComponent, SlideSkeletonComponent],
+  templateUrl: './carousel.component.html',
+  styleUrl: './carousel.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  animations: [fade]
 })
 
-export class carrouselComponent {
+export class carouselComponent {
 
   @ViewChild('swiper', { static: false }) swiperContainer!: ElementRef<SwiperContainer>
   @ViewChild('main') mainContainer!: ElementRef<HTMLElement>
   @ViewChild(PlayTrailerEmbeedComponent) trailerEmbeed!: PlayTrailerEmbeedComponent
   @ViewChild(PlayTrailerEmbeedComponent, { read: ElementRef }) trailerEmbeedElement !: ElementRef
   onPlayTrailer = output<playerTrailer>()
-  listMovies = input.required<listMovies | undefined>()
+  requestMoreData = output<void>()
+  listMovies = input.required<WritableSignal<listMovies | undefined>>()
   title = input.required<string>()
   importance = input.required<number>()
   numSlides: number = 1
   isEnd = signal(false)
   isBeginning = signal(true)
-  gap = 0
   hoverStates: { [key: number]: boolean } = {};
   currentIndex = 0
   isSwiperRegistered = false
   slideWidth = 320
   paddingX = 0
   spaceBetween = 12
+  isLoading: WritableSignal<boolean> = signal(false)
 
-  constructor(private renderer2: Renderer2, private router: Router) {
-    if (!this.isSwiperRegistered) {
-      register(); // Registra Swiper solo una vez
-      this.isSwiperRegistered = true;
-    }
-
-  }
-  /* ngOnInit(){
-    this.router.events.pipe(filter((event)=>event instanceof NavigationEnd)).subscribe(()=>{
-      setTimeout(()=>{
-        console.log('estableciendo ')
-        this.initSwiper()
-      },0)
+  constructor(private renderer2: Renderer2) {
+    effect(() => {
+      console.log(this.listMovies()())
+      this.isLoading.set(false)
+      this.isEnd.set(false)
+      queueMicrotask(() => {
+        this.swiperContainer.nativeElement.swiper.update()       
+      })
     })
-  } */
+  }
 
   ngAfterViewInit() {
-    console.log('after view init')
+     this.calculateNumSlides()
     this.initSwiper()
+    this.renderer2.setAttribute(this.swiperContainer.nativeElement, 'style', `z-index:${this.importance()};`);
   }
 
   initSwiper() {
-    this.renderer2.setAttribute(this.swiperContainer.nativeElement, 'style', `z-index:${this.importance()};`);
-    this.calculateNumSlides()
     const swiperOptions: SwiperOptions = {
       speed: 800,
       slidesPerView: 'auto',
@@ -81,17 +80,21 @@ export class carrouselComponent {
         enabled: true,
         nextEl: `.swiper-next-${this.title()}`,
         prevEl: `.swiper-previous-${this.title()}`,
-
       }
     }
 
     this.swiperContainer.nativeElement.addEventListener('swiperslidechange', (event: any) => {
-      this.isBeginning.set(event.detail[0].isBeginning)
-      this.isEnd.set(event.detail[0].isEnd)
-      if (this.isEnd()) {
-        this.deletePaddingToSwiperContainer()
-      } else {
-        this.setPaddingToSwiperContainer()
+      this.isBeginning.set(event.detail[0].isBeginning);
+      this.isEnd.set(event.detail[0].isEnd);
+      let page = this.listMovies()()?.page ?? 0;
+      let total_pages = this.listMovies()()?.total_pages ?? 0;
+
+      (event.detail[0].isEnd) ? this.deletePaddingToSwiperContainer() : this.setPaddingToSwiperContainer()
+
+      if ((event.detail[0].slides.length - (this.numSlides * 2) <= event.detail[0].activeIndex)
+        && (page < total_pages) && !this.isLoading()) {
+        this.isLoading.set(true)
+        this.requestMoreData.emit() 
       }
     })
 
@@ -130,21 +133,17 @@ export class carrouselComponent {
 
   setStylesToFirstSlide() {
     let swiper = this.swiperContainer.nativeElement.swiper
-    console.log(swiper.slides[0])
     this.renderer2.setStyle(swiper.slides[0], 'margin-left', ((this.paddingX - this.spaceBetween) * -1) + 'px')
-
   }
 
-
-  mouseEnter(index: number) {
-    console.log(this.swiperContainer.nativeElement.swiper.slides[0])
+  onMouseEnterToSlide(index: number, id: number) {
     let videoId = this.getKeyTrailer(index);
     this.hoverStates[index] = true;
     this.currentIndex = index
     if (videoId !== '') {
       this.renderer2.appendChild(this.swiperContainer.nativeElement.swiper.slides[index].firstChild,
         this.trailerEmbeedElement.nativeElement)
-      this.trailerEmbeed.createPlayer(videoId)
+      this.trailerEmbeed.setPlayerVideoData(videoId, id)
 
       requestAnimationFrame(() => {
         this.renderer2.addClass(this.trailerEmbeedElement.nativeElement, 'active')
@@ -152,8 +151,7 @@ export class carrouselComponent {
     }
   }
 
-
-  mouseLeave(index: number) {
+  onMouseLeaveToSlide(index: number) {
     let videoId = this.getKeyTrailer(index);
     this.hoverStates[index] = false;
     if (videoId !== '') {
@@ -176,7 +174,7 @@ export class carrouselComponent {
   }
 
   getKeyTrailer(index: number): string {
-    const trailer = this.listMovies()?.results?.[index].videos?.results.find((element: any) => element.type === 'Trailer');
+    const trailer = this.listMovies()()?.results?.[index].videos?.results.find((element: any) => element.type === 'Trailer');
     const key = trailer?.key || '';
     return key;
   }

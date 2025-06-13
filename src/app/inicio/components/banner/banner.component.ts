@@ -131,7 +131,6 @@ export default class BannerComponent {
 
   }
 
-
   playTrailer() {
     this.onPlayTrailer.emit({
       videoId: signal(this.getKeyTrailer()),

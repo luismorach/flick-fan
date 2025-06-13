@@ -1,4 +1,5 @@
-<div class="absolute top-0 rounded-t-md z-10 cursor-pointer overflow-hidden w-80 h-48 bg-amber-500" (click)="redirectDetailsMovie(id)">
+<div class="absolute top-0 rounded-t-md z-10 cursor-pointer overflow-hidden w-80 h-48" 
+(click)="redirectDetailsMovie(id)">
   
  <youtube-player [videoId]="videoID" [height]="192" [width]="320" [playerVars]="playerVars"
     (stateChange)="onStateChange($event)" class="pointer-events-none w-80 h-48">

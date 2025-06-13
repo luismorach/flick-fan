@@ -45,8 +45,9 @@ export class PlayTrailerEmbeedComponent {
     event.stopPropagation()
   }
 
-  createPlayer(videoId: string) {
+  setPlayerVideoData(videoId: string,id:number) {
     this.videoID=videoId
+    this.id=id
     this.mutedState=true
   }
 

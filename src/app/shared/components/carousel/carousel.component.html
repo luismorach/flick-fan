@@ -1,10 +1,10 @@
 <main class=" w-full bg-[#0f0f0f] pb-8" #main>
-    <header class="p-6 text-white text-2xl">
+    <header class="p-6 pl-3 text-white text-2xl">
         <p class=" font-racing">Películas {{title()}}</p>
     </header>
 
     <section class="relative">
-        <button class=" group w-8 h-32 z-50 absolute left-0 top-1/5 text-white bg-[rgba(0,5,13,.5)] 
+        <button class=" group w-8 h-32 z-50 absolute left-0 top-1/7 text-white bg-[rgba(0,5,13,.5)] 
     flex items-center justify-center rounded-tr-lg rounded-br-lg swiper-previous-{{title()}} cursor-pointer"
             [hidden]="isBeginning()">
             <i class="fa-solid fa-chevron-left text-base transition-all ease-in delay-200 group-hover:text-xl "></i>
@@ -12,16 +12,17 @@
 
         <swiper-container init="false" class="w-full h-60 z-0 relative" #swiper>
 
-            @for(movie of listMovies()?.results;track movie;let i = $index;){
-            <swiper-slide (mouseenter)="mouseEnter(i)" (mouseleave)="mouseLeave(i)"
-                class="z-0 w-80 transition-transform duration-300 hover:scale-125 hover:z-20" 
-                [ngClass]="{'origin-left':i % numSlides==0,'origin-right':i % numSlides==numSlides-1}">
+            @for(movie of listMovies()()?.results;track movie;let i = $index;){
+            <swiper-slide (mouseenter)="onMouseEnterToSlide(i,movie.id)" (mouseleave)="onMouseLeaveToSlide(i)"
+                class="z-0 w-80 h-48 transition-transform duration-300 hover:scale-125 hover:z-20"
+                [ngClass]="{'origin-left':i % numSlides==0,'origin-right':i % numSlides==numSlides-1}" @fade>
 
                 <section class="h-48 shadow-xs shadow-white relative" [class.rounded-t-md]="hoverStates[i]"
                     [class.rounded-md]="!hoverStates[i]">
 
                     <figure class="w-full h-48 relative cursor-pointer" [class.rounded-t-md]="hoverStates[i]"
-                        [class.rounded-b-none]="hoverStates[i]" [class.rounded-md]="!hoverStates[i]">
+                        [class.rounded-b-none]="hoverStates[i]" [class.rounded-md]="!hoverStates[i]"
+                        (click)="trailerEmbeed.redirectDetailsMovie(movie.id)">
                         <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie.backdrop_path}}" fill #img
                             class="object-cover object-center text-white bg-black" alt="imagen no disponible"
                             [class.rounded-t-md]="hoverStates[i]" [class.rounded-b-none]="hoverStates[i]"
@@ -72,16 +73,24 @@
                 </section>
             </swiper-slide>
             }
+
+            @if(isLoading()){
+            @for(a of [1,2,3,4,5];track a){
+            <swiper-slide class="w-80 h-48">
+               <app-slide-skeleton [hasMargin]="false" @fade></app-slide-skeleton>
+            </swiper-slide>
+            }
+            }
         </swiper-container>
 
-        <button class="group w-8 h-32 z-50 absolute right-0 top-1/5 text-white bg-[rgba(0,5,13,.5)] 
-    flex items-center justify-center rounded-tl-lg rounded-bl-lg swiper-next-{{title()}} cursor-pointer"
-            [hidden]="isEnd()" >
+        <button class="group w-8 h-32 z-50 absolute right-0 top-1/7 text-white bg-[rgba(0,5,13,.5)] 
+                       flex items-center justify-center rounded-tl-lg rounded-bl-lg swiper-next-{{title()}} 
+                       cursor-pointer" [hidden]="isEnd()">
             <i class="fa-solid fa-chevron-right text-base  group-hover:scale-125 "></i>
         </button>
 
     </section>
-    
 </main>
 
- <app-play-trailer-embeed #trailer class="opacity-0 w-80 h-48" (isEnded)="closeTrailerPlayer()"></app-play-trailer-embeed>
+<app-play-trailer-embeed #trailer class="opacity-0 w-80 h-48"
+    (isEnded)="closeTrailerPlayer()"></app-play-trailer-embeed>

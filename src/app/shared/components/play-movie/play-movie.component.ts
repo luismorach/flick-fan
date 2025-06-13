@@ -8,14 +8,17 @@ import { DatePipe, DecimalPipe, DOCUMENT, NgOptimizedImage, NgStyle } from '@ang
 import { RatingComponent } from '../rating/rating.component';
 import { ComunicatorService } from '../../services/comunicator/comunicator.service';
 import { AnimationsService } from '../../services/animations/animations.service';
-import { carrouselComponent } from '../carrousel/carrousel.component';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { carouselComponent } from '../carousel/carousel.component';
+import { CarouselSkeletonComponent } from '../carousel/carousel-skeleton/carousel-skeleton.component';
+import { fade } from '../../animations/animations';
 
 @Component({
   selector: 'app-play-movie',
-  imports: [UrlSafePipe, NgOptimizedImage, RatingComponent, DatePipe, DecimalPipe, NgStyle, RouterLink, RatingComponent, carrouselComponent],
+  imports: [UrlSafePipe, NgOptimizedImage, RatingComponent,
+     RatingComponent, carouselComponent,CarouselSkeletonComponent],
   templateUrl: './play-movie.component.html',
-  styleUrl: './play-movie.component.css'
+  styleUrl: './play-movie.component.css',
+  animations:[fade]
 })
 
 export default class PlayMovieComponent {

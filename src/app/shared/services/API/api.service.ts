@@ -52,18 +52,18 @@ export class ApiService {
     return fusion
   }
 
-  getNowPlaying() {
-    let nowPlaying = (this.http.get(this.API + 'movie/now_playing?language=es-VE&page=1') as Observable<listMovies>)
+  getNowPlaying(page:number) {
+    let nowPlaying = (this.http.get(this.API + `movie/now_playing?language=es-VE&page=${page}`) as Observable<listMovies>)
     return  this.joinDetailsMovie(nowPlaying)
   }
 
-  getPopular() {
-    let popularMovies = this.http.get(this.API + 'movie/popular?language=es-VE&page=1')
+  getPopular(page:number) {
+    let popularMovies = this.http.get(this.API + `movie/popular?language=es-VE&page=${page}`)
     return  this.joinDetailsMovie(popularMovies)
   }
 
-  getUpcoming() {
-    let upcomingMovies = this.http.get(this.API + 'movie/upcoming?language=es-VE&page=1')
+  getUpcoming(page:number) {
+    let upcomingMovies = this.http.get(this.API +   `movie/upcoming?language=es-VE&page=${page}` )
     return  this.joinDetailsMovie(upcomingMovies)
   }
 

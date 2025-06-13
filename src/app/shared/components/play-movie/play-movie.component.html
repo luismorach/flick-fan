@@ -37,11 +37,19 @@
             </div>
 
             @defer(when similarMovies()){
-            <app-carrousel [listMovies]="similarMovies()" title="similares" [importance]="2"></app-carrousel>
+            <app-carousel [listMovies]="similarMovies" title="similares" [importance]="2" @fade>
+            </app-carousel>
+            }
+            @placeholder{
+                <app-carousel-skeleton @fade></app-carousel-skeleton>
             }
 
             @defer(when recomendedMovies()){
-            <app-carrousel [listMovies]="recomendedMovies()" title="recomendadas" [importance]="1"></app-carrousel>
+            <app-carousel [listMovies]="recomendedMovies" title="recomendadas" [importance]="1" @fade>
+            </app-carousel>
+            }
+            @placeholder{
+                <app-carousel-skeleton @fade></app-carousel-skeleton>
             }
         </div>
     </section>
