@@ -13,11 +13,13 @@ import { CarouselSkeletonComponent } from '../shared/components/carousel/carouse
 import { fade } from '../shared/animations/animations';
 import { BannerSkeletonComponent } from './components/banner/banner-skeleton/banner-skeleton.component';
 import { LoadingComponent } from './components/loading/loading.component';
+import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-inicio',
   imports: [BannerComponent, carouselComponent, PlayTrailerComponent, BannerSeriesComponent, 
-    CarouselSeriesComponent, CarouselSkeletonComponent,BannerSkeletonComponent,LoadingComponent],
+    CarouselSeriesComponent, CarouselSkeletonComponent,BannerSkeletonComponent,LoadingComponent,CarouselSeriesSkeletonComponent],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,9 +33,12 @@ export default class InicioComponent {
   upcomingMovies: WritableSignal<listMovies | undefined> = signal(undefined)
   nowPlaying : WritableSignal<listMovies | undefined> = signal(undefined)
   airingToday = toSignal(this.API.getAiringTodaySeries() as Observable<listSeries>)
+  onTheAir:WritableSignal<listSeries | undefined> = signal(undefined)
   player: playerTrailer = { videoId: signal(''), isPlaying: false }
+  doc = inject(DOCUMENT)
 
   constructor() {
+    this.doc.scrollingElement?.scrollTo(0, 0)
      effect(() => {
       this.API.getNowPlaying(1).subscribe(data => this.nowPlaying.set(data))
     })
@@ -42,6 +47,9 @@ export default class InicioComponent {
     })
     effect(() => {
       this.API.getUpcoming(1).subscribe(data => this.upcomingMovies.set(data))
+    })
+    effect(() => {
+      this.API.getOnTheAirSeries(1).subscribe(data => this.onTheAir.set(data))
     })
   }
 

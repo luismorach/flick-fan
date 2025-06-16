@@ -90,6 +90,11 @@ export class ApiService {
     return this.joinDetailsSeries(airingToday)
   }
 
+  getOnTheAirSeries(page:number){
+    let onTheAirSeries= this.http.get(this.API + `tv/on_the_air?language=es-VE&page=${page}`)
+    return this.joinDetailsSeries(onTheAirSeries)
+  }
+
   getMoreData(MethodApi: Function, currentData: WritableSignal<listMovies | listSeries | undefined>) {
     console.log('solicitando mas datos')
     let currentPage = currentData()?.page

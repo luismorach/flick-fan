@@ -1,0 +1,18 @@
+<main class=" w-full bg-[#0f0f0f] pb-8 relative  overflow-x-hidden" #container>
+     <header class="p-1 my-6 ml-3 flex gap-1">
+        <p class="p-1 w-48 bg-neutral-800 rounded-full animate-pulse"></p>
+    </header>
+
+    <section class="relative">
+        <section class="w-full h-[75vh] flex grow-0 min-w-screen pb-4" >
+
+            @for(a of numElements;track a;let first=$first){
+            <app-slide-skeleton [hasMargin]="true" [class.ml-5]="first"></app-slide-skeleton>
+            }
+        </section>
+
+
+    </section>
+
+
+
