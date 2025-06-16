@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { listMovies, Movie } from '../../interfaces/interfaces';
+import { Injectable, WritableSignal, inject } from '@angular/core';
+import { listMovies, listSeries, Movie } from '../../interfaces/interfaces';
 import {  concatMap, map, mergeAll, mergeMap, Observable, tap, toArray } from 'rxjs';
 
 @Injectable({
@@ -88,6 +88,21 @@ export class ApiService {
   getAiringTodaySeries(){
     let airingToday = this.http.get(this.API + 'tv/airing_today?language=es-VE&page=1')
     return this.joinDetailsSeries(airingToday)
+  }
+
+  getMoreData(MethodApi: Function, currentData: WritableSignal<listMovies | listSeries | undefined>) {
+    console.log('solicitando mas datos')
+    let currentPage = currentData()?.page
+    if (currentPage) currentPage += 1
+    console.log('numero de pagina', currentPage)
+
+    MethodApi(currentPage).subscribe((newData: any) => {
+      currentData.update((data: any) => ({
+        ...data,
+        page: newData.page,
+        results: [...data?.results, ...newData.results]
+      }))
+    })
   }
   
 }

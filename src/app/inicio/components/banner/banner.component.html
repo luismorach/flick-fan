@@ -2,23 +2,30 @@
 
     <section class="z-0 w-full h-[150vh] justify-center self-center absolute ">
         <swiper-container init="false" #swiper>
-            @for(movie of listMovies()?.results;track movie){
+            @for(movie of listMovies()()?.results;track movie){
             <swiper-slide
                 class="w-full h-screen relative after:w-full 
                 after:absolute after:top-0 after:h-screen after:bg-linear-to-r after:from-[rgba(15,15,15,1)] 
-                after:from-35% after:via-[rgba(15,15,15,.9)] after:via-50% after:to-[rgba(83,200,141,0)] after:to-100% ">
+                after:from-35% after:via-[rgba(15,15,15,.9)] after:via-50% after:to-[rgba(83,200,141,0)] after:to-100% "
+                @fade>
                 <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie.backdrop_path}}" fill #img
                     class="object-cover object-center gradient">
             </swiper-slide>
             }
+
+            @if(isLoading()){
+            <swiper-slide class="w-full h-full">
+                <app-loading @fade></app-loading>
+            </swiper-slide>
+            }
         </swiper-container>
     </section>
-   
+
     <section class="text-white flex flex-wrap flex-row md:py-12 relative w-full h-screen mb-24">
 
         <div class="m-12 w-8 self-center" [ngClass]="{'pointer-events-none, text-gray-800':isBeginning()}">
             <i class="fa-solid fa-chevron-left  hover:cursor-pointer rounded-full
-        text-center text-base transition-all ease-in hover:text-xl swiper-previous" (click)="animateElements()"></i>
+        text-center text-base transition-all ease-in hover:text-xl swiper-previous"></i>
         </div>
         @if(movie()){
         <header class="sm:max-w-[40%] px-4 md:px-12 relative self-center">
@@ -54,7 +61,7 @@
                 </button>
             </section>
         </header>
-        
+
         <div class="grow text-center self-center">
             <a routerLink="/watch-movie/{{movie().id}}">
                 <i class="fa-regular fa-circle-play text-6xl transition-all ease-in-out duration-300
@@ -67,9 +74,8 @@
 
         <div class="m-12 w-8 self-center  text-right">
             <i class="fa-solid fa-chevron-right hover:cursor-pointer rounded-full 
-        text-center text-base transition-all ease-in hover:text-xl swiper-next" 
-        [ngClass]="{'pointer-events-none, text-gray-800':isEnd()}"
-        (click)="animateElements()"></i>
+        text-center text-base transition-all ease-in hover:text-xl swiper-next"
+                [ngClass]="{'pointer-events-none, text-gray-800':isEnd()}"></i>
         </div>
 
     </section>

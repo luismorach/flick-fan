@@ -5,14 +5,15 @@ import {
 } from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle'
 import { listMovies, playerTrailer } from '../../interfaces/interfaces';
-import { DatePipe, NgClass, NgOptimizedImage} from '@angular/common';
+import { DatePipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { SwiperOptions } from 'swiper/types';
 import { PlayTrailerEmbeedComponent } from '../play-trailer-embeed/play-trailer-embeed.component';
-import { animate, style, transition, trigger } from '@angular/animations';
 import { SlideSkeletonComponent } from './carousel-skeleton/slide-skeleton/slide-skeleton.component';
 import { fade } from '../../animations/animations';
+import { calculateNumSlides, calculatePaddingToSetSwiperContainer, deletePaddingToSwiperContainer, getRangeSlidesLoading, initSwiper, setPaddingToSwiperContainer, setStylesToFirstSlide } from '../../utils/carousel';
 
-register(); 
+
+register();
 
 @Component({
   selector: 'app-carousel',
@@ -46,6 +47,7 @@ export class carouselComponent {
   paddingX = 0
   spaceBetween = 12
   isLoading: WritableSignal<boolean> = signal(false)
+  slidesLoading!: number[]
 
   constructor(private renderer2: Renderer2) {
     effect(() => {
@@ -53,88 +55,122 @@ export class carouselComponent {
       this.isLoading.set(false)
       this.isEnd.set(false)
       queueMicrotask(() => {
-        this.swiperContainer.nativeElement.swiper.update()       
+        this.swiperContainer.nativeElement.swiper.update()
       })
     })
   }
 
   ngAfterViewInit() {
-     this.calculateNumSlides()
-    this.initSwiper()
+    this.numSlides = calculateNumSlides(this.mainContainer.nativeElement.scrollWidth, this.slideWidth)
+    this.slidesLoading = getRangeSlidesLoading(this.numSlides)
+    initSwiper(this.swiperContainer, this.numSlides, this.spaceBetween, this.title())
+    this.addEventSlideChange()
     this.renderer2.setAttribute(this.swiperContainer.nativeElement, 'style', `z-index:${this.importance()};`);
+
+    let swiper = this.swiperContainer.nativeElement.swiper;
+    calculatePaddingToSetSwiperContainer(swiper, this.spaceBetween)
+    setPaddingToSwiperContainer(swiper, this.spaceBetween, this.renderer2)
+    setStylesToFirstSlide(swiper, this.spaceBetween, this.renderer2)
   }
 
-  initSwiper() {
-    const swiperOptions: SwiperOptions = {
-      speed: 800,
-      slidesPerView: 'auto',
-      allowTouchMove: false,
-      observer: true,
-      observeParents: true,
-      watchSlidesProgress: true,
-      initialSlide: 0,
-      slidesPerGroup: this.numSlides,
-      spaceBetween: this.spaceBetween,
-      slidesOffsetAfter: this.spaceBetween,
-      navigation: {
-        enabled: true,
-        nextEl: `.swiper-next-${this.title()}`,
-        prevEl: `.swiper-previous-${this.title()}`,
-      }
-    }
-
+  addEventSlideChange() {
     this.swiperContainer.nativeElement.addEventListener('swiperslidechange', (event: any) => {
       this.isBeginning.set(event.detail[0].isBeginning);
       this.isEnd.set(event.detail[0].isEnd);
       let page = this.listMovies()()?.page ?? 0;
       let total_pages = this.listMovies()()?.total_pages ?? 0;
+      let swiper = this.swiperContainer.nativeElement.swiper;
 
-      (event.detail[0].isEnd) ? this.deletePaddingToSwiperContainer() : this.setPaddingToSwiperContainer()
+      (event.detail[0].isEnd) ? deletePaddingToSwiperContainer(swiper, this.renderer2) :
+        setPaddingToSwiperContainer(swiper, this.spaceBetween, this.renderer2)
 
-      if ((event.detail[0].slides.length - (this.numSlides * 2) <= event.detail[0].activeIndex)
+      if ((event.detail[0].slides.length - (this.numSlides * 3) <= event.detail[0].activeIndex)
         && (page < total_pages) && !this.isLoading()) {
         this.isLoading.set(true)
-        this.requestMoreData.emit() 
+        this.requestMoreData.emit()
       }
     })
-
-    if (this.swiperContainer) {
-      Object.assign(this.swiperContainer.nativeElement, swiperOptions)
-      this.swiperContainer.nativeElement?.initialize()
-      this.calculatePaddingToSetSwiperContainer()
-      this.setPaddingToSwiperContainer()
-      this.setStylesToFirstSlide()
-    }
-
   }
+  /*  initSwiper() {
+     const swiperOptions: SwiperOptions = {
+       speed: 800,
+       slidesPerView: 'auto',
+       allowTouchMove: false,
+       observer: true,
+       observeParents: true,
+       watchSlidesProgress: true,
+       initialSlide: 0,
+       slidesPerGroup: this.numSlides,
+       spaceBetween: this.spaceBetween,
+       slidesOffsetAfter: this.spaceBetween,
+       navigation: {
+         enabled: true,
+         nextEl: `.swiper-next-${this.title()}`,
+         prevEl: `.swiper-previous-${this.title()}`,
+       }
+     }
+ 
+     this.swiperContainer.nativeElement.addEventListener('swiperslidechange', (event: any) => {
+       this.isBeginning.set(event.detail[0].isBeginning);
+       this.isEnd.set(event.detail[0].isEnd);
+       let page = this.listMovies()()?.page ?? 0;
+       let total_pages = this.listMovies()()?.total_pages ?? 0;
+       let swiper = this.swiperContainer.nativeElement.swiper;
+ 
+       (event.detail[0].isEnd) ? deletePaddingToSwiperContainer(swiper, this.renderer2) :
+         setPaddingToSwiperContainer(swiper, this.spaceBetween, this.renderer2)
+ 
+       if ((event.detail[0].slides.length - (this.numSlides * 3) <= event.detail[0].activeIndex)
+         && (page < total_pages) && !this.isLoading()) {
+         this.isLoading.set(true)
+         this.requestMoreData.emit()
+       }
+     })
+ 
+     if (this.swiperContainer) {
+       Object.assign(this.swiperContainer.nativeElement, swiperOptions)
+       this.swiperContainer.nativeElement?.initialize()
+ 
+       let swiper = this.swiperContainer.nativeElement.swiper;
+       calculatePaddingToSetSwiperContainer(swiper, this.spaceBetween)
+       setPaddingToSwiperContainer(swiper, this.spaceBetween, this.renderer2)
+       setStylesToFirstSlide(swiper, this.spaceBetween, this.renderer2)
+     }
+   } */
 
-  calculateNumSlides() {
-    let containerWidth = this.mainContainer.nativeElement.scrollWidth
-    if (containerWidth)
-      this.numSlides = Math.floor(containerWidth / this.slideWidth)
-  }
-
-  calculatePaddingToSetSwiperContainer() {
-    let containerWidth = this.mainContainer.nativeElement.scrollWidth
-    let usedWith = this.numSlides * (this.slideWidth) + (this.numSlides - 1) * this.spaceBetween
-    let remainingSpace = containerWidth - usedWith
-    this.paddingX = Math.floor(Math.max(remainingSpace / 2, 0))
-  }
-
-  setPaddingToSwiperContainer() {
-    let swiper = this.swiperContainer.nativeElement.swiper
-    this.renderer2.setStyle(swiper.wrapperEl, 'padding', `0px ${this.paddingX}px`)
-  }
-
-  deletePaddingToSwiperContainer() {
-    let swiper = this.swiperContainer.nativeElement.swiper
-    this.renderer2.setStyle(swiper.wrapperEl, 'padding', '0px')
-  }
-
-  setStylesToFirstSlide() {
-    let swiper = this.swiperContainer.nativeElement.swiper
-    this.renderer2.setStyle(swiper.slides[0], 'margin-left', ((this.paddingX - this.spaceBetween) * -1) + 'px')
-  }
+  /*  calculateNumSlides() {
+     let containerWidth = this.mainContainer.nativeElement.scrollWidth
+     if (containerWidth)
+       this.numSlides = Math.floor(containerWidth / this.slideWidth)
+   }
+ 
+   getSlidesLoading() {
+     this.slidesLoading = Array.from({ length: this.numSlides + 1 }, (_, i) => i)
+   }
+ 
+   calculatePaddingToSetSwiperContainer() {
+     console.log(this.swiperContainer.nativeElement.swiper.slides[0].scrollWidth)
+     this.slideWidth = this.swiperContainer.nativeElement.swiper.slides[0].scrollWidth
+     let containerWidth = this.swiperContainer.nativeElement.swiper.width
+     let usedWith = this.numSlides * (this.slideWidth) + (this.numSlides - 1) * this.spaceBetween
+     let remainingSpace = containerWidth - usedWith
+     this.paddingX = Math.floor(Math.max(remainingSpace / 2, 0))
+   }
+ 
+   setPaddingToSwiperContainer() {
+     let swiper = this.swiperContainer.nativeElement.swiper
+     this.renderer2.setStyle(swiper.wrapperEl, 'padding', `0px ${this.paddingX}px`)
+   }
+ 
+   deletePaddingToSwiperContainer() {
+     let swiper = this.swiperContainer.nativeElement.swiper
+     this.renderer2.setStyle(swiper.wrapperEl, 'padding', '0px')
+   }
+ 
+   setStylesToFirstSlide() {
+     let swiper = this.swiperContainer.nativeElement.swiper
+     this.renderer2.setStyle(swiper.slides[0], 'margin-left', ((this.paddingX - this.spaceBetween) * -1) + 'px')
+   } */
 
   onMouseEnterToSlide(index: number, id: number) {
     let videoId = this.getKeyTrailer(index);

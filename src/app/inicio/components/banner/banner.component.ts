@@ -9,15 +9,18 @@ import { RouterLink } from '@angular/router';
 import { AnimationsService } from '../../../shared/services/animations/animations.service';
 import { RatingComponent } from '../../../shared/components/rating/rating.component';
 import { ComunicatorService } from '../../../shared/services/comunicator/comunicator.service';
+import { LoadingComponent } from '../loading/loading.component';
+import { fade } from '../../../shared/animations/animations';
 
 @Component({
   selector: 'app-banner',
-  imports: [DatePipe, NgOptimizedImage, RouterLink, NgClass, RatingComponent],
+  imports: [DatePipe, NgOptimizedImage, RouterLink, NgClass, RatingComponent,LoadingComponent],
   templateUrl: './banner.component.html',
   styleUrl: './banner.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  animations:[fade]
 
 })
 
@@ -27,12 +30,14 @@ export default class BannerComponent {
   onPlayTrailer = output<playerTrailer>()
   animationsService = inject(AnimationsService)
   indexCurrentElement: number = 0
-  listMovies = input.required<listMovies | undefined>()
+  listMovies = input.required<WritableSignal<listMovies | undefined>>()
   movie: WritableSignal<any>= signal(undefined)
   isSwiperRegistered = false
   isBeginning=signal(true)
   isEnd=signal(false)
   trailerID=signal('')
+  isLoading: WritableSignal<boolean> = signal(false)
+  requestMoreData = output<void>()
 
    @HostListener("window:scroll", ['$event'])
   enableBackgroundNav(event: any) {
@@ -51,9 +56,14 @@ export default class BannerComponent {
     
     this.comunicatorService.setBackgroundNav(false)
     effect(() => {
-      this.movie.set(this.listMovies()?.results[this.indexCurrentElement])
-       this.animateElements()  
+      this.movie.set(this.listMovies()()?.results[this.indexCurrentElement])
+      this.isLoading.set(false)
+      this.isEnd.set(false)
+      queueMicrotask(() => {
+        this.swiperContainer.nativeElement.swiper.update()       
+      })
     })
+    
     effect(()=>{
       console.log(this.trailerID())
       this.onPlayTrailer.emit({
@@ -91,8 +101,16 @@ export default class BannerComponent {
       this.isBeginning.set(event.detail[0].isBeginning)
       this.isEnd.set(event.detail[0].isEnd)
       this.indexCurrentElement = event.detail[0].activeIndex
-      this.movie.set(this.listMovies()?.results[this.indexCurrentElement]) 
+      this.movie.set(this.listMovies()()?.results[this.indexCurrentElement]) 
       this.trailerID.set(this.getKeyTrailer())
+      let page = this.listMovies()()?.page ?? 0;
+      let total_pages = this.listMovies()()?.total_pages ?? 0;
+      
+      if (this.isEnd() && (page < total_pages) && !this.isLoading()) {
+        this.isLoading.set(true)
+        this.requestMoreData.emit() 
+      }
+      this.animateElements()
     })
 
     if (this.swiperContainer) {

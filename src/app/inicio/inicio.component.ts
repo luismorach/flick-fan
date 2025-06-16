@@ -11,12 +11,13 @@ import { BannerSeriesComponent } from './components/banner-series/banner-series.
 import { CarouselSeriesComponent } from '../shared/components/carousel-series/carousel-series.component';
 import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
 import { fade } from '../shared/animations/animations';
+import { BannerSkeletonComponent } from './components/banner/banner-skeleton/banner-skeleton.component';
+import { LoadingComponent } from './components/loading/loading.component';
 
 @Component({
   selector: 'app-inicio',
-  imports: [BannerComponent, carouselComponent,
-    PlayTrailerComponent, BannerSeriesComponent, CarouselSeriesComponent, CarouselSkeletonComponent
-  ],
+  imports: [BannerComponent, carouselComponent, PlayTrailerComponent, BannerSeriesComponent, 
+    CarouselSeriesComponent, CarouselSkeletonComponent,BannerSkeletonComponent,LoadingComponent],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,11 +29,14 @@ export default class InicioComponent {
   playTrailerComponent = viewChild(PlayTrailerComponent)
   popularMovies: WritableSignal<listMovies | undefined> = signal(undefined)
   upcomingMovies: WritableSignal<listMovies | undefined> = signal(undefined)
-  nowPlaying = toSignal(this.API.getNowPlaying(1) as Observable<listMovies>,)
+  nowPlaying : WritableSignal<listMovies | undefined> = signal(undefined)
   airingToday = toSignal(this.API.getAiringTodaySeries() as Observable<listSeries>)
   player: playerTrailer = { videoId: signal(''), isPlaying: false }
 
   constructor() {
+     effect(() => {
+      this.API.getNowPlaying(1).subscribe(data => this.nowPlaying.set(data))
+    })
     effect(() => {
       this.API.getPopular(1).subscribe(data => this.popularMovies.set(data))
     })
@@ -45,20 +49,5 @@ export default class InicioComponent {
     this.player = player
     if (player.isPlaying)
       this.playTrailerComponent()?.openTrailer()
-  }
-
-  getMoreData(MethodApi: Function, currentData: WritableSignal<listMovies | listSeries | undefined>) {
-    console.log('solicitando mas datos')
-    let currentPage = currentData()?.page
-    if (currentPage) currentPage += 1
-    console.log('numero de pagina', currentPage)
-
-    MethodApi(currentPage).subscribe((newData: any) => {
-      currentData.update((data: any) => ({
-        ...data,
-        page: newData.page,
-        results: [...data?.results, ...newData.results]
-      }))
-    })
   }
 }

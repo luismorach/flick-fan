@@ -5,7 +5,7 @@
 
     <section class="relative">
         <button class=" group w-8 h-52 z-50 absolute left-0 top-1/4 text-white bg-[rgba(0,5,13,.5)] 
-    flex items-center justify-center rounded-tr-lg rounded-br-lg swiper-previous cursor-pointer"
+    flex items-center justify-center rounded-tr-lg rounded-br-lg swiper-previous-{{title()}} cursor-pointer"
             [class.opacity-0]="isBeginning()">
             <i class="fa-solid fa-chevron-left text-base transition-all ease-in delay-200 group-hover:text-xl "></i>
         </button>
@@ -13,10 +13,10 @@
         <swiper-container init="false" navigation="true" class="w-full h-[75vh] z-0 relative" #swiper>
 
             @for(serie of listSeries()?.results;track serie;let i = $index){
-            <swiper-slide (mouseenter)="mouseEnter(i)" (mouseleave)="mouseLeave(i)" class="z-0 mx-5 w-72 h-[75vh]">
+            <swiper-slide (mouseenter)="mouseEnter(i)" (mouseleave)="mouseLeave(i)" class="z-0 w-72 h-[75vh]">
 
                <!--  @if(serie.videos.results.length>0){
-                <div class="rounded-t-md pointer-events-none" id="{{title()}}{{i}}"></div>
+                 <div class="rounded-t-md pointer-events-none" id="{{title()}}{{i}}"></div>
                 
                 <i class=" fa solid cursor-pointer hover:scale-110 rounded-full bg-neutral-800/80 
                     text-white p-3 w-10 h-10 mr-1.5 transition-transform duration-300 hover:bg-white 
@@ -46,7 +46,7 @@
                     </div>
                     <figcaption class="pl-4 text-white absolute flex flex-col justify-end z-50 w-full h-[75vh]
                             bg-linear-to-r from-[rgba(0,0,0,1)] from-0% via-[rgba(20,20,20,0.7)] via-35% 
-                            to-transparent to-100% rounded-md">
+                            to-transparent to-100% rounded-xl">
                         <h1 class="font-racing text-3xl">{{serie.name}}</h1>
 
                         <div class="text-2xl py-4 pb-16">
@@ -103,7 +103,7 @@
         </swiper-container>
 
         <button class="group w-8 h-52 z-50 absolute right-0 top-1/4 text-white bg-[rgba(0,5,13,.5)] 
-    flex items-center justify-center rounded-tl-lg rounded-bl-lg swiper-next cursor-pointer"
+    flex items-center justify-center rounded-tl-lg rounded-bl-lg swiper-next-{{title()}} cursor-pointer"
             [class.opacity-0]="isEnd()">
             <i class="fa-solid fa-chevron-right text-base  group-hover:scale-125 "></i>
         </button>
