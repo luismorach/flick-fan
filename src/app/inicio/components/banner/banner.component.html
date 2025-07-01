@@ -2,7 +2,7 @@
 
     <section class="z-0 w-full h-[150vh] justify-center self-center absolute ">
         <swiper-container init="false" #swiper>
-            @for(movie of listMovies()()?.results;track movie){
+            @for(movie of listMovies()()?.results;track movie?.id){
             <swiper-slide
                 class="w-full h-screen relative after:w-full 
                 after:absolute after:top-0 after:h-screen after:bg-linear-to-r after:from-[rgba(15,15,15,1)] 
@@ -21,18 +21,19 @@
         </swiper-container>
     </section>
 
-    <section class="text-white flex flex-wrap flex-row md:py-12 relative w-full h-screen mb-24">
+    <section class="text-white flex flex-wrap flex-row md:py-12 relative w-full h-screen mb-24 pl-12">
 
-        <div class="m-12 w-8 self-center" [ngClass]="{'pointer-events-none, text-gray-800':isBeginning()}">
+        <button class="w-8 self-center" [hidden]="isBeginning()">
             <i class="fa-solid fa-chevron-left  hover:cursor-pointer rounded-full
         text-center text-base transition-all ease-in hover:text-xl swiper-previous"></i>
-        </div>
+        </button>
+
         @if(movie()){
-        <header class="sm:max-w-[40%] px-4 md:px-12 relative self-center">
+        <header class="sm:max-w-[40%] px-4 md:px-12 relative self-center ml-12" [class.ml-20]="isBeginning()">
             <h1 class="font-racing uppercase text-3xl text-left sm:text-4xl lg:text-5xl relative" id="title">
                 {{movie()?.title}}
             </h1>
-            <app-rating class="flex pt-4 left-[-150%] font-roboto" [rating]="movie().vote_average"
+            <app-rating class="flex pt-4 left-[-150%] font-roboto" [rating]="movie()?.vote_average"
                 id="rating"></app-rating>
 
             <p class="font-roboto pt-2 text-justify max-h-[20vh] line-clamp-5" id="overview">{{movie()?.overview}}
@@ -52,7 +53,7 @@
             <section class="flex justify-start " id="buttons">
                 <button class="bg-[#f80000] p-2 px-4 rounded-md font-racing text-lg mr-4 my-4
                 hover:shadow-md hover:shadow-white transition-all ease-in cursor-pointer" (click)="playTrailer()"
-                    [ngClass]="{'bg-zinc-800 pointer-events-none':movie().videos.results.length==0}">
+                    [ngClass]="{'bg-zinc-800 pointer-events-none':movie()?.videos?.results?.length==0}">
                     <i class="fa-solid fa-play"></i>&nbsp; &nbsp;Trailer
                 </button>
                 <button class="bg-white text-[#f80000] p-2 px-4 rounded-md font-racing text-lg ml-4 my-4
@@ -63,7 +64,7 @@
         </header>
 
         <div class="grow text-center self-center">
-            <a routerLink="/watch-movie/{{movie().id}}">
+            <a routerLink="/watch-movie/{{movie()?.id}}">
                 <i class="fa-regular fa-circle-play text-6xl transition-all ease-in-out duration-300
             self-center hover:text-[#e50914] hover:cursor-pointer"
                     style=" text-shadow:0 0 20px rgba(255,255,255,0.8)"></i>
@@ -72,11 +73,10 @@
         </div>
         }
 
-        <div class="m-12 w-8 self-center  text-right">
+        <button class="m-12 w-8 self-center  text-right" [hidden]="isEnd()">
             <i class="fa-solid fa-chevron-right hover:cursor-pointer rounded-full 
-        text-center text-base transition-all ease-in hover:text-xl swiper-next"
-                [ngClass]="{'pointer-events-none, text-gray-800':isEnd()}"></i>
-        </div>
+        text-center text-base transition-all ease-in hover:text-xl swiper-next"></i>
+        </button>
 
     </section>
 

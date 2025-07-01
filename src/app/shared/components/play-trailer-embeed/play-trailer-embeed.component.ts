@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, output, signal, ViewChild} from '@angular/core';
+import { Component, input, output, signal, ViewChild, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 import { YouTubePlayer } from '@angular/youtube-player';
 
@@ -13,12 +13,14 @@ export class PlayTrailerEmbeedComponent {
 
   @ViewChild(YouTubePlayer) youtubePlayer!: YouTubePlayer;
   mutedState = true
+  size = input.required<number[]>()
+  isMovie = input.required<boolean>()
   id = 0
-  videoID = ''
-  isEnded=output<void>()
+  videoID: WritableSignal<string> = signal('')
+  isEnded = output<void>()
   playerVars: YT.PlayerVars = {
-    autoplay:1,
     controls: 0,
+    autoplay: 1,
     loop: 1,
     showinfo: 1,
     iv_load_policy: 3,
@@ -41,28 +43,43 @@ export class PlayTrailerEmbeedComponent {
   changeMuted(event: any) {
     this.mutedState = !this.mutedState;
     (this.mutedState) ? this.youtubePlayer.mute() : this.youtubePlayer.unMute();
-
     event.stopPropagation()
   }
 
-  setPlayerVideoData(videoId: string,id:number) {
-    this.videoID=videoId
-    this.id=id
-    this.mutedState=true
+  setPlayerVideoData(videoId: string, id: number) {
+    this.videoID.set(videoId)
+    this.id = id
+    this.mutedState = true
+    console.log('qactivqaknkdo', this.videoID())
+
   }
 
   onStateChange(event: any) {
+    console.log('sftqafte change', event)
     if (event.data == YT.PlayerState.ENDED) {
       this.isEnded.emit()
     }
   }
 
+  onReady(event: any) {
+    console.log('ya esta ready', event)
+  }
+
   destroy() {
-    this.videoID=''
+    this.videoID.set('')
     this.mutedState = true
+  }
+
+  redirect() {
+    (this.isMovie()) ? this.redirectDetailsMovie(this.id) : this.redirectDetailsSerie(this.id)
   }
 
   redirectDetailsMovie(id: number) {
     this.router.navigate(['/details-movie/' + id])
   }
+  
+  redirectDetailsSerie(id: number) {
+    this.router.navigate(['/details-serie/' + id])
+  }
+
 }

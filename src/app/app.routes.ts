@@ -9,4 +9,7 @@ export const routes: Routes = [ {
 {
     path: 'details-movie/:id_movie', loadComponent: () => import('./shared/components/details-movie/details-movie.component'),
 },
+{
+    path: 'details-serie/:id_serie', loadComponent: () => import('./shared/components/details-serie/details-serie.component'),
+},
 ];

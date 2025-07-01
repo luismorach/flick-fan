@@ -1,27 +1,30 @@
-import { Component, inject, CUSTOM_ELEMENTS_SCHEMA, signal, WritableSignal, Inject, ChangeDetectionStrategy, 
-   effect,  ViewEncapsulation, ViewChild, ElementRef, output, HostListener, input } from '@angular/core';
+import {
+  Component, inject, CUSTOM_ELEMENTS_SCHEMA, signal, WritableSignal, Inject, ChangeDetectionStrategy,
+  effect, ViewEncapsulation, ViewChild, ElementRef, output, HostListener, input
+} from '@angular/core';
 import { DOCUMENT, DatePipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { register, SwiperContainer } from 'swiper/element/bundle'
 import { SwiperOptions } from 'swiper/types';
 import 'swiper/css'
-import { listMovies, playerTrailer } from '../../../shared/interfaces/interfaces';
+import { listMovies, Movie, playerTrailer } from '../../../shared/interfaces/interfaces';
 import { RouterLink } from '@angular/router';
 import { AnimationsService } from '../../../shared/services/animations/animations.service';
 import { RatingComponent } from '../../../shared/components/rating/rating.component';
 import { ComunicatorService } from '../../../shared/services/comunicator/comunicator.service';
 import { LoadingComponent } from '../loading/loading.component';
 import { fade } from '../../../shared/animations/animations';
+import { getKeyTrailer } from '../../../shared/utils/carousel';
+register()
 
 @Component({
   selector: 'app-banner',
-  imports: [DatePipe, NgOptimizedImage, RouterLink, NgClass, RatingComponent,LoadingComponent],
+  imports: [DatePipe, NgOptimizedImage, RouterLink, NgClass, RatingComponent, LoadingComponent],
   templateUrl: './banner.component.html',
   styleUrl: './banner.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  animations:[fade]
-
+  animations: [fade]
 })
 
 export default class BannerComponent {
@@ -31,15 +34,13 @@ export default class BannerComponent {
   animationsService = inject(AnimationsService)
   indexCurrentElement: number = 0
   listMovies = input.required<WritableSignal<listMovies | undefined>>()
-  movie: WritableSignal<any>= signal(undefined)
-  isSwiperRegistered = false
-  isBeginning=signal(true)
-  isEnd=signal(false)
-  trailerID=signal('')
+  movie: WritableSignal<Movie | undefined> = signal(undefined)
+  isBeginning = signal(true)
+  isEnd = signal(false)
   isLoading: WritableSignal<boolean> = signal(false)
   requestMoreData = output<void>()
 
-   @HostListener("window:scroll", ['$event'])
+  @HostListener("window:scroll", ['$event'])
   enableBackgroundNav(event: any) {
     let offset = event.srcElement.children[0].scrollTop
     if (offset > 20) {
@@ -47,34 +48,32 @@ export default class BannerComponent {
     } else {
       this.comunicatorService.setBackgroundNav(false)
     }
-  } 
+  }
   constructor(@Inject(DOCUMENT) private document: Document, public comunicatorService: ComunicatorService) {
-    if (!this.isSwiperRegistered) {
-      register(); // Registra Swiper solo una vez
-      this.isSwiperRegistered = true;
-    }
-    
+
     this.comunicatorService.setBackgroundNav(false)
     effect(() => {
       this.movie.set(this.listMovies()()?.results[this.indexCurrentElement])
       this.isLoading.set(false)
       this.isEnd.set(false)
       queueMicrotask(() => {
-        this.swiperContainer.nativeElement.swiper.update()       
+        this.swiperContainer.nativeElement.swiper.update()
       })
     })
-    
-    effect(()=>{
-      console.log(this.trailerID())
+
+    effect(() => {
+      console.log(this.movie())
+      const trailerKey = getKeyTrailer(this.indexCurrentElement, this.listMovies()())
       this.onPlayTrailer.emit({
-        videoId:this.trailerID,
-        isPlaying:false
+        videoId: signal(trailerKey),
+        isPlaying: false
       })
     })
   }
 
   ngAfterViewInit() {
     this.initSwiper()
+    this.addEventSlideChange()
   }
 
   initSwiper() {
@@ -90,28 +89,11 @@ export default class BannerComponent {
         dynamicBullets: true
       },
       navigation: {
-        enabled:true,
+        enabled: true,
         nextEl: '.swiper-next',
         prevEl: '.swiper-previous'
       },
     }
-
-   
-    this.swiperContainer.nativeElement.addEventListener('swiperslidechange', (event: any) => {
-      this.isBeginning.set(event.detail[0].isBeginning)
-      this.isEnd.set(event.detail[0].isEnd)
-      this.indexCurrentElement = event.detail[0].activeIndex
-      this.movie.set(this.listMovies()()?.results[this.indexCurrentElement]) 
-      this.trailerID.set(this.getKeyTrailer())
-      let page = this.listMovies()()?.page ?? 0;
-      let total_pages = this.listMovies()()?.total_pages ?? 0;
-      
-      if (this.isEnd() && (page < total_pages) && !this.isLoading()) {
-        this.isLoading.set(true)
-        this.requestMoreData.emit() 
-      }
-      this.animateElements()
-    })
 
     if (this.swiperContainer) {
       Object.assign(this.swiperContainer.nativeElement, swiperOptions)
@@ -119,7 +101,30 @@ export default class BannerComponent {
     }
 
   }
+  addEventSlideChange() {
+    this.swiperContainer.nativeElement.addEventListener('swiperslidechange', (event: any) => {
+      this.isBeginning.set(event.detail[0].isBeginning)
+      this.isEnd.set(event.detail[0].isEnd)
+      this.indexCurrentElement = event.detail[0].activeIndex
+      this.movie.set(this.listMovies()()?.results[this.indexCurrentElement])
 
+
+      this.loadMoreData()
+      this.animateElements()
+    })
+  }
+  loadMoreData() {
+    console.log('indeexx', this.indexCurrentElement)
+    let page = this.listMovies()()?.page ?? 0;
+    let total_pages = this.listMovies()()?.total_pages ?? 0;
+
+    if (page < total_pages) {
+      this.isLoading.set(true)
+    }
+    if (this.isEnd() && (page < total_pages)) {
+      this.requestMoreData.emit()
+    }
+  }
 
   animateElements() {
     const title = this.document.getElementById('title')
@@ -150,16 +155,11 @@ export default class BannerComponent {
   }
 
   playTrailer() {
+    const trailerKey = getKeyTrailer(this.indexCurrentElement, this.listMovies()())
     this.onPlayTrailer.emit({
-      videoId: signal(this.getKeyTrailer()),
+      videoId: signal(trailerKey),
       isPlaying: true
     });
-  }
-
-  getKeyTrailer(): string {
-    const trailer = this.movie()?.videos?.results.find((element: any) => element.type === 'Trailer');
-    const key = trailer?.key || '';
-    return key;
   }
 
   ngOnDestroy() {

@@ -2,38 +2,38 @@
 
     <figure class="w-full h-screen z-0 absolute gradient after:w-full 
     after:absolute after:top-0 after:h-full after:bg-[#0f0f0f] after:opacity-50 after:z-0 ">
-        <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie()?.backdrop_path}}" fill
+        <img ngSrc="{{'http://image.tmdb.org/t/p/original'+serie()?.backdrop_path}}" fill
             class="object-cover object-center rounded-xl gradient">
     </figure>
 
     <section class="w-full h-screen flex items-end mb-20">
         <figure
             class="z-10 relative flex grow bg-zinc-500  self-end ml-8 mb-8 w-1/5 h-2/4 rounded-xl shadow-xs shadow-white">
-            <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie()?.poster_path}}" fill priority #img
+            <img ngSrc="{{'http://image.tmdb.org/t/p/original'+serie()?.poster_path}}" fill priority #img
                 class="object-cover object-center rounded-xl ">
         </figure>
 
         <header class="z-10 w-full m-8 md:px-12 relative self-end text-white text-base">
             <h1 class="font-racing uppercase text-3xl text-left sm:text-4xl lg:text-5xl relative" id="title">
-                {{movie()?.title}}
+                {{serie()?.name}}
             </h1>
 
 
-            <p class="font-roboto pt-2 text-justify max-h-[43vh] overflow-scroll">{{movie()?.overview}}</p>
+            <p class="font-roboto pt-2 text-justify max-h-[43vh] overflow-scroll">{{serie()?.overview}}</p>
 
             <div class="flex pt-4 font-roboto " id="genres">
-                @for(genre of movie()?.genres;track genre){
+                @for(genre of serie()?.genres;track genre){
                 <p>{{genre.name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
                 }
             </div>
 
             <div class="flex py-2 font-roboto items-center" id="release">
-                <p>Duración {{movie()?.runtime}} minutos&nbsp;</p>
+                <p>Duración {{serie()?.runtime}} minutos&nbsp;</p>
                 <i class="fa-solid fa-clock">&nbsp;&nbsp;&nbsp;</i>
-                <p class="">{{movie()?.release_date|date:'longDate'}}</p>
+                <p class="">{{serie()?.release_date|date:'longDate'}}</p>
             </div>
 
-            <a routerLink="/watch-movie/{{movie()?.id}}" class="border border-white rounded-xl px-4 py-0.5 text-sm hover:scale-110 
+            <a routerLink="/watch-serie/{{serie()?.id}}" class="border border-white rounded-xl px-4 py-0.5 text-sm hover:scale-110 
             hover:border-[#e50914] hover:text-[#e50914] cursor-pointer"> VER AHORA &nbsp;
                 <i class="fa-solid fa-play text-sm"></i>
             </a>
@@ -42,12 +42,12 @@
         <div class="z-10 absolute right-20 top-20 text-white grow flex flex-col justify-end font-racing">
             <div class="flex justify-start items-center font-racing">
                 <i class="fa solid fa-star text-[#e50914]"></i>
-                <p class="text-2xl px-2"> {{movie()?.vote_average | number:'1.1-1'}}</p>
+                <p class="text-2xl px-2"> {{serie()?.vote_average | number:'1.1-1'}}</p>
                 <p class="text-base ">/&nbsp;10</p>
 
             </div>
 
-            <p class="pl-6">{{movie()?.vote_count}} calificaciones</p>
+            <p class="pl-6">{{serie()?.vote_count}} calificaciones</p>
         </div>
     </section>
 
@@ -103,27 +103,27 @@
             </div>
             <aside class=" rounded-xl text-white w-full font-roboto text-sm p-4 pl-16">
                 <h1 class="text-base font-extrabold">Titulo original</h1>
-                <p class="text-sm pb-4">{{movie()?.original_title}}</p>
+                <p class="text-sm pb-4">{{serie()?.original_title}}</p>
                 <h1 class="text-base font-extrabold">Estatus</h1>
-                <p class="text-sm pb-4">{{movie()?.status}}</p>
+                <p class="text-sm pb-4">{{serie()?.status}}</p>
                 <h1 class="text-base font-extrabold">Compañias de producción</h1>
-                @for(company of movie()?.production_companies;track company){
+                @for(company of serie()?.production_companies;track company){
                 <p>{{company.name}}</p>
                 }
                 <h1 class="text-base font-extrabold pt-4">Paises de producción</h1>
-                @for(country of movie()?.production_countries;track country){
+                @for(country of serie()?.production_countries;track country){
                 <p>{{country.name}}</p>
                 }
                 <h1 class=" text-base font-extrabold pt-4">Presupuesto </h1>
-                @if(movie()?.budget){
-                <p>{{movie()?.budget | currency:'USD':'symbol-narrow':'1.0-0'}}</p>
+                @if(serie()?.budget){
+                <p>{{serie()?.budget | currency:'USD':'symbol-narrow':'1.0-0'}}</p>
                 }
                 @else{
                 <p>-</p>
                 }
                 <h1 class="text-base font-extrabold pt-4">Ingresos </h1>
-                @if(movie()?.revenue){
-                <p>{{movie()?.revenue | currency:'USD':'symbol-narrow':'1.0-0'}}</p>
+                @if(serie()?.revenue){
+                <p>{{serie()?.revenue | currency:'USD':'symbol-narrow':'1.0-0'}}</p>
                 }
                 @else{
                 <p>-</p>

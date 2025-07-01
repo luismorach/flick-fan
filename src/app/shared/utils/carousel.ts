@@ -1,20 +1,30 @@
 import { ElementRef, inject, Renderer2, RendererFactory2 } from "@angular/core"
 import Swiper from "swiper"
 import { SwiperContainer } from "swiper/element";
+import { FreeMode, Mousewheel } from "swiper/modules";
 import { SwiperOptions } from "swiper/types";
+import { listMovies, listSeries } from "../interfaces/interfaces";
+
+var timeouts: number[] = []
+var animationsID: number[] = []
+
 
 export function initSwiper(swiperContainer: ElementRef<SwiperContainer>, numSlides: number, spaceBetween: number, title: string) {
     const swiperOptions: SwiperOptions = {
+        modules: [Mousewheel, FreeMode],
         speed: 800,
         slidesPerView: 'auto',
         allowTouchMove: false,
-        observer: true,
-        observeParents: true,
-        watchSlidesProgress: true,
         initialSlide: 0,
         slidesPerGroup: numSlides,
         spaceBetween: spaceBetween,
         slidesOffsetAfter: spaceBetween,
+        freeMode: {
+            enabled: true,
+            momentum: false
+        },
+        watchSlidesProgress: true,
+        resistanceRatio: 0,
         navigation: {
             enabled: true,
             nextEl: `.swiper-next-${title}`,
@@ -33,7 +43,7 @@ export function calculateNumSlides(containerWidth: number, slideWidth: number) {
 }
 
 export function getRangeSlidesLoading(numSlides: number) {
-    return Array.from({ length: numSlides + 1 }, (_, i) => i)
+    return Array.from({ length: numSlides }, (_, i) => i)
 }
 
 export function calculatePaddingToSetSwiperContainer(swiper: Swiper, spaceBetween: number) {
@@ -42,8 +52,6 @@ export function calculatePaddingToSetSwiperContainer(swiper: Swiper, spaceBetwee
     let numSlides = calculateNumSlides(containerWidth, slideWidth)
     let usedWith = (numSlides * slideWidth) + (numSlides - 1) * spaceBetween
     let remainingSpace = containerWidth - usedWith
-    console.log(swiper.slides[0])
-    console.log(containerWidth,slideWidth,numSlides,usedWith)
     return Math.floor(Math.max(remainingSpace / 2, 0))
 
 }
@@ -62,3 +70,47 @@ export function setStylesToFirstSlide(swiper: Swiper, spaceBetween: number, rend
     let paddingX = calculatePaddingToSetSwiperContainer(swiper, spaceBetween)
     renderer2.setStyle(swiper.slides[0], 'margin-left', ((paddingX - spaceBetween) * -1) + 'px')
 }
+
+export function startTimeOut(callback: Function, delay: number) {
+    const timeoutID = setTimeout(callback, delay)
+    timeouts.push(timeoutID)
+    return timeoutID
+}
+export function clearAllTimeouts() {
+    timeouts.forEach((id) => clearTimeout(id))
+    timeouts=[]
+}
+
+export function startAnimationFrame(callback: Function) {
+    const animationID = requestAnimationFrame(()=>callback())
+    animationsID.push(animationID)
+    return animationID
+}
+export function clearAllAnimationsFrame() {
+    console.log(animationsID)
+    animationsID.forEach((id) => cancelAnimationFrame(id))
+    animationsID=[]
+}
+export function waitForAnimationFrame():Promise<void>{
+    return new Promise(resolve=>requestAnimationFrame(()=>resolve()))
+}
+
+export function waitForTransitionEnd(element:HTMLElement){
+    return new Promise<void>(resolve => {
+      const onEnd = () => {
+        console.log('ftransicion ftferminada',element.offsetWidth)
+        element.removeEventListener('transitionend', onEnd)
+        resolve();
+      }
+      element.addEventListener('transitionend', onEnd, { once: true })
+    })
+}
+
+export function getKeyTrailer(index: number,data:listMovies | listSeries | undefined): string {
+    if (data?.results[index] === undefined) return ''
+    const trailer = data?.results[index].videos?.results.find((element: any) => element.type === 'Trailer');
+    const key = trailer?.key || '';
+    return key;
+  }
+  
+

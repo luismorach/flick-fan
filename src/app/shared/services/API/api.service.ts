@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, WritableSignal, inject } from '@angular/core';
-import { listMovies, listSeries, Movie } from '../../interfaces/interfaces';
-import {  concatMap, map, mergeAll, mergeMap, Observable, tap, toArray } from 'rxjs';
+import { Credits, listMovies, listSeries, Movie, Serie } from '../../interfaces/interfaces';
+import { concatMap, map, mergeAll, mergeMap, Observable, tap, toArray } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -23,8 +23,8 @@ export class ApiService {
     let fusion = observable.pipe(
       map((data: any) => details.pipe(
         map((movies: any) => {
-          data.results= movies
-          return {page:data.page,total_pages: data.total_pages, total_results:data.total_results, results:movies}
+          data.results = movies
+          return { page: data.page, total_pages: data.total_pages, total_results: data.total_results, results: movies }
         }),
       )), mergeAll())
 
@@ -36,7 +36,7 @@ export class ApiService {
       map((data: any) => data.results),
       mergeMap((data: any) => data),
       concatMap((serie: any) => {
-        return this.http.get(this.API + 'tv/' + serie.id + '?append_to_response=videos&language=es-VE')
+        return this.http.get(this.API + 'tv/' + serie.id + '?append_to_response=videos&language=en-US')
       }),
       toArray(),
     )
@@ -44,55 +44,58 @@ export class ApiService {
     let fusion = observable.pipe(
       map((data: any) => details.pipe(
         map((series: any) => {
-          data.results= series
-          return {page:data.page,total_pages: data.total_pages, total_results:data.total_results, results:series}
+          data.results = series
+          return { page: data.page, total_pages: data.total_pages, total_results: data.total_results, results: series }
         }),
       )), mergeAll())
 
     return fusion
   }
 
-  getNowPlaying(page:number) {
+  getNowPlaying(page: number) {
     let nowPlaying = (this.http.get(this.API + `movie/now_playing?language=es-VE&page=${page}`) as Observable<listMovies>)
-    return  this.joinDetailsMovie(nowPlaying)
+    return this.joinDetailsMovie(nowPlaying)
   }
 
-  getPopular(page:number) {
+  getPopular(page: number) {
     let popularMovies = this.http.get(this.API + `movie/popular?language=es-VE&page=${page}`)
-    return  this.joinDetailsMovie(popularMovies)
+    return this.joinDetailsMovie(popularMovies)
   }
 
-  getUpcoming(page:number) {
-    let upcomingMovies = this.http.get(this.API +   `movie/upcoming?language=es-VE&page=${page}` )
-    return  this.joinDetailsMovie(upcomingMovies)
+  getUpcoming(page: number) {
+    let upcomingMovies = this.http.get(this.API + `movie/upcoming?language=es-VE&page=${page}`)
+    return this.joinDetailsMovie(upcomingMovies)
   }
 
-  getDetailsMovie(movie_id: number) {
-    return this.http.get(this.API + 'movie/' + movie_id + '?append_to_response=videos&language=es-VE')
+  getDetailsMovie(movie_id: number): Observable<Movie> {
+    return this.http.get(this.API + 'movie/' + movie_id + '?append_to_response=videos&language=es-VE') as Observable<Movie>
   }
 
-  getCreditsMovie(movie_id: number) {
-    return this.http.get(this.API + 'movie/' + movie_id + '/credits?language=es-VE')
+  getCreditsMovie(movie_id: number): Observable<Credits> {
+    return this.http.get(this.API + 'movie/' + movie_id + '/credits?language=es-VE') as Observable<Credits>
   }
 
   getSimilarMovies(movie_id: number) {
     let similarMovies = this.http.get(this.API + 'movie/' + movie_id + '/similar?language=es-VE')
-    return  this.joinDetailsMovie(similarMovies)
+    return this.joinDetailsMovie(similarMovies)
   }
-  
-  getRecomendedMovies(movie_id:number){
-    let recomendations=this.http.get(this.API + 'movie/' + movie_id + '/recommendations?language=es-VE')
+
+  getRecomendedMovies(movie_id: number) {
+    let recomendations = this.http.get(this.API + 'movie/' + movie_id + '/recommendations?language=es-VE')
     return this.joinDetailsMovie(recomendations)
   }
 
-  getAiringTodaySeries(){
+  getAiringTodaySeries() {
     let airingToday = this.http.get(this.API + 'tv/airing_today?language=es-VE&page=1')
     return this.joinDetailsSeries(airingToday)
   }
 
-  getOnTheAirSeries(page:number){
-    let onTheAirSeries= this.http.get(this.API + `tv/on_the_air?language=es-VE&page=${page}`)
+  getOnTheAirSeries(page: number) {
+    let onTheAirSeries = this.http.get(this.API + `tv/on_the_air?language=es-VE&page=${page}`)
     return this.joinDetailsSeries(onTheAirSeries)
+  }
+  getDetailsSerie(serie_id: number): Observable<Serie> {
+    return this.http.get(this.API + 'tv/' + serie_id + '?append_to_response=videos&language=es-VE') as Observable<Serie>
   }
 
   getMoreData(MethodApi: Function, currentData: WritableSignal<listMovies | listSeries | undefined>) {
@@ -109,5 +112,5 @@ export class ApiService {
       }))
     })
   }
-  
+
 }

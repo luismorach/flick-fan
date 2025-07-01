@@ -1,8 +1,6 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { register } from 'swiper/element/bundle'
 import { NavBarComponent } from './nav-bar/nav-bar.component';
-register()
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, NavBarComponent],
@@ -11,9 +9,12 @@ register()
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppComponent {
-  
+
   title = 'flick-fan';
-
-
-
+ 
 }
+
+
+
+
+

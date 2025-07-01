@@ -6,11 +6,10 @@ import {
 import { register, SwiperContainer } from 'swiper/element/bundle'
 import { listMovies, playerTrailer } from '../../interfaces/interfaces';
 import { DatePipe, NgClass, NgOptimizedImage } from '@angular/common';
-import { SwiperOptions } from 'swiper/types';
 import { PlayTrailerEmbeedComponent } from '../play-trailer-embeed/play-trailer-embeed.component';
 import { SlideSkeletonComponent } from './carousel-skeleton/slide-skeleton/slide-skeleton.component';
 import { fade } from '../../animations/animations';
-import { calculateNumSlides, calculatePaddingToSetSwiperContainer, deletePaddingToSwiperContainer, getRangeSlidesLoading, initSwiper, setPaddingToSwiperContainer, setStylesToFirstSlide } from '../../utils/carousel';
+import { calculateNumSlides, calculatePaddingToSetSwiperContainer, clearAllAnimationsFrame, deletePaddingToSwiperContainer, getKeyTrailer, getRangeSlidesLoading, initSwiper, setPaddingToSwiperContainer, setStylesToFirstSlide, startAnimationFrame } from '../../utils/carousel';
 
 
 register();
@@ -77,122 +76,48 @@ export class carouselComponent {
     this.swiperContainer.nativeElement.addEventListener('swiperslidechange', (event: any) => {
       this.isBeginning.set(event.detail[0].isBeginning);
       this.isEnd.set(event.detail[0].isEnd);
-      let page = this.listMovies()()?.page ?? 0;
-      let total_pages = this.listMovies()()?.total_pages ?? 0;
       let swiper = this.swiperContainer.nativeElement.swiper;
 
       (event.detail[0].isEnd) ? deletePaddingToSwiperContainer(swiper, this.renderer2) :
         setPaddingToSwiperContainer(swiper, this.spaceBetween, this.renderer2)
 
-      if ((event.detail[0].slides.length - (this.numSlides * 3) <= event.detail[0].activeIndex)
-        && (page < total_pages) && !this.isLoading()) {
-        this.isLoading.set(true)
-        this.requestMoreData.emit()
-      }
+      this.loadMoreData()
     })
   }
-  /*  initSwiper() {
-     const swiperOptions: SwiperOptions = {
-       speed: 800,
-       slidesPerView: 'auto',
-       allowTouchMove: false,
-       observer: true,
-       observeParents: true,
-       watchSlidesProgress: true,
-       initialSlide: 0,
-       slidesPerGroup: this.numSlides,
-       spaceBetween: this.spaceBetween,
-       slidesOffsetAfter: this.spaceBetween,
-       navigation: {
-         enabled: true,
-         nextEl: `.swiper-next-${this.title()}`,
-         prevEl: `.swiper-previous-${this.title()}`,
-       }
-     }
- 
-     this.swiperContainer.nativeElement.addEventListener('swiperslidechange', (event: any) => {
-       this.isBeginning.set(event.detail[0].isBeginning);
-       this.isEnd.set(event.detail[0].isEnd);
-       let page = this.listMovies()()?.page ?? 0;
-       let total_pages = this.listMovies()()?.total_pages ?? 0;
-       let swiper = this.swiperContainer.nativeElement.swiper;
- 
-       (event.detail[0].isEnd) ? deletePaddingToSwiperContainer(swiper, this.renderer2) :
-         setPaddingToSwiperContainer(swiper, this.spaceBetween, this.renderer2)
- 
-       if ((event.detail[0].slides.length - (this.numSlides * 3) <= event.detail[0].activeIndex)
-         && (page < total_pages) && !this.isLoading()) {
-         this.isLoading.set(true)
-         this.requestMoreData.emit()
-       }
-     })
- 
-     if (this.swiperContainer) {
-       Object.assign(this.swiperContainer.nativeElement, swiperOptions)
-       this.swiperContainer.nativeElement?.initialize()
- 
-       let swiper = this.swiperContainer.nativeElement.swiper;
-       calculatePaddingToSetSwiperContainer(swiper, this.spaceBetween)
-       setPaddingToSwiperContainer(swiper, this.spaceBetween, this.renderer2)
-       setStylesToFirstSlide(swiper, this.spaceBetween, this.renderer2)
-     }
-   } */
+  loadMoreData() {
+    let page = this.listMovies()()?.page ?? 0;
+    let total_pages = this.listMovies()()?.total_pages ?? 0;
 
-  /*  calculateNumSlides() {
-     let containerWidth = this.mainContainer.nativeElement.scrollWidth
-     if (containerWidth)
-       this.numSlides = Math.floor(containerWidth / this.slideWidth)
-   }
- 
-   getSlidesLoading() {
-     this.slidesLoading = Array.from({ length: this.numSlides + 1 }, (_, i) => i)
-   }
- 
-   calculatePaddingToSetSwiperContainer() {
-     console.log(this.swiperContainer.nativeElement.swiper.slides[0].scrollWidth)
-     this.slideWidth = this.swiperContainer.nativeElement.swiper.slides[0].scrollWidth
-     let containerWidth = this.swiperContainer.nativeElement.swiper.width
-     let usedWith = this.numSlides * (this.slideWidth) + (this.numSlides - 1) * this.spaceBetween
-     let remainingSpace = containerWidth - usedWith
-     this.paddingX = Math.floor(Math.max(remainingSpace / 2, 0))
-   }
- 
-   setPaddingToSwiperContainer() {
-     let swiper = this.swiperContainer.nativeElement.swiper
-     this.renderer2.setStyle(swiper.wrapperEl, 'padding', `0px ${this.paddingX}px`)
-   }
- 
-   deletePaddingToSwiperContainer() {
-     let swiper = this.swiperContainer.nativeElement.swiper
-     this.renderer2.setStyle(swiper.wrapperEl, 'padding', '0px')
-   }
- 
-   setStylesToFirstSlide() {
-     let swiper = this.swiperContainer.nativeElement.swiper
-     this.renderer2.setStyle(swiper.slides[0], 'margin-left', ((this.paddingX - this.spaceBetween) * -1) + 'px')
-   } */
-
+     if (page < total_pages) {
+      this.isLoading.set(true)
+    }
+    if (this.isEnd() && (page < total_pages)) {
+      this.requestMoreData.emit()
+    }
+  }
   onMouseEnterToSlide(index: number, id: number) {
-    let videoId = this.getKeyTrailer(index);
+    let videoId = getKeyTrailer(index, this.listMovies()());
     this.hoverStates[index] = true;
     this.currentIndex = index
-    if (videoId !== '') {
-      this.renderer2.appendChild(this.swiperContainer.nativeElement.swiper.slides[index].firstChild,
-        this.trailerEmbeedElement.nativeElement)
-      this.trailerEmbeed.setPlayerVideoData(videoId, id)
+    if (videoId === '') return
 
-      requestAnimationFrame(() => {
-        this.renderer2.addClass(this.trailerEmbeedElement.nativeElement, 'active')
-      })
-    }
+    this.renderer2.appendChild(this.swiperContainer.nativeElement.swiper.slides[index].firstChild,
+      this.trailerEmbeedElement.nativeElement)
+    this.trailerEmbeed.setPlayerVideoData(videoId, id)
+
+    startAnimationFrame(() => {
+      this.renderer2.addClass(this.trailerEmbeedElement.nativeElement, 'active')
+    })
   }
 
   onMouseLeaveToSlide(index: number) {
-    let videoId = this.getKeyTrailer(index);
+    let videoId = getKeyTrailer(index, this.listMovies()());
     this.hoverStates[index] = false;
-    if (videoId !== '') {
-      this.closeTrailerPlayer()
-    }
+
+    if (videoId === '') return
+
+    this.closeTrailerPlayer()
+    clearAllAnimationsFrame()
   }
 
   closeTrailerPlayer() {
@@ -204,14 +129,10 @@ export class carouselComponent {
 
   playTrailer(index: number) {
     this.onPlayTrailer.emit({
-      videoId: signal(this.getKeyTrailer(index)),
+      videoId: signal(getKeyTrailer(index, this.listMovies()())),
       isPlaying: true
     });
   }
 
-  getKeyTrailer(index: number): string {
-    const trailer = this.listMovies()()?.results?.[index].videos?.results.find((element: any) => element.type === 'Trailer');
-    const key = trailer?.key || '';
-    return key;
-  }
+
 }

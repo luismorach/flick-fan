@@ -1,8 +1,12 @@
+@defer(when nowPlaying()){
 <app-banner [listMovies]="nowPlaying" (onPlayTrailer)="playTrailer($event)" 
 (requestMoreData)="API.getMoreData(this.API.getNowPlaying.bind(this.API),nowPlaying)" @fade></app-banner>
+}
+@placeholder{
+    <app-loading @fade></app-loading>
+}
 
-
-@defer(when popularMovies()){
+@defer(when popularMovies() && nowPlaying()){
     <app-carousel @fade [listMovies]="popularMovies" title="populares" [importance]="3" 
         (onPlayTrailer)="playTrailer($event)" (requestMoreData)="API.getMoreData(this.API.getPopular.bind(this.API),popularMovies)">
     </app-carousel>
@@ -11,7 +15,7 @@
     <app-carousel-skeleton @fade ></app-carousel-skeleton>
 } -->
  
-@defer(when upcomingMovies()){
+@defer(when upcomingMovies() && nowPlaying()){
     <app-carousel @fade [listMovies]="upcomingMovies" title="recientes" [importance]="2"
         (onPlayTrailer)="playTrailer($event)" (requestMoreData)="API.getMoreData(this.API.getUpcoming.bind(this.API),upcomingMovies)">
     </app-carousel>
@@ -19,15 +23,15 @@
     <app-carousel-skeleton @fade ></app-carousel-skeleton>
 }
  -->
-@defer(when airingToday()){
+@defer(when airingToday() && nowPlaying()){
 <app-banner-series [listSeries]="airingToday()"></app-banner-series>
 }
 <!-- @placeholder{
    <app-loading @fade></app-loading>
 } -->
 
-@defer(when onTheAir()){
-<app-carousel-series [listSeries]="onTheAir" title="air" [importance]="2" @fade
+@defer(when onTheAir() && nowPlaying()){
+<app-carousel-series [listSeries]="onTheAir" title="air" [importance]="2" 
 (requestMoreData)="API.getMoreData(this.API.getOnTheAirSeries.bind(this.API),onTheAir)">
 
 </app-carousel-series>

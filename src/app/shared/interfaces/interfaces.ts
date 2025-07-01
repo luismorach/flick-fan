@@ -173,6 +173,7 @@ export interface Serie {
     vote_average: number
     vote_count: number
     images: images
+    videos:videos
 }
 
 interface createdBy {

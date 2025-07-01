@@ -92,5 +92,5 @@
     </section>
 </main>
 
-<app-play-trailer-embeed #trailer class="opacity-0 w-80 h-48"
-    (isEnded)="closeTrailerPlayer()"></app-play-trailer-embeed>
+<app-play-trailer-embeed #trailer class="opacity-0 w-80 h-48" [size]="[320,192]"
+    (isEnded)="closeTrailerPlayer()" [isMovie]="true"></app-play-trailer-embeed>

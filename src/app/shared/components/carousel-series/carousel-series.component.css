@@ -1,9 +1,6 @@
-.expand{
-    transition: width .5s cubic-bezier(.2,.45,0,1);
-}
-.opaque{
-    
-    transition: opacity .5s cubic-bezier(.2,.45,0,1);
-}
 
-
+.active {
+    opacity: 100%;
+    transition: opacity 0.5s ease-in;
+    transition-delay: 3s;
+}

@@ -3,26 +3,27 @@
         <p class=" font-racing">Series {{title()}}</p>
     </header>
 
-    <section class="relative">
+     <section class="relative">
         <button class=" group w-8 h-52 z-50 absolute left-0 top-1/4 text-white bg-[rgba(0,5,13,.5)] 
     flex items-center justify-center rounded-tr-lg rounded-br-lg swiper-previous-{{title()}} cursor-pointer"
-            [class.opacity-0]="isBeginning()">
+            [class.hidden]="isBeginning()">
             <i class="fa-solid fa-chevron-left text-base transition-all ease-in delay-200 group-hover:text-xl "></i>
         </button>
 
-        <swiper-container init="false" navigation="true" class="w-full z-0 relative" #swiper>
+       <swiper-container init="false" navigation="true" class="w-full" #swiper>
 
             @for(serie of listSeries()()?.results;track serie;let i = $index){
-            <swiper-slide (mouseenter)="mouseEnter(i)" (mouseleave)="mouseLeave(i)" class="z-0 w-72 h-[29rem]" @fade>
+            <swiper-slide (mouseenter)="onMouseEnterToSlide(i,serie.id)" (mouseleave)="onMouseLeaveToSlide(i)"
+                class="relative  w-72 h-[29rem] cursor-pointer" 
+                (click)="trailerEmbeed.redirectDetailsSerie(serie.id)" @fade >
 
 
-
-                <figure class="h-full absolute cursor-pointer opaque w-72">
+                <figure class="h-full absolute cursor-pointer w-72">
                     <img ngSrc="{{'http://image.tmdb.org/t/p/original'+serie.poster_path}}" fill #img
                         class="object-cover object-center text-white bg-black rounded-xl">
                 </figure>
 
-                <figure class="w-full h-full relative cursor-pointer opaque opacity-0">
+                <figure class="w-full h-full relative cursor-pointer opacity-0">
                     <div class="w-full h-full absolute">
                         <img ngSrc="{{'http://image.tmdb.org/t/p/original'+serie.backdrop_path}}" fill #img
                             class="object-cover object-center text-white bg-black aspect-auto rounded-xl"
@@ -44,9 +45,8 @@
 
 
                         </div>
-                        <!--  <img ngSrc="{{'http://image.tmdb.org/t/p/original'+serie.images.logos[0].file_path}}"
-                            class="rounded-md object-cover w-" alt="imagen no disponible" fill> -->
-                    </figcaption>
+                        
+                    </figcaption> 
 
                 </figure>
             </swiper-slide>
@@ -60,15 +60,18 @@
             }
             }
         </swiper-container>
-
+ 
         <button class="group w-8 h-52 z-50 absolute right-0 top-1/4 text-white bg-[rgba(0,5,13,.5)] 
-    flex items-center justify-center rounded-tl-lg rounded-bl-lg swiper-next-{{title()}} cursor-pointer"
-            [class.opacity-0]="isEnd()">
+    flex items-center justify-center rounded-tl-lg rounded-bl-lg cursor-pointer swiper-next-{{title()}}"
+            [class.hidden]="isEnd()" >
             <i class="fa-solid fa-chevron-right text-base  group-hover:scale-125 "></i>
         </button>
 
-    </section>
+         
+    </section> 
 
-
-
+   
 </main>
+
+<app-play-trailer-embeed #trailer class="opacity-0 w-72 h-[29rem]" [size]="[806,464]"
+    (isEnded)="closeTrailerPlayer()" [isMovie]="false"></app-play-trailer-embeed>

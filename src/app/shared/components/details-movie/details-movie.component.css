@@ -15,7 +15,6 @@ swiper-container::part(button-next):hover {
 
 }
 
-
 swiper-container::part(container){
     overflow-y: visible;
     overflow-x: clip;
