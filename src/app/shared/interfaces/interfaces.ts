@@ -55,14 +55,14 @@ export interface videos {
     }[]
 }
 
-export interface images{
+export interface images {
     id: number
     backdrops: backdrops[]
-    posters: posters[] 
+    posters: posters[]
     logos: logo[]
 }
 
-interface backdrops{
+interface backdrops {
     aspect_ratio: number
     file_path: string
     height: number
@@ -71,7 +71,7 @@ interface backdrops{
     vote_count: number
     width: number
 }
-interface posters{
+interface posters {
     file_path: string
     aspect_ratio: number
     height: number
@@ -81,7 +81,7 @@ interface posters{
     width: number
     logo_path: string
 }
-interface logo{
+interface logo {
     file_path: string
     aspect_ratio: number
     height: number
@@ -154,10 +154,10 @@ export interface Serie {
     languages: string[]
     last_air_date: Date
     last_episode_to_air: last_episode_to_air
-    name:string
-    next_episode_to_air:string
-    number_of_episodes:number
-    number_of_seasons:number
+    name: string
+    next_episode_to_air: string
+    number_of_episodes: number
+    number_of_seasons: number
     origin_country: string[]
     original_language: string
     original_name: string
@@ -173,7 +173,7 @@ export interface Serie {
     vote_average: number
     vote_count: number
     images: images
-    videos:videos
+    videos: videos
 }
 
 interface createdBy {
@@ -199,17 +199,30 @@ interface last_episode_to_air {
     still_path: string
 }
 
-interface season{
+export interface season {
     air_date: Date
-    episode_count: number
     id: number
     name: string
     overview: string
     poster_path: string
     season_number: number
     vote_average: number
+    episode_count:number
+    episodes:episode[]
 }
-    
 
+interface episode {
+    episode_count: number
+    production_code: string
+    runtime: number
+    show_id: number
+    still_path: string
+    vote_count: number
+    id: number
+    name: string
+    overview: string
+    season_number: number
+    vote_average: number
+    crew: Crew
 
-
+}

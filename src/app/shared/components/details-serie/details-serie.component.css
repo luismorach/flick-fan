@@ -1,0 +1,23 @@
+swiper-container::part(container) {
+    overflow-y: visible;
+    overflow-x: clip;
+}
+
+swiper-container::part(button-prev),
+swiper-container::part(button-next) {
+    color: white;
+    height: 1rem;
+    width: 1rem;
+    padding: .5rem;
+    background-color: color-mix(in oklab, var(--color-red-500)
+     /* oklch(63.7% 0.237 25.331) = #fb2c36 */ 20%, transparent);
+   
+    transition: all cubic-bezier(0.4, 0, 1, 1) 0.3s;
+    border-radius: 100%;
+}
+
+swiper-container::part(button-prev):hover,
+swiper-container::part(button-next):hover {
+    transform: scale(1.2);
+
+}

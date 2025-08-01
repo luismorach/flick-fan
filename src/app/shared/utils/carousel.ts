@@ -42,7 +42,7 @@ export function calculateNumSlides(containerWidth: number, slideWidth: number) {
     return Math.floor(containerWidth / slideWidth)
 }
 
-export function getRangeSlidesLoading(numSlides: number) {
+export function getRange(numSlides: number) {
     return Array.from({ length: numSlides }, (_, i) => i)
 }
 

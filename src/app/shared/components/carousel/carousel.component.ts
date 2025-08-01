@@ -9,7 +9,8 @@ import { DatePipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { PlayTrailerEmbeedComponent } from '../play-trailer-embeed/play-trailer-embeed.component';
 import { SlideSkeletonComponent } from './carousel-skeleton/slide-skeleton/slide-skeleton.component';
 import { fade } from '../../animations/animations';
-import { calculateNumSlides, calculatePaddingToSetSwiperContainer, clearAllAnimationsFrame, deletePaddingToSwiperContainer, getKeyTrailer, getRangeSlidesLoading, initSwiper, setPaddingToSwiperContainer, setStylesToFirstSlide, startAnimationFrame } from '../../utils/carousel';
+import { calculateNumSlides, calculatePaddingToSetSwiperContainer, clearAllAnimationsFrame, 
+  deletePaddingToSwiperContainer, getKeyTrailer, getRange, initSwiper, setPaddingToSwiperContainer, setStylesToFirstSlide, startAnimationFrame } from '../../utils/carousel';
 
 
 register();
@@ -61,7 +62,7 @@ export class carouselComponent {
 
   ngAfterViewInit() {
     this.numSlides = calculateNumSlides(this.mainContainer.nativeElement.scrollWidth, this.slideWidth)
-    this.slidesLoading = getRangeSlidesLoading(this.numSlides)
+    this.slidesLoading = getRange(this.numSlides)
     initSwiper(this.swiperContainer, this.numSlides, this.spaceBetween, this.title())
     this.addEventSlideChange()
     this.renderer2.setAttribute(this.swiperContainer.nativeElement, 'style', `z-index:${this.importance()};`);

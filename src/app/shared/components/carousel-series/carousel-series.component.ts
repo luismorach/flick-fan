@@ -3,7 +3,8 @@ import { register, SwiperContainer } from 'swiper/element/bundle';
 import { listSeries } from '../../interfaces/interfaces';
 import { NgClass, NgOptimizedImage } from '@angular/common';
 import {
-  calculateNumSlides, clearAllAnimationsFrame, clearAllTimeouts, deletePaddingToSwiperContainer, getKeyTrailer, getRangeSlidesLoading, initSwiper,
+  calculateNumSlides, clearAllAnimationsFrame, clearAllTimeouts, deletePaddingToSwiperContainer, getKeyTrailer,
+   getRange, initSwiper,
   setPaddingToSwiperContainer, setStylesToFirstSlide, startAnimationFrame, startTimeOut,
   waitForAnimationFrame,
   waitForTransitionEnd
@@ -56,7 +57,7 @@ export class CarouselSeriesComponent {
 
   ngAfterViewInit() {
     this.numSlides = calculateNumSlides(this.mainContainer.nativeElement.scrollWidth, this.slideWidth)
-    this.slidesLoading = getRangeSlidesLoading(this.numSlides)
+    this.slidesLoading = getRange(this.numSlides)
     initSwiper(this.swiperContainer, this.numSlides, this.spaceBetween, this.title())
     this.addEventSlideChange()
     this.addEventSlideChangeTransitionStart()
