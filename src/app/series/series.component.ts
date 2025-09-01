@@ -6,6 +6,6 @@ import { Component } from '@angular/core';
   templateUrl: './series.component.html',
   styleUrl: './series.component.css'
 })
-export class SeriesComponent {
+export default class SeriesComponent {
 
 }

@@ -6,6 +6,6 @@ import { Component } from '@angular/core';
   templateUrl: './movies.component.html',
   styleUrl: './movies.component.css'
 })
-export class MoviesComponent {
+export default class MoviesComponent {
 
 }

@@ -5,10 +5,16 @@ export const routes: Routes = [
         path: 'home', loadComponent: () => import('./inicio/inicio.component'),
     },
     {
+        path: 'movies', loadComponent: () => import('./movies/movies.component'),
+    },
+    {
+        path: 'series', loadComponent: () => import('./series/series.component'),
+    },
+    {
         path: 'watch-movie/:id_movie', loadComponent: () => import('./shared/components/play-movie/play-movie.component'),
     },
     {
-        path: 'watch-serie/:id_serie', 
+        path: 'watch-serie/:id_serie',
         loadComponent: () => import('./shared/components/play-serie/play-serie.component'),
     },
     {
@@ -17,5 +23,5 @@ export const routes: Routes = [
     {
         path: 'details-serie/:id_serie', loadComponent: () => import('./shared/components/details-serie/details-serie.component'),
     },
-    { path: '', redirectTo: 'home', pathMatch: 'full' }, 
+    { path: '', redirectTo: 'home', pathMatch: 'full' },
 ];
