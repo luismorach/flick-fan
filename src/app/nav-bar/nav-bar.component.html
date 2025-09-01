@@ -14,13 +14,13 @@
             <li class="md:invisible m-2 self-end">
                 <i class="fa fa-xmark hover:text-[#e50914] hover:cursor-pointer" (click)="show=false"></i>
             </li>
-            <li class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
+            <li [routerLink]="['/home']" class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
                 <a>Inicio</a>
             </li>
-            <li class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
+            <li [routerLink]="['/movies']" class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
                 <a>Peliculas</a>
             </li>
-            <li class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
+            <li [routerLink]="['/series']" class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
                 <a>Series</a>
             </li>
         </ul>
