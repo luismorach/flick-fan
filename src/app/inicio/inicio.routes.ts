@@ -6,6 +6,10 @@ const routes: Routes = [
     },
     {
         path: 'watch-movie/:id_movie', loadComponent: () => import('../shared/components/play-movie/play-movie.component'),
+    },
+    {
+        path: 'watch-serie/:id_serie/:number_season/:number_episode', 
+        loadComponent: () => import('../shared/components/play-serie/play-serie.component'),
     }
 ];
 

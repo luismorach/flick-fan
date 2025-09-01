@@ -1,6 +1,5 @@
 @import 'tailwindcss';
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap')
-layer(utilities);
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap') layer(utilities);
 
 @theme {
   --font-racing: 'racing sans one';
@@ -10,6 +9,7 @@ layer(utilities);
     0% {
       left: -1000;
     }
+
     100% {
       left: 0;
     }
@@ -24,7 +24,7 @@ layer(utilities);
   If we ever want to remove these styles, we need to add an explicit border
   color utility to any element that depends on these defaults.
 */
-@layer base {
+/* @layer base {
   *,
   ::after,
   ::before,
@@ -32,26 +32,22 @@ layer(utilities);
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
   }
-}
+} */
 
-@utility clip-ellipse {
-  clip-path: ellipse(300% 100% at top);
-}
 
-@utility clip-circle {
-  clip-path: circle(6rem);
-}
 
 @layer base {
   @font-face {
     font-family: 'racing sans one';
     src: url('./assets/fonts/racing-sans-one/RacingSansOne-Regular.ttf');
   }
+
   @font-face {
     font-family: 'Roboto';
     src: url('./assets/fonts/roboto/Roboto-Regular.ttf');
   }
- 
+
+
 }
 
 body,
@@ -60,12 +56,12 @@ html {
   background-color: #0f0f0f;
 }
 
-.gradient{
-  mask-image: linear-gradient(black 80%,transparent)
-  
+.gradient {
+  mask-image: linear-gradient(black 80%, transparent)
 }
 
-.gradient-top{
-  mask-image: linear-gradient(transparent 0%,black 50%,transparent 100%)
-  
+.gradient-top {
+  mask-image: linear-gradient(transparent 0%, black 50%, transparent 100%)
 }
+
+

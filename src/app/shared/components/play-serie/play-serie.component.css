@@ -1,0 +1,31 @@
+swiper-container::part(container) {
+    overflow-y: visible;
+    overflow-x: clip;
+}
+
+swiper-container::part(button-prev),
+swiper-container::part(button-next) {
+     z-index: 10;
+    position: absolute;
+    top: 50%;
+    width: .73rem;
+    height: .73rem;
+    color: white;
+    stroke: white;
+    stroke-width: .11rem;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 9999px;
+    backdrop-filter: blur(4px);
+    
+    transition: all 0.3s ease-in;
+    cursor: pointer;
+    padding: 1.1rem;
+    border:solid 1px;
+    border-color: color-mix(in oklab, var(--color-red-900) /* oklch(39.6% 0.141 25.723) = #82181a */ 50%, transparent);
+
+}
+
+swiper-container::part(button-prev):hover,
+swiper-container::part(button-next):hover {
+    transform: scale(1.10);
+}

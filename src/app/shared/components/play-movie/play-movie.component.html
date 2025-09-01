@@ -1,56 +1,118 @@
-<main class="w-full">
-    <section class="w-full h-auto flex justify-center">
-        <div class="w-1/5 flex flex-col  px-6 pt-20 pb-4 mb-32">
-            <figure class="z-10 relative w-full h-96 rounded-xl shadow-xs shadow-white">
-                <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie()?.poster_path}}" fill priority #img
-                    class="object-cover object-center rounded-xl ">
-            </figure>
-            <header class="text-white text-2xl font-racing pt-1">
-                <h1>{{movie()?.title}}</h1>
-                <app-rating class="flex pt-4 left-[-150%] font-roboto" [rating]="movie()?.vote_average"></app-rating>
-                <div class="flex justify-between gap-6 items-end">
-                    <div class="h-8 mt-4 px-2 max-w-40 lg:w-40 flex bg-neutral-900 justify-center 
-                items-center rounded-lg focus-within:bg-neutral-800 shadow-md shadow-[#e50914]">
-                        <input placeholder="Calificacion" type="text" class="text-neutral-300 bg-transparent grow text-sm h-8 outline-hidden w-full
-                     placeholder-neutral-300">
-                    </div>
-                    <button class="border border-white rounded-xl px-4 text-sm hover:scale-110 h-6 mb-1
-            hover:border-[#e50914] hover:text-[#e50914] cursor-pointer"> Calificar&nbsp;
-                    </button>
-                </div>
-            </header>
-            <article class="text-white font-roboto pt-14 flex flex-col">
-                <h1 class="text-xl font-racing py-4"><i class="fa-solid fa-message text-[#e50914]"></i> &nbsp; Deja un
-                    comentario</h1>
-                <textarea class="bg-black w-full h-48 outline-hidden placeholder:text-neutral-400 p-2" rows="5"
-                    cols="33" placeholder="Tu comentario..."></textarea>
-                <button class="border border-white rounded-sm px-4 w-44 my-4 font-racing text-sm  self-center
-                hover:scale-110 h-6 mb-1 hover:border-[#e50914] hover:text-[#e50914] cursor-pointer">
-                    publicar comentario&nbsp;
-                </button>
-            </article>
-        </div>
-        <div class="w-4/5 z-10 relative pl-6 ">
-            <div class="w-full h-screen pr-6 pt-20 pb-4">
-                <iframe [src]="url_movie() | urlSafe" class="w-full h-full shadow-xs shadow-white outline-hidden"
-                    allowfullscreen></iframe>
+<main class="font-sans text-white bg-gradient-to-br from-black via-[#1a0000] to-[#330000] 
+min-h-screen pt-16 overflow-x-hidden">
+    <div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-0">
+        <div class="absolute top-[20%] left-[10%] w-[100px] h-[100px] rounded-full 
+        bg-[radial-gradient(circle,rgba(255,0,0,0.1),transparent)] 
+        animate-[float_6s_ease-in-out_infinite]" style="animation-delay:0s"></div>
+
+        <div class="absolute top-[60%] right-[15%] w-[150px] h-[150px] rounded-full 
+        bg-[radial-gradient(circle,rgba(255,0,0,0.1),transparent)] 
+        animate-[float_6s_ease-in-out_infinite]" style="animation-delay:2s"></div>
+
+        <div class="absolute bottom-[20%] left-[20%] w-[80px] h-[80px] rounded-full 
+        bg-[radial-gradient(circle,rgba(255,0,0,0.1),transparent)] 
+        animate-[float_6s_ease-in-out_infinite]" style="animation-delay:4s"></div>
+    </div>
+
+    <div class="mx-auto p-5">
+        <header class="text-center py-10 relative">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[2px] bg-gradient-to-r 
+                from-transparent via-red-600 to-transparent">
             </div>
 
-            @defer(when similarMovies()){
-            <app-carousel [listMovies]="similarMovies" title="similares" [importance]="2" @fade>
-            </app-carousel>
-            }
-            @placeholder{
-                <app-carousel-skeleton @fade></app-carousel-skeleton>
-            }
+            <h1 class="text-[3.5rem] md:text-[2.5rem] font-light tracking-[3px] 
+                bg-gradient-to-r from-red-800 via-red-600 to-red-800 text-transparent 
+                bg-clip-text drop-shadow-[0_0_30px_rgba(255,0,0,0.3)]">
+                REAL CINEMA
+            </h1>
+            <p class="text-[1.2rem] text-gray-300 font-light tracking-wide">
+                Una experiencia cinematográfica única</p>
+        </header>
 
-            @defer(when recomendedMovies()){
-            <app-carousel [listMovies]="recomendedMovies" title="recomendadas" [importance]="1" @fade>
-            </app-carousel>
-            }
-            @placeholder{
-                <app-carousel-skeleton @fade></app-carousel-skeleton>
-            }
-        </div>
-    </section>
+        <section class="grid grid-cols-3 gap-8 h-full py-14">
+            <aside>
+                <section
+                    class="h-screen grid grid-cols-1 gap-8 p-8 bg-white/5 rounded-2xl backdrop-blur border border-red-500/10">
+                    <div
+                        class="bg-gradient-to-br from-neutral-900 to-[#2d0000] p-8 rounded-xl border border-red-500/20">
+                        <h3 class="text-red-600 text-xl font-semibold mb-4">{{movie()?.title}}</h3>
+
+                        <div class="relative">
+                            <figure class="z-10 relative w-44 h-64 rounded-xl shadow-xs shadow-white">
+                                <img ngSrc="{{'http://image.tmdb.org/t/p/original'+movie()?.poster_path}}" fill priority
+                                    #img class="object-cover object-center rounded-xl ">
+                            </figure>
+                        </div>
+
+                        <p class="text-gray-300 leading-relaxed text-base mt-4 line-clamp-[7]">
+                            {{movie()?.overview}}
+                        </p>
+                    </div>
+                    <!-- <div
+                        class="bg-gradient-to-br from-neutral-900 to-[#2d0000] p-8 rounded-xl border border-red-500/20">
+
+                        <h3 class="text-red-600 text-xl font-semibold mb-4">{{movie()?.title}}</h3>
+                        <p class="text-gray-300 leading-relaxed text-base">
+                            {{movie()?.overview}}
+                        </p>
+                    </div> -->
+
+                </section>
+            </aside>
+            <section class="col-span-2 relative ">
+                <div class="h-screen relative bg-gradient-to-br from-neutral-900 to-[#2a0000] rounded-2xl 
+                p-8 shadow-[0_25px_80px_rgba(0,0,0,0.7),_0_0_0_1px_rgba(255,0,0,0.1),_inset_0_1px_0_rgba(255,255,255,0.1)] 
+               ">
+                    <h3 class="text-red-600 text-xl font-semibold mb-4">
+                        {{movie()?.title}}
+                    </h3>
+
+                    <div class="relative h-[92%] rounded-[15px] overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.8)] 
+                before:absolute before:inset-0 before:bg-[linear-gradient(45deg,rgba(255,0,0,0.1)_0%,transparent_25%,transparent_75%,rgba(255,0,0,0.1)_100%)] 
+                before:pointer-events-none before:z-[1] w-full ">
+
+
+
+                        <iframe [src]="url_movie() | urlSafe"
+                            class="w-full h-full shadow-xs shadow-white outline-hidden" allowfullscreen></iframe>
+                    </div>
+
+                    <!--  <div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-4 z-10">
+                    <button
+                        class="bg-black/70 border-2 border-red-500/30 text-red-500 px-5 py-3 rounded-full cursor-pointer backdrop-blur font-medium transition-all hover:bg-red-500/20 hover:border-red-500 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(255,0,0,0.3)]">▶
+                        Play/Pause</button>
+                    <button
+                        class="bg-black/70 border-2 border-red-500/30 text-red-500 px-5 py-3 rounded-full cursor-pointer backdrop-blur font-medium transition-all hover:bg-red-500/20 hover:border-red-500 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(255,0,0,0.3)]">⛶
+                        Pantalla Completa</button>
+                    <button
+                        class="bg-black/70 border-2 border-red-500/30 text-red-500 px-5 py-3 rounded-full cursor-pointer backdrop-blur font-medium transition-all hover:bg-red-500/20 hover:border-red-500 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(255,0,0,0.3)]">🔊
+                        Silenciar</button>
+                </div> -->
+                </div>
+            </section>
+
+
+        </section>
+
+
+    </div>
+    @defer(when similarMovies()){
+    <app-carousel [listMovies]="similarMovies" title="similares" [importance]="2" id="similar"
+        (requestMoreData)="API.getMoreData(this.API.getSimilarMovies.bind(this.API),similarMovies,id_movie)" @fade>
+    </app-carousel>
+    }
+    @placeholder{
+    <app-carousel-skeleton @fade></app-carousel-skeleton>
+    }
+
+    @defer(when recomendedMovies()){
+    <app-carousel [listMovies]="recomendedMovies" title="recomendadas" [importance]="1" id="recomended"
+        (requestMoreData)="API.getMoreData(this.API.getRecomendedMovies.bind(this.API),recomendedMovies,id_movie)"
+        @fade>
+    </app-carousel>
+    }
+    @placeholder{
+    <app-carousel-skeleton @fade></app-carousel-skeleton>
+    }
+
 </main>

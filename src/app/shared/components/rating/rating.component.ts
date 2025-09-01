@@ -1,9 +1,9 @@
-import { NgClass } from '@angular/common';
+import { DecimalPipe, NgClass } from '@angular/common';
 import { Component, input, Input } from '@angular/core';
 
 @Component({
   selector: 'app-rating',
-  imports: [NgClass],
+  imports: [NgClass,DecimalPipe],
   templateUrl: './rating.component.html',
   styleUrl: './rating.component.css'
 })

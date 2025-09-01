@@ -211,8 +211,8 @@ export interface season {
     episodes:episode[]
 }
 
-interface episode {
-    episode_count: number
+export interface episode {
+    episode_number: number
     production_code: string
     runtime: number
     show_id: number
@@ -223,6 +223,7 @@ interface episode {
     overview: string
     season_number: number
     vote_average: number
+    air_date:string
     crew: Crew
 
 }

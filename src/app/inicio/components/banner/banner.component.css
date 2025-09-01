@@ -3,14 +3,22 @@ swiper-container:part(pagination) {
   position: absolute;
   margin: 0;
   padding: 0%;
+  top: 0;
+   min-width: 100% !important;
+  width: auto !important;
+  display: flex;
+  justify-content: center;
 }
+
 swiper-container::part(bullet) {
-  background-color: white;
+  background-color: gray;
   opacity: .8;
 }
+
 swiper-container::part(bullet-active) {
-    background-color: #e50914;
-    opacity: 1;
-  }
- 
-  
+  width: 32px;
+  border-radius: 8px;
+  transition: all 300ms ease;
+  background: linear-gradient(to right, #ef4444, #dd0303);
+  opacity: 1;
+}

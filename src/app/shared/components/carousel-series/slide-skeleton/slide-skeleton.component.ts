@@ -7,5 +7,4 @@ import { Component, input } from '@angular/core';
   styleUrl: './slide-skeleton.component.css'
 })
 export class SlideSkeletonComponent {
-  hasMargin = input.required<boolean>()
 }

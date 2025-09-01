@@ -14,11 +14,14 @@ import { ComunicatorService } from '../../../shared/services/comunicator/comunic
 import { LoadingComponent } from '../loading/loading.component';
 import { fade } from '../../../shared/animations/animations';
 import { getKeyTrailer } from '../../../shared/utils/carousel';
+import { MinutesToTimePipe } from '../../../shared/pipes/minutes-to-time.pipe';
+import { BannerSkeletonComponent } from './banner-skeleton/banner-skeleton.component';
 register()
 
 @Component({
   selector: 'app-banner',
-  imports: [DatePipe, NgOptimizedImage, RouterLink, NgClass, RatingComponent, LoadingComponent],
+  imports: [DatePipe, NgOptimizedImage, RouterLink, NgClass, RatingComponent, 
+    LoadingComponent, MinutesToTimePipe,BannerSkeletonComponent],
   templateUrl: './banner.component.html',
   styleUrl: './banner.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -39,6 +42,9 @@ export default class BannerComponent {
   isEnd = signal(false)
   isLoading: WritableSignal<boolean> = signal(false)
   requestMoreData = output<void>()
+  isSwiperHover=false
+  private paginationObserver?: MutationObserver;
+  private shadowChildObserver?: MutationObserver;
 
   @HostListener("window:scroll", ['$event'])
   enableBackgroundNav(event: any) {
@@ -72,13 +78,21 @@ export default class BannerComponent {
   }
 
   ngAfterViewInit() {
+    this.swiperContainer.nativeElement.injectStyles = [
+      `
+        :host ::part(pagination) {
+          width: 120px !important;
+        }
+      `
+    ];
     this.initSwiper()
     this.addEventSlideChange()
+    this.changeWidthPagination()
   }
 
   initSwiper() {
     const swiperOptions: SwiperOptions = {
-      speed: 800,
+      speed: 500,
       slidesPerView: 1,
       slidesPerGroup: 1,
       allowTouchMove: false,
@@ -98,11 +112,14 @@ export default class BannerComponent {
     if (this.swiperContainer) {
       Object.assign(this.swiperContainer.nativeElement, swiperOptions)
       this.swiperContainer.nativeElement?.initialize()
+
     }
+
 
   }
   addEventSlideChange() {
     this.swiperContainer.nativeElement.addEventListener('swiperslidechange', (event: any) => {
+
       this.isBeginning.set(event.detail[0].isBeginning)
       this.isEnd.set(event.detail[0].isEnd)
       this.indexCurrentElement = event.detail[0].activeIndex
@@ -117,13 +134,49 @@ export default class BannerComponent {
     console.log('indeexx', this.indexCurrentElement)
     let page = this.listMovies()()?.page ?? 0;
     let total_pages = this.listMovies()()?.total_pages ?? 0;
-
-    if (page < total_pages) {
-      this.isLoading.set(true)
-    }
+   
     if (this.isEnd() && (page < total_pages)) {
+      this.isLoading.set(true)
       this.requestMoreData.emit()
     }
+  }
+
+  changeWidthPagination() {
+    // 3) fallback: si Swiper sigue reescribiendo el style inline, observamos y lo forzamos
+    const swiper = this.swiperContainer.nativeElement
+    const shadow = swiper.shadowRoot;
+    if (!shadow) return;
+
+    // si el pagination ya existe, observa directamente; si no, observa creación de nodos
+    const ensureObserve = (paginationEl: HTMLElement) => {
+      // aplicar al inicio
+      paginationEl.style.setProperty('width', '110px', 'important');
+
+      // observa cambios al atributo style y re-aplica
+      this.paginationObserver = new MutationObserver((mutations) => {
+        // re-aplica cada vez que cambie el style
+        paginationEl.style.setProperty('width', '110px', 'important');
+      });
+
+      this.paginationObserver.observe(paginationEl, { attributes: true, attributeFilter: ['style'] });
+    };
+
+    const pagination = shadow.querySelector('[part="pagination"]') as HTMLElement | null;
+    if (pagination) {
+      ensureObserve(pagination);
+    } else {
+      // puede crearse después: observar childList dentro del shadow root
+      this.shadowChildObserver = new MutationObserver(() => {
+        const pag = shadow.querySelector('[part="pagination"]') as HTMLElement | null;
+        if (pag) {
+          ensureObserve(pag);
+          this.shadowChildObserver?.disconnect();
+          this.shadowChildObserver = undefined;
+        }
+      });
+      this.shadowChildObserver.observe(shadow, { childList: true, subtree: true });
+    }
+
   }
 
   animateElements() {
@@ -134,24 +187,20 @@ export default class BannerComponent {
     const release = this.document.getElementById('release')
     const buttons = this.document.getElementById('buttons')
 
-    let playerTitle = this.animationsService.moveX('400ms', '700ms', '-150%', '0').create(title)
+    let playerTitle = this.animationsService.moveX('400ms', '400ms', '-150%', '0').create(title)
     playerTitle.play()
 
-    let playerRating = this.animationsService.moveX('400ms', '700ms', '-150%', '0').create(rating)
+    let playerRating = this.animationsService.moveX('400ms', '400ms', '-150%', '0').create(release)
     playerRating.play()
 
-    let playerOverview = this.animationsService.moveY('400ms', '500ms', '100%', '0').create(overview)
-    playerOverview.play()
-
-    let playerGenres = this.animationsService.moveY('400ms', '1s', '50%', '0').create(genres)
+    let playerGenres = this.animationsService.moveX('400ms', '400ms', '-150%', '0').create(genres)
     playerGenres.play()
 
-    let playerRelease = this.animationsService.moveY('400ms', '1s', '50%', '0').create(release)
-    playerRelease.play()
+    let playerOverview = this.animationsService.moveY('400ms', '700ms', '100%', '0').create(overview)
+    playerOverview.play()
 
-    let playerButtons = this.animationsService.moveY('200ms', '1.3s', '3%', '0').create(buttons)
+    let playerButtons = this.animationsService.moveY('200ms', '1s', '3%', '0').create(buttons)
     playerButtons.play()
-
   }
 
   playTrailer() {
@@ -162,9 +211,12 @@ export default class BannerComponent {
     });
   }
 
-  ngOnDestroy() {
-    console.log('destruido')
+
+  ngOnDestroy(): void {
+    this.paginationObserver?.disconnect();
+    this.shadowChildObserver?.disconnect();
   }
+
 
 }
 

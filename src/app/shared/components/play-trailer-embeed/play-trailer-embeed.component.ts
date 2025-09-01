@@ -21,10 +21,11 @@ export class PlayTrailerEmbeedComponent {
   playerVars: YT.PlayerVars = {
     controls: 0,
     autoplay: 1,
-    loop: 1,
-    showinfo: 1,
     iv_load_policy: 3,
     mute: 1,
+    showinfo: 0,  
+    modestbranding: 1,
+    cc_load_policy: 0,
   }
   constructor(private router: Router) { }
 

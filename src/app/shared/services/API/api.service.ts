@@ -36,7 +36,7 @@ export class ApiService {
       map((data: any) => data.results),
       mergeMap((data: any) => data),
       concatMap((serie: any) => {
-        return this.http.get(this.API + 'tv/' + serie.id + '?append_to_response=videos&language=en-US')
+        return this.http.get(this.API + 'tv/' + serie.id + '?append_to_response=videos&language=es-VE')
       }),
       toArray(),
     )
@@ -46,6 +46,28 @@ export class ApiService {
         map((series: any) => {
           data.results = series
           return { page: data.page, total_pages: data.total_pages, total_results: data.total_results, results: series }
+        }),
+      )), mergeAll())
+
+    return fusion
+  }
+
+  joinDetailsSeason(observable: Observable<object>, serie_id: number) {
+    let details = observable.pipe(
+      map((data: any) => data.seasons),
+      mergeMap((data: any) => data),
+      concatMap((season: any) => {
+        return this.http.get(this.API + 'tv/' + serie_id + '/season/' + season.season_number + '?language=es-VE')
+      }),
+      toArray(),
+    )
+
+    let fusion = observable.pipe(
+      map((data: any) => details.pipe(
+        map((seasons: any) => {
+          data.seasons = seasons
+          console.log(seasons)
+          return { ...data, seasons: seasons }
         }),
       )), mergeAll())
 
@@ -75,18 +97,18 @@ export class ApiService {
     return this.http.get(this.API + 'movie/' + movie_id + '/credits?language=es-VE') as Observable<Credits>
   }
 
-  getSimilarMovies(movie_id: number) {
-    let similarMovies = this.http.get(this.API + 'movie/' + movie_id + '/similar?language=es-VE')
+  getSimilarMovies(page: number,id_movie: number) {
+    let similarMovies = this.http.get(this.API + `movie/ ${id_movie}/similar?language=es-VE&page=${page}`)
     return this.joinDetailsMovie(similarMovies)
   }
 
-  getRecomendedMovies(movie_id: number) {
-    let recomendations = this.http.get(this.API + 'movie/' + movie_id + '/recommendations?language=es-VE')
+  getRecomendedMovies(page: number,id_movie: number) {
+    let recomendations = this.http.get(this.API + `movie/${id_movie}/recommendations?language=es-VE&page=${page}`)
     return this.joinDetailsMovie(recomendations)
   }
 
-  getAiringTodaySeries() {
-    let airingToday = this.http.get(this.API + 'tv/airing_today?language=es-VE&page=1')
+  getAiringTodaySeries(page: number) {
+    let airingToday = this.http.get(this.API + `tv/airing_today?language=es-VE&page=${page}`)
     return this.joinDetailsSeries(airingToday)
   }
 
@@ -94,11 +116,30 @@ export class ApiService {
     let onTheAirSeries = this.http.get(this.API + `tv/on_the_air?language=es-VE&page=${page}`)
     return this.joinDetailsSeries(onTheAirSeries)
   }
+  getPopularSeries(page: number) {
+    let popularSeries = this.http.get(this.API + `tv/popular?language=es-VE&page=${page}`)
+    return this.joinDetailsSeries(popularSeries)
+  }
   getDetailsSerie(serie_id: number): Observable<Serie> {
-    return this.http.get(this.API + 'tv/' + serie_id + '?append_to_response=videos&language=es-VE') as Observable<Serie>
+    let detailsSeason = this.http.get(this.API + 'tv/' + serie_id + '?append_to_response=videos&language=es-VE')
+    return this.joinDetailsSeason(detailsSeason, serie_id)
   }
 
-  getMoreData(MethodApi: Function, currentData: WritableSignal<listMovies | listSeries | undefined>) {
+  getCreditsSerie(serie_id: number): Observable<Credits> {
+    return this.http.get(this.API + 'tv/' + serie_id + '/credits?language=es-VE') as Observable<Credits>
+  }
+
+  getSimilarSeries(page: number,serie_id: number) {
+    let similarSeries = this.http.get(this.API + 'tv/' + serie_id + `/similar?language=es-VE&page=${page}`)
+    return this.joinDetailsSeries(similarSeries)
+  }
+
+  getRecomendedSeries(page: number,serie_id: number) {
+    let recomendations = this.http.get(this.API + 'tv/' + serie_id + `/recommendations?language=es-VE&page=${page}`)
+    return this.joinDetailsSeries(recomendations)
+  }
+
+ /*  getMoreData(MethodApi: Function, currentData: WritableSignal<listMovies | listSeries | undefined>) {
     console.log('solicitando mas datos')
     let currentPage = currentData()?.page
     if (currentPage) currentPage += 1
@@ -111,6 +152,30 @@ export class ApiService {
         results: [...data?.results, ...newData.results]
       }))
     })
+  } */
+
+  getMoreData<T extends { page: number; results: any[] }>(
+    MethodApi: (...args: any[]) => Observable<T>,
+    currentData: WritableSignal<T | undefined>,
+    ...extraArgs: any[]
+  ) {
+    console.log('solicitando mas datos');
+
+    let currentPage = currentData()?.page ?? 0;
+    currentPage += 1; 
+
+    console.log('numero de pagina', currentPage);
+
+    // 👇 pasamos currentPage + extraArgs
+    MethodApi(currentPage, ...extraArgs).subscribe((newData: T) => {
+      console.log(newData)
+      currentData.update((data) => ({
+        ...data,
+        page: newData.page,
+        results: [...(data?.results ?? []), ...newData.results]
+      }as T));
+    });
   }
+
 
 }

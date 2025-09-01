@@ -1,10 +1,10 @@
 @if(rating()){
-    <div class="flex">
+    <div class="flex items-center">
         @for (char of "12345";track char;let index=$index){
             <i class="fa solid fa-star bg-linear-to-r from-[#e50914]
             to-zinc-300 bg-clip-text text-transparent text-sm px-[.15rem]" 
             [ngClass]="calculatePercent(index)"></i>
         }
-        <p class="px-2 text-center text-sm font-racing">{{rating()}} / 10</p>
+        <p class="px-2 text-center text-lg font-racing">{{rating() | number:'1.1-1' :'en-US'}} </p>
     </div>
 }

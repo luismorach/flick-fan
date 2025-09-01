@@ -1,11 +1,11 @@
-import { Component, HostListener, inject, input, Signal, signal, WritableSignal } from '@angular/core';
-import { ActivatedRoute, Params, RouterLink } from '@angular/router';
+import { Component, inject, signal, WritableSignal } from '@angular/core';
+import { ActivatedRoute, Params, } from '@angular/router';
 import { UrlSafePipe } from '../../pipes/url-safe.pipe';
-import { concatAll, map, Observable, Subscription, toArray } from 'rxjs';
+import { concatAll, map, Subscription} from 'rxjs';
 import { ApiService } from '../../services/API/api.service';
-import { listMovies, Movie } from '../../interfaces/interfaces';
-import { DatePipe, DecimalPipe, DOCUMENT, NgOptimizedImage, NgStyle } from '@angular/common';
-import { RatingComponent } from '../rating/rating.component';
+import { listMovies} from '../../interfaces/interfaces';
+import {  DOCUMENT, NgOptimizedImage, } from '@angular/common';
+
 import { ComunicatorService } from '../../services/comunicator/comunicator.service';
 import { AnimationsService } from '../../services/animations/animations.service';
 import { carouselComponent } from '../carousel/carousel.component';
@@ -14,11 +14,10 @@ import { fade } from '../../animations/animations';
 
 @Component({
   selector: 'app-play-movie',
-  imports: [UrlSafePipe, NgOptimizedImage, RatingComponent,
-     RatingComponent, carouselComponent,CarouselSkeletonComponent],
+  imports: [UrlSafePipe, NgOptimizedImage,carouselComponent, CarouselSkeletonComponent],
   templateUrl: './play-movie.component.html',
   styleUrl: './play-movie.component.css',
-  animations:[fade]
+  animations: [fade]
 })
 
 export default class PlayMovieComponent {
@@ -28,8 +27,9 @@ export default class PlayMovieComponent {
   recomendedMovies: WritableSignal<listMovies | undefined> = signal(undefined)
   subscription: Subscription[] = []
   doc = inject(DOCUMENT)
+  id_movie=0
 
-  constructor(private rutaActiva: ActivatedRoute, private api: ApiService,
+  constructor(private rutaActiva: ActivatedRoute, public API: ApiService,
     private comunicatorService: ComunicatorService, private animationsService: AnimationsService) {
 
     this.comunicatorService.setBackgroundNav(true)
@@ -40,17 +40,20 @@ export default class PlayMovieComponent {
 
   getUrlMovie() {
     this.subscription.push(this.rutaActiva.params.pipe(
-      map((params: Params) => this.api.getDetailsMovie(params['id_movie'])), concatAll())
+      map((params: Params) => {
+        this.id_movie=params['id_movie']
+        return this.API.getDetailsMovie(params['id_movie'])
+      }), concatAll())
       .subscribe((movie: any) => {
         this.doc.scrollingElement?.scrollTo(0, 0)
         this.url_movie.set('https://vidsrc.to/embed/movie/' + movie.imdb_id)
         this.movie.set(movie)
       }))
   }
-  
+
   getSimilarMovies() {
     this.subscription.push(this.rutaActiva.params.pipe(
-      map((params: Params) => this.api.getSimilarMovies(params['id_movie'])), concatAll())
+      map((params: Params) => this.API.getSimilarMovies(1,params['id_movie'])), concatAll())
       .subscribe((movies: any) => {
         if (movies.results.length > 0) {
           this.similarMovies.set(movies)
@@ -60,7 +63,7 @@ export default class PlayMovieComponent {
 
   getRecomendedMovies() {
     this.subscription.push(this.rutaActiva.params.pipe(
-      map((params: Params) => this.api.getRecomendedMovies(params['id_movie'])), concatAll())
+      map((params: Params) => this.API.getRecomendedMovies(1,params['id_movie'])), concatAll())
       .subscribe((movies: any) => {
         if (movies.results.length > 0) {
           this.recomendedMovies.set(movies)
@@ -68,10 +71,62 @@ export default class PlayMovieComponent {
       }))
   }
 
-  ngOndestroy() {
-    console.log('destroing')
-    this.subscription.forEach(subscription => {
-      subscription.unsubscribe()
-    })
+
+  
+
+  /* togglePlay() {
+    if (this.video?.paused) {
+      this.video.play();
+      document.querySelector('.control-btn').textContent = '⏸ Pausar';
+    } else {
+      video.pause();
+      document.querySelector('.control-btn').textContent = '▶ Reproducir';
+    }
   }
+
+  toggleFullscreen() {
+    if (video.requestFullscreen) {
+      video.requestFullscreen();
+    } else if (video.webkitRequestFullscreen) {
+      video.webkitRequestFullscreen();
+    } else if (video.msRequestFullscreen) {
+      video.msRequestFullscreen();
+    }
+  }
+
+  toggleMute() {
+    video.muted = !video.muted;
+    const btn = document.querySelectorAll('.control-btn')[2];
+    btn.textContent = video.muted ? '🔇 Activar Audio' : '🔊 Silenciar';
+  } */
+
+// Efectos de interacción
+/* document.addEventListener('mousemove', (e) => {
+  const videoContainer = document.querySelector('.video-container');
+  const rect = videoContainer.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / rect.width;
+  const y = (e.clientY - rect.top) / rect.height;
+
+  if (x >= 0 && x <= 1 && y >= 0 && y <= 1) {
+    const rotateX = (y - 0.5) * 10;
+    const rotateY = (x - 0.5) * 10;
+    videoContainer.style.transform = `rotateX(${2 - rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+  }
+}); */
+
+// Animación de carga
+/* window.addEventListener('load', () => {
+  document.body.style.opacity = '0';
+  document.body.style.transition = 'opacity 0.8s ease';
+  setTimeout(() => {
+    document.body.style.opacity = '1';
+  }, 100);
+}); */
+
+ngOndestroy() {
+  console.log('destroing')
+  this.subscription.forEach(subscription => {
+    subscription.unsubscribe()
+  })
+}
 }

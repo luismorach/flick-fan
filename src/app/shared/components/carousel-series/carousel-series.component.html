@@ -1,31 +1,32 @@
 <main class=" w-full  pb-8 relative" #main>
-    <header class="p-6 text-white text-2xl">
-        <p class=" font-racing">Series {{title()}}</p>
+    <header class="p-6 mb-2 pl-12 text-white text-2xl">
+        <h2 class="text-3xl font-bold text-white">
+            <span class="inline-block relative bg-gradient-to-r from-red-400 to-red-700 bg-clip-text text-transparent
+            after:h-1 after:w-3/5 after:bg-gradient-to-r after:from-red-400 after:to-red-700 
+            after:rounded-full after:absolute  after:bottom-0 after:left-0 pb-2">
+                {{title()}}
+            </span>
+        </h2>
     </header>
 
-     <section class="relative">
-        <button class=" group w-8 h-52 z-50 absolute left-0 top-1/4 text-white bg-[rgba(0,5,13,.5)] 
-    flex items-center justify-center rounded-tr-lg rounded-br-lg swiper-previous-{{title()}} cursor-pointer"
-            [class.hidden]="isBeginning()">
-            <i class="fa-solid fa-chevron-left text-base transition-all ease-in delay-200 group-hover:text-xl "></i>
-        </button>
-
-       <swiper-container init="false" navigation="true" class="w-full" #swiper>
+    <section class="relative">
+     
+        <swiper-container init="false" class="w-full" (mouseenter)="isSwiperHover=true"
+            (mouseleave)="isSwiperHover=false" #swiper>
 
             @for(serie of listSeries()()?.results;track serie;let i = $index){
             <swiper-slide (mouseenter)="onMouseEnterToSlide(i,serie.id)" (mouseleave)="onMouseLeaveToSlide(i)"
-                class="relative  w-72 h-[29rem] cursor-pointer" 
-                (click)="trailerEmbeed.redirectDetailsSerie(serie.id)" @fade >
+                class="relative w-72 h-[29rem]" @fade>
 
 
-                <figure class="h-full absolute cursor-pointer w-72">
-                    <img ngSrc="{{'http://image.tmdb.org/t/p/original'+serie.poster_path}}" fill #img
+                <figure class="h-full absolute w-72">
+                    <img ngSrc="{{getTallImage(serie.poster_path)}}" fill #img
                         class="object-cover object-center text-white bg-black rounded-xl">
                 </figure>
 
-                <figure class="w-full h-full relative cursor-pointer opacity-0">
+                <figure class="w-full h-full relative opacity-0">
                     <div class="w-full h-full absolute">
-                        <img ngSrc="{{'http://image.tmdb.org/t/p/original'+serie.backdrop_path}}" fill #img
+                        <img ngSrc="{{getWideImage(serie.backdrop_path)}}" fill #img
                             class="object-cover object-center text-white bg-black aspect-auto rounded-xl"
                             alt="imagen no disponible">
                     </div>
@@ -34,21 +35,42 @@
                             to-transparent to-100% rounded-xl">
                         <h1 class="font-racing text-3xl">{{serie.name}}</h1>
 
-                        <div class="text-2xl py-4 pb-16">
-                            <button class="cursor-pointer hover:scale-110 rounded-lg bg-neutral-700
-                        text-white p-3 w-32 h-14 transition-transform duration-300 hover:bg-white 
-                        hover:text-black">mas info</button>
+                        <div class="text-2xl py-4 pb-16 flex gap-6">
+                            <a class="flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-800 text-white 
+                            px-4 rounded-lg font-semibold transition-all duration-300 h-14 cursor-pointer
+                            hover:from-red-700 hover:to-red-900 hover:shadow-lg hover:shadow-red-500/25"
+                                (click)="trailerEmbeed.redirectDetailsSerie(serie.id)">
+                                <svg class="w-5 h-5 " xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+                                    width="20" height="20" fill="none" stroke="currentColor" stroke-width="64">
+                                    <circle cx="256" cy="256" r="216" />
+                                    <line x1="256" y1="220" x2="256" y2="352" stroke-linecap="round" />
+                                    <circle cx="256" cy="144" r="36" fill="currentColor" stroke="none" />
+                                </svg>
+                                <span>Más información</span>
+                            </a>
 
-                            <i class="fa-solid fa-plus cursor-pointer hover:scale-110 rounded-full bg-neutral-700 
-                        text-white p-4 w-14 h-14 ml-4 transition-transform duration-300 hover:bg-white 
-                        hover:text-black"></i>
-
-
+                            <div class="p-3 rounded-full border-2 border-white/30 text-white 
+                                hover:border-[#e50914] hover:text-[#e50914] my-1 transition-all 
+                                transform hover:scale-110 cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </div>
                         </div>
-                        
-                    </figcaption> 
-
+                    </figcaption>
                 </figure>
+
+                <div class="absolute top-4 right-4 bg-black/80 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1 border border-red-900/30">
+                    <svg class="w-5 h-5 text-red-500 fill-red-500" viewBox="0 0 24 24">
+                        <path
+                            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                    <span class="font-semibold text-white text-sm">{{ serie.vote_average | number:'1.1-1'
+                        :'en-US'}}</span>
+                </div>
             </swiper-slide>
             }
 
@@ -60,18 +82,24 @@
             }
             }
         </swiper-container>
- 
-        <button class="group w-8 h-52 z-50 absolute right-0 top-1/4 text-white bg-[rgba(0,5,13,.5)] 
-    flex items-center justify-center rounded-tl-lg rounded-bl-lg cursor-pointer swiper-next-{{title()}}"
-            [class.hidden]="isEnd()" >
-            <i class="fa-solid fa-chevron-right text-base  group-hover:scale-125 "></i>
-        </button>
 
-         
-    </section> 
+         <div class="proxy-prev-{{id()}}  z-10 absolute left-2 top-1/2 w-12 h-12 flex justify-center items-center 
+        hover:cursor-pointer ease-in hover:scale-110 text-center text-sm  bg-black/80
+        backdrop-blur-sm text-white rounded-full transition-all duration-300 
+        cursor-pointer border border-red-900/50" [class.opacity-0]="isBeginning() || !isSwiperHover" 
+            (mouseenter)="isSwiperHover=true" (mouseleave)="isSwiperHover=false">
+            <i class="fa-solid fa-chevron-left "></i>
+        </div>
+        <div class=" proxy-next-{{id()}} z-10 absolute right-2 top-1/2 w-12 h-12
+        flex justify-center items-center hover:cursor-pointer ease-in 
+        hover:hover:scale-110 text-center text-sm  bg-black/80
+            backdrop-blur-sm text-white rounded-full transition-all duration-300 cursor-pointer border border-red-900/50"
+            [class.opacity-0]="isEnd()|| !isSwiperHover" (mouseenter)="isSwiperHover=true" (mouseleave)="isSwiperHover=false">
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
 
-   
+    </section>
 </main>
 
-<app-play-trailer-embeed #trailer class="opacity-0 w-72 h-[29rem]" [size]="[806,464]"
-    (isEnded)="closeTrailerPlayer()" [isMovie]="false"></app-play-trailer-embeed>
+<app-play-trailer-embeed #trailer class="opacity-0 w-72 h-[29rem]" [size]="[806,464]" (isEnded)="closeTrailerPlayer()"
+    [isMovie]="false"></app-play-trailer-embeed>

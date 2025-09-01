@@ -1,5 +1,5 @@
-<div class="absolute top-0 z-10 cursor-pointer overflow-hidden" [class.rounded-t-md]="isMovie()"
-  [class.rounded-xl]="!isMovie()" (click)="redirect()">
+<div class="absolute top-0 z-10 overflow-hidden" [class.rounded-t-2xl]="isMovie()"
+  [class.rounded-xl]="!isMovie()" >
 
   <youtube-player [videoId]="videoID()" [width]="size()[0]" [height]="size()[1]" [playerVars]="playerVars"
     [suggestedQuality]="'hd720'" (stateChange)="onStateChange($event)" (ready)="onReady($event)"
@@ -10,5 +10,6 @@
 </div>
 <i class=" fa solid cursor-pointer hover:scale-110 rounded-full bg-neutral-800/80 
                     text-white p-3 w-10 h-10 mr-1.5 transition-transform duration-300 hover:bg-white 
-                    hover:text-black absolute z-50 bottom-2 right-[3%]" (click)="changeMuted($event)"
-  [ngClass]="{'fa-volume-xmark':mutedState, 'fa-volume-high':!mutedState}"></i>
+                    hover:text-black absolute z-50 right-[3%]" (click)="changeMuted($event)"
+  [ngClass]="{'fa-volume-xmark':mutedState, 'fa-volume-high':!mutedState}" [class.bottom-[50%]]="isMovie()"
+  [class.bottom-2]="!isMovie()"></i>

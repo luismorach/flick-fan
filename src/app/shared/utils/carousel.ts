@@ -1,4 +1,4 @@
-import { ElementRef, inject, Renderer2, RendererFactory2 } from "@angular/core"
+import { ElementRef, Renderer2 } from "@angular/core"
 import Swiper from "swiper"
 import { SwiperContainer } from "swiper/element";
 import { FreeMode, Mousewheel } from "swiper/modules";
@@ -6,13 +6,11 @@ import { SwiperOptions } from "swiper/types";
 import { listMovies, listSeries } from "../interfaces/interfaces";
 
 var timeouts: number[] = []
-var animationsID: number[] = []
+export var animationsID: number[] = []
 
-
-export function initSwiper(swiperContainer: ElementRef<SwiperContainer>, numSlides: number, spaceBetween: number, title: string) {
+export function setOptionsToSwiperWhitMultiplesSlidesPerView(numSlides: number, spaceBetween: number) {
     const swiperOptions: SwiperOptions = {
         modules: [Mousewheel, FreeMode],
-        speed: 800,
         slidesPerView: 'auto',
         allowTouchMove: false,
         initialSlide: 0,
@@ -25,13 +23,10 @@ export function initSwiper(swiperContainer: ElementRef<SwiperContainer>, numSlid
         },
         watchSlidesProgress: true,
         resistanceRatio: 0,
-        navigation: {
-            enabled: true,
-            nextEl: `.swiper-next-${title}`,
-            prevEl: `.swiper-previous-${title}`,
-        }
     }
-
+    return swiperOptions
+}
+export function initSwiper(swiperContainer: ElementRef<SwiperContainer>, swiperOptions: SwiperOptions) {
     if (swiperContainer) {
         Object.assign(swiperContainer.nativeElement, swiperOptions)
         swiperContainer.nativeElement?.initialize()
@@ -39,6 +34,7 @@ export function initSwiper(swiperContainer: ElementRef<SwiperContainer>, numSlid
 }
 
 export function calculateNumSlides(containerWidth: number, slideWidth: number) {
+    console.log(containerWidth)
     return Math.floor(containerWidth / slideWidth)
 }
 
@@ -78,39 +74,39 @@ export function startTimeOut(callback: Function, delay: number) {
 }
 export function clearAllTimeouts() {
     timeouts.forEach((id) => clearTimeout(id))
-    timeouts=[]
+    timeouts = []
 }
 
 export function startAnimationFrame(callback: Function) {
-    const animationID = requestAnimationFrame(()=>callback())
+    const animationID = requestAnimationFrame(() => callback())
     animationsID.push(animationID)
     return animationID
 }
 export function clearAllAnimationsFrame() {
     console.log(animationsID)
     animationsID.forEach((id) => cancelAnimationFrame(id))
-    animationsID=[]
+    animationsID = []
 }
-export function waitForAnimationFrame():Promise<void>{
-    return new Promise(resolve=>requestAnimationFrame(()=>resolve()))
+export function waitForAnimationFrame(): Promise<void> {
+    return new Promise(resolve => requestAnimationFrame(() => resolve()))
 }
 
-export function waitForTransitionEnd(element:HTMLElement){
+export function waitForTransitionEnd(element: HTMLElement) {
     return new Promise<void>(resolve => {
-      const onEnd = () => {
-        console.log('ftransicion ftferminada',element.offsetWidth)
-        element.removeEventListener('transitionend', onEnd)
-        resolve();
-      }
-      element.addEventListener('transitionend', onEnd, { once: true })
+        const onEnd = () => {
+            console.log('ftransicion ftferminada', element.offsetWidth)
+            element.removeEventListener('transitionend', onEnd)
+            resolve();
+        }
+        element.addEventListener('transitionend', onEnd, { once: true })
     })
 }
 
-export function getKeyTrailer(index: number,data:listMovies | listSeries | undefined): string {
+export function getKeyTrailer(index: number, data: listMovies | listSeries | undefined): string {
     if (data?.results[index] === undefined) return ''
     const trailer = data?.results[index].videos?.results.find((element: any) => element.type === 'Trailer');
     const key = trailer?.key || '';
     return key;
-  }
-  
+}
+
 

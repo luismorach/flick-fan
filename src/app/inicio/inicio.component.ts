@@ -15,10 +15,12 @@ import { BannerSkeletonComponent } from './components/banner/banner-skeleton/ban
 import { LoadingComponent } from './components/loading/loading.component';
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
 import { DOCUMENT } from '@angular/common';
+import { SlideSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/slide-skeleton/slide-skeleton.component';
+import { SkeletonComponent } from './components/banner-series/skeleton/skeleton.component';
 
 @Component({
   selector: 'app-inicio',
-  imports: [BannerComponent, carouselComponent, PlayTrailerComponent, BannerSeriesComponent, 
+  imports: [BannerComponent, carouselComponent, PlayTrailerComponent, BannerSeriesComponent, SkeletonComponent,
     CarouselSeriesComponent, CarouselSkeletonComponent,BannerSkeletonComponent,LoadingComponent,CarouselSeriesSkeletonComponent],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.css',
@@ -32,8 +34,9 @@ export default class InicioComponent {
   popularMovies: WritableSignal<listMovies | undefined> = signal(undefined)
   upcomingMovies: WritableSignal<listMovies | undefined> = signal(undefined)
   nowPlaying : WritableSignal<listMovies | undefined> = signal(undefined)
-  airingToday = toSignal(this.API.getAiringTodaySeries() as Observable<listSeries>)
+  airingToday : WritableSignal<listSeries | undefined> = signal(undefined)
   onTheAir:WritableSignal<listSeries | undefined> = signal(undefined)
+  popularSeries:WritableSignal<listSeries | undefined> = signal(undefined)
   player: playerTrailer = { videoId: signal(''), isPlaying: false }
   doc = inject(DOCUMENT)
 
@@ -50,6 +53,12 @@ export default class InicioComponent {
     })
     effect(() => {
       this.API.getOnTheAirSeries(1).subscribe(data => this.onTheAir.set(data))
+    })
+    effect(() => {
+      this.API.getAiringTodaySeries(1).subscribe(data => this.airingToday.set(data))
+    })
+    effect(() => {
+      this.API.getPopularSeries(1).subscribe(data => this.popularSeries.set(data))
     })
   }
 
