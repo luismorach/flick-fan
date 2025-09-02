@@ -15,10 +15,11 @@
         (mouseenter)="isSwiperHover=true" (mouseleave)="isSwiperHover=false" #swiper>
 
             @for(movie of listMovies()()?.results;track movie.id;let i = $index;){
-          <swiper-slide (mouseenter)="onMouseEnterToSlide(i,movie.id)" (mouseleave)="onMouseLeaveToSlide(i)"
-                class="z-0 w-80  transition-transform duration-300 hover:scale-125 hover:z-20"
-                [ngClass]="{'origin-left':i % numSlides==0,'origin-right':i % numSlides==numSlides-1}" @fade>
-                <app-movie-carousel [movie]="movie" [isHovered]="hoverStates[i]" ></app-movie-carousel>
+          <swiper-slide 
+                class="w-80 " @fade>
+                <app-movie-carousel [movie]="movie" 
+                class="relative z-0 w-80 transition-transform duration-300 hover:scale-125 hover:z-50"
+                [ngClass]="{'origin-left':i % numSlides==0,'origin-right':i % numSlides==numSlides-1}"></app-movie-carousel>
             </swiper-slide>
             }
 
@@ -50,5 +51,3 @@
     </section>
 </main>
 
-<app-play-trailer-embeed #trailer class="opacity-0 w-80 h-48" [size]="[320,192]" (isEnded)="closeTrailerPlayer()"
-    [isMovie]="true"></app-play-trailer-embeed>

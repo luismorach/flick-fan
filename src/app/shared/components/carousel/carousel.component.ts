@@ -125,7 +125,7 @@ export class carouselComponent {
       }
     });
   }
-
+/* 
   onMouseEnterToSlide(index: number, id: number) {
     let videoId = getKeyTrailer(index, this.listMovies()());
     this.hoverStates[index] = true;
@@ -163,7 +163,7 @@ export class carouselComponent {
       videoId: signal(getKeyTrailer(index, this.listMovies()())),
       isPlaying: true
     });
-  }
+  } */
 
 
 }

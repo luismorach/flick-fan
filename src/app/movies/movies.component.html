@@ -1,1 +1,36 @@
-<p>movies works!</p>
+@defer(when nowPlaying()){
+<app-banner [listMovies]="upcomingMovies" (onPlayTrailer)="playTrailer($event)"
+    (requestMoreData)="API.getMoreData(this.API.getUpcoming.bind(this.API),upcomingMovies)" @fade></app-banner>
+}
+@placeholder{
+<app-banner-skeleton @fade></app-banner-skeleton>
+}
+
+@defer(when popularMovies()){
+<section class="flex gap-4 flex-wrap p-4 justify-center mb-16" infiniteScroll [infiniteScrollDistance]="2"
+    [infiniteScrollThrottle]="300" (scrolled)="onScroll()">
+    @for( movie of nowPlaying()?.results;track movie.id; let i=$index){
+    <app-movie-carousel [movie]="movie"
+        class="relative z-0 w-80 transition-transform duration-300 hover:scale-125 hover:z-20"
+        [ngClass]="{'origin-left':i % numMovies==0,'origin-right':i % numMovies==numMovies-1}"></app-movie-carousel>
+    }
+
+    @if(isLoading()){
+    @for(loading of numElements;track loading){
+        <app-slide-skeleton></app-slide-skeleton>
+    }
+    }
+</section>
+
+}
+@placeholder{
+<app-carousel-skeleton @fade></app-carousel-skeleton>
+}
+
+
+@defer(when player.isPlaying){
+<app-play-trailer [videoKey]="player.videoId()"></app-play-trailer>
+}
+@placeholder{
+<span></span>
+}

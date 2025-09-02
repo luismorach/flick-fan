@@ -25,6 +25,7 @@
     "@tailwindcss/postcss": "^4.1.3",
     "@tailwindcss/vite": "^4.1.3",
     "express": "^4.18.2",
+    "ngx-infinite-scroll": "^19.0.0",
     "rxjs": "~7.8.0",
     "swiper": "^11.1.4",
     "tslib": "^2.3.0",

@@ -1,4 +1,5 @@
-<main class="relative shadow-lg   bg-black group flex flex-col  rounded-2xl ">
+<main class="relative shadow-lg w-80  bg-black group flex flex-col  rounded-2xl "
+(mouseenter)="onMouseEnterToSlide(movie().id)" (mouseleave)="onMouseLeaveToSlide()" #main>
     <figure class="relative w-full h-48">
         <img ngSrc="{{getWideImage(movie().backdrop_path)}}" fill
             class="w-full  object-cover rounded-t-2xl transition-transform duration-500">
@@ -36,8 +37,8 @@
                 <span>{{movie()?.runtime | minutesToTime}}</span>
             </div>
         </div>
-        <div class="transition-all duration-500 overflow-hidden"
-            [ngClass]="{'max-h-48 ':isHovered(), 'max-h-0':!isHovered()}">
+        <div class="transition-all duration-500 overflow-hidden absolute bg-black w-80 -ml-4 rounded-b-2xl"
+            [ngClass]="{'max-h-48 p-4':isHovered, 'max-h-0':!isHovered}">
             <p class="text-gray-300 text-sm line-clamp-3">
                 {{movie().overview}}
             </p>
@@ -68,3 +69,6 @@
 
     </section>
 </main>
+
+<app-play-trailer-embeed #trailer class="opacity-0 w-80 h-48" [size]="[320,192]" (isEnded)="closeTrailerPlayer()"
+    [isMovie]="true"></app-play-trailer-embeed>
