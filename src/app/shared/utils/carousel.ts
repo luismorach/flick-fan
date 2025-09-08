@@ -3,7 +3,7 @@ import Swiper from "swiper"
 import { SwiperContainer } from "swiper/element";
 import { FreeMode, Mousewheel } from "swiper/modules";
 import { SwiperOptions } from "swiper/types";
-import { listMovies, listSeries, Movie } from "../interfaces/interfaces";
+import { listMovies, listSeries, Movie, Serie } from "../interfaces/interfaces";
 
 var timeouts: number[] = []
 export var animationsID: number[] = []
@@ -92,11 +92,11 @@ export function waitForAnimationFrame(): Promise<void> {
 }
 
 export function waitForTransitionEnd(element: HTMLElement) {
-    return new Promise<void>(resolve => {
+    return new Promise<HTMLElement>(resolve => {
         const onEnd = () => {
             console.log('ftransicion ftferminada', element.offsetWidth)
             element.removeEventListener('transitionend', onEnd)
-            resolve();
+            resolve(element);
         }
         element.addEventListener('transitionend', onEnd, { once: true })
     })
@@ -108,7 +108,7 @@ export function getKeyTrailer(index: number, data: listMovies | listSeries | und
     const key = trailer?.key || '';
     return key;
 }
-export function getKeyTrailerOf(data: Movie | undefined): string {
+export function getKeyTrailerOf(data: Movie | Serie | undefined): string {
     if (data=== undefined) return ''
     const trailer = data?.videos?.results.find((element: any) => element.type === 'Trailer');
     const key = trailer?.key || '';

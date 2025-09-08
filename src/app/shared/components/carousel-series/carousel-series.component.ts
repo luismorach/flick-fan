@@ -14,12 +14,13 @@ import { fade } from '../../animations/animations';
 import { SlideSkeletonComponent } from './slide-skeleton/slide-skeleton.component';
 import { PlayTrailerEmbeedComponent } from '../play-trailer-embeed/play-trailer-embeed.component';
 import { getTallImage, getWideImage } from '../../utils/images-by-default';
+import { CardSerieComponent } from './card-serie/card-serie.component';
 
 register();
 
 @Component({
   selector: 'app-carousel-series',
-  imports: [NgOptimizedImage, NgClass, SlideSkeletonComponent, PlayTrailerEmbeedComponent, DecimalPipe],
+  imports: [NgOptimizedImage, NgClass, SlideSkeletonComponent, PlayTrailerEmbeedComponent, DecimalPipe, CardSerieComponent],
   templateUrl: './carousel-series.component.html',
   styleUrl: './carousel-series.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -29,8 +30,8 @@ export class CarouselSeriesComponent {
 
   @ViewChild('swiper') swiperContainer!: ElementRef<SwiperContainer>
   @ViewChild('main') mainContainer!: ElementRef<HTMLElement>
-  @ViewChild(PlayTrailerEmbeedComponent) trailerEmbeed!: PlayTrailerEmbeedComponent
-  @ViewChild(PlayTrailerEmbeedComponent, { read: ElementRef }) trailerEmbeedElement !: ElementRef
+/*   @ViewChild(PlayTrailerEmbeedComponent) trailerEmbeed!: PlayTrailerEmbeedComponent
+  @ViewChild(PlayTrailerEmbeedComponent, { read: ElementRef }) trailerEmbeedElement !: ElementRef */
   listSeries = input.required<WritableSignal<listSeries | undefined>>()
   title = input.required<string>()
   id = input.required<string>()
@@ -43,10 +44,10 @@ export class CarouselSeriesComponent {
   spaceBetween = 40
   isLoading: WritableSignal<boolean> = signal(false)
   slidesLoading!: number[]
-  currentIndex = -1
+  /* currentIndex = -1 */
   isSwiperHover = false
-  getTallImage = getTallImage
-  getWideImage = getWideImage
+  /* getTallImage = getTallImage
+  getWideImage = getWideImage */
   isNeededResetPosition = false
 
   constructor(private renderer2: Renderer2) {
@@ -62,7 +63,7 @@ export class CarouselSeriesComponent {
 
 
   ngAfterViewInit() {
-    this.numSlides = calculateNumSlides(this.mainContainer.nativeElement.scrollWidth, this.slideWidth+this.spaceBetween)
+    this.numSlides = calculateNumSlides(this.mainContainer.nativeElement.scrollWidth, this.slideWidth + this.spaceBetween)
     this.slidesLoading = getRange(this.numSlides)
     const swiperOptions = setOptionsToSwiperWhitMultiplesSlidesPerView(this.numSlides, this.spaceBetween)
     initSwiper(this.swiperContainer, swiperOptions)
@@ -137,7 +138,7 @@ export class CarouselSeriesComponent {
     }
   }
 
-  async onMouseEnterToSlide(index: number, id: number) {
+  /* async onMouseEnterToSlide(index: number) {
     const slide = this.swiperContainer.nativeElement.swiper.slides[index]
     this.currentIndex = index
     startTimeOut(async () => {
@@ -169,7 +170,7 @@ export class CarouselSeriesComponent {
       this.renderer2.setStyle(hover, 'opacity', `${hoverOpacity}`);
     })
   }
-
+ */
   private async adjustSwiperPosition(slide: HTMLElement) {
     const viewportWidth = this.swiperContainer.nativeElement.offsetWidth;
     let newTranslate = this.originalTranslate;
@@ -197,7 +198,7 @@ export class CarouselSeriesComponent {
 
   }
 
-  private moveAndPlayTrailer(slide: HTMLElement, index: number, id: number) {
+ /*  private moveAndPlayTrailer(slide: HTMLElement, index: number, id: number) {
     let videoId = getKeyTrailer(index, this.listSeries()());
 
     if (videoId === '') return
@@ -243,7 +244,7 @@ export class CarouselSeriesComponent {
     this.renderer2.removeChild(this.swiperContainer.nativeElement.swiper.slides[this.currentIndex],
       this.trailerEmbeedElement.nativeElement)
     this.trailerEmbeed.destroy()
-  }
+  } */
   resetPosition() {
     if (this.isNeededResetPosition) {
       this.swiperContainer.nativeElement.swiper.translateTo(this.originalTranslate, 300);
@@ -251,10 +252,36 @@ export class CarouselSeriesComponent {
     }
   }
 
-  collapseSlide(slide: HTMLElement) {
+ /*  collapseSlide(slide: HTMLElement) {
     startAnimationFrame(() => {
       this.renderer2.setStyle(slide, 'width', `${this.slideWidth}px`);
     })
+  } */
+
+
+
+  provisionalMouseEnter(index: number) {
+    const slide = this.swiperContainer.nativeElement.swiper.slides[index]
+    startTimeOut(async () => {
+      this.swiperContainer.nativeElement.swiper.disable()
+      this.adjustSwiperPosition(slide)
+    }, 300)
   }
 
+  provisionalMouseLeave(index: number) {
+    const slide = this.swiperContainer.nativeElement.swiper.slides[index]
+
+    clearAllTimeouts()
+    clearAllAnimationsFrame()
+    this.resetPosition()
+    setTimeout(async () => {
+      await waitForTransitionEnd(slide)
+      await waitForAnimationFrame()
+      this.swiperContainer.nativeElement.slidesOffsetAfter = this.spaceBetween
+
+      this.swiperContainer.nativeElement.swiper.enable()
+      this.swiperContainer.nativeElement.swiper.update()
+      console.log('saliendo rpovisional')
+    }, 300)
+  }
 }

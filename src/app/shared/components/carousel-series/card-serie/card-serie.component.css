@@ -1,0 +1,12 @@
+
+
+.trailer {
+  opacity: 0;
+  transition: opacity 0.5s ease-in; /* transición definida desde el inicio */
+  pointer-events: none;
+}
+
+.trailer.active {
+  opacity: 1; /* usa 1, no 100% */
+  pointer-events: auto;
+}

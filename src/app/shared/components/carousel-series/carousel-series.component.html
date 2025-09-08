@@ -15,7 +15,7 @@
             (mouseleave)="isSwiperHover=false" #swiper>
 
             @for(serie of listSeries()()?.results;track serie;let i = $index){
-            <swiper-slide (mouseenter)="onMouseEnterToSlide(i,serie.id)" (mouseleave)="onMouseLeaveToSlide(i)"
+            <!-- <swiper-slide (mouseenter)="onMouseEnterToSlide(i)" (mouseleave)="onMouseLeaveToSlide(i)"
                 class="relative w-72 h-[29rem]" @fade>
 
 
@@ -71,8 +71,12 @@
                     <span class="font-semibold text-white text-sm">{{ serie.vote_average | number:'1.1-1'
                         :'en-US'}}</span>
                 </div>
-            </swiper-slide>
-            }
+            </swiper-slide> -->
+            <swiper-slide class="relative w-auto h-[29rem]" @fade >
+                <app-card-serie [serie]="serie" (mouseenter)="provisionalMouseEnter(i)" 
+                (mouseleave)="provisionalMouseLeave(i)"></app-card-serie>
+            </swiper-slide>    
+        }
 
             @if(isLoading()){
             @for(loading of slidesLoading;track loading){
@@ -101,5 +105,5 @@
     </section>
 </main>
 
-<app-play-trailer-embeed #trailer class="opacity-0 w-72 h-[29rem]" [size]="[806,464]" (isEnded)="closeTrailerPlayer()"
-    [isMovie]="false"></app-play-trailer-embeed>
+<!-- <app-play-trailer-embeed #trailer class="opacity-0 w-72 h-[29rem]" [size]="[806,464]" (isEnded)="closeTrailerPlayer()"
+    [isMovie]="false"></app-play-trailer-embeed> -->

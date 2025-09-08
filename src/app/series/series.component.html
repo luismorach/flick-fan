@@ -1,1 +1,43 @@
-<p>series works!</p>
+<main>
+  @defer(when onTheAir()){
+  <app-banner-series [listSeries]="onTheAir"
+    (requestMoreData)="API.getMoreData(this.API.getOnTheAirSeries.bind(this.API),onTheAir)" @fade>
+  </app-banner-series>
+  }@placeholder{
+  <app-skeleton [hasSlides]="true" @fade></app-skeleton>
+  }
+
+
+  @defer(when popularSeries()){
+  <section class="flex flex-col gap-4 p-[42px] justify-around mb-16" infiniteScroll [infiniteScrollDistance]="2"
+    [infiniteScrollThrottle]="300" (scrolled)="onScroll()">
+    @for (serie of results; let i = $index; track serie.id) {
+    @if (i % 4 === 0) {
+    <div class="flex justify-around gap-[42px]  overflow-x-auto hide-scrollbar scroll-smooth">
+      @for (s of results.slice(i, i + 4); track s.id;let i=$index;let first=$first) {
+      <app-card-serie [serie]="s" (mouseenter)="mouseEnter($event,i)"
+        (mouseleave)="mouseLeave($event)"></app-card-serie>
+      }
+      <div class="w-[806px] shrink-0"></div>
+    </div>
+    }
+    }
+    <!-- @for( serie of popularSeries()?.results;track serie.id; let i=$index){
+    <app-card-serie [serie]="serie">
+    </app-card-serie>
+    }
+ -->
+    @if(isLoading()){
+    <div class="flex gap-[42px]">
+      @for(loading of numElements;track loading){
+      <app-slide-skeleton @fade></app-slide-skeleton>
+      }
+    </div>
+    }
+  </section>
+
+  }
+  @placeholder{
+  <app-carousel-series-skeleton @fade></app-carousel-series-skeleton>
+  }
+</main>
