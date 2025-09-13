@@ -1,21 +1,21 @@
 import { Component, effect, ElementRef, HostListener, inject, Renderer2, signal, ViewChild, WritableSignal } from '@angular/core';
-import { BannerSeriesComponent } from '../inicio/components/banner-series/banner-series.component';
-import { SkeletonComponent } from '../inicio/components/banner-series/skeleton/skeleton.component';
 import { ApiService } from '../shared/services/API/api.service';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { listSeries } from '../shared/interfaces/interfaces';
 import { fade } from '../shared/animations/animations';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
-import { calculateNumSlides, clearAllAnimationsFrame, clearAllTimeouts, startAnimationFrame, startTimeOut, waitForAnimationFrame, waitForTransitionEnd } from '../shared/utils/carousel';
+import { calculateNumSlides, startTimeOut} from '../shared/utils/helpers';
 import { CardSerieComponent } from '../shared/components/carousel-series/card-serie/card-serie.component';
-import { SlideSkeletonComponent } from '../shared/components/carousel-series/slide-skeleton/slide-skeleton.component';
+import { CardSerieSkeletonComponent } from '../shared/components/carousel-series/card-serie-skeleton/card-serie-skeleton.component';
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
 import { ComunicatorService } from '../shared/services/comunicator/comunicator.service';
+import { BannerSeriesComponent } from '../shared/components/banner-series/banner-series.component';
+import { SkeletonComponent } from '../shared/components/banner-series/skeleton/skeleton.component';
 
 @Component({
   selector: 'app-series',
   imports: [BannerSeriesComponent, SkeletonComponent, InfiniteScrollDirective,
-    CardSerieComponent, SlideSkeletonComponent, CarouselSeriesSkeletonComponent, CommonModule],
+    CardSerieComponent, CardSerieSkeletonComponent, CarouselSeriesSkeletonComponent, CommonModule],
   templateUrl: './series.component.html',
   styleUrl: './series.component.css',
   animations: [fade]
@@ -29,9 +29,9 @@ export default class SeriesComponent {
   numSeries = 0
   numElements!: number[]
   isLoading: WritableSignal<boolean> = signal(false)
-  spaceBetween=42
+  spaceBetween = 42
 
-   @HostListener("window:scroll", ['$event'])
+  @HostListener("window:scroll", ['$event'])
   enableBackgroundNav(event: any) {
     let offset = event.srcElement.children[0].scrollTop
     if (offset > 20) {
@@ -41,7 +41,7 @@ export default class SeriesComponent {
     }
   }
 
-  constructor(private comunicatorService:ComunicatorService) {
+  constructor(private comunicatorService: ComunicatorService) {
     this.doc.scrollingElement?.scrollTo(0, 0)
     effect(() => {
       this.API.getPopularSeries(1).subscribe(data => this.popularSeries.set(data))
@@ -60,10 +60,16 @@ export default class SeriesComponent {
   }
 
   onScroll() {
+    let page = this.popularSeries()?.page ?? 0;
+    let total_pages = this.popularSeries()?.total_pages ?? 0;
+    if (page >= total_pages) {
+      this.isLoading.set(false)
+      return
+    }
     this.isLoading.set(true)
-    console.log('pidiendo mas datos')
     this.API.getMoreData(this.API.getPopularSeries.bind(this.API), this.popularSeries)
   }
+  
   get results() {
     return this.popularSeries()?.results ?? [];
   }
@@ -85,7 +91,7 @@ export default class SeriesComponent {
   mouseLeave(event: any) {
     const child = event.target as HTMLElement;
     const parent = child.parentElement as HTMLElement;
-    parent.scrollLeft=0
+    parent.scrollLeft = 0
   }
 
 }

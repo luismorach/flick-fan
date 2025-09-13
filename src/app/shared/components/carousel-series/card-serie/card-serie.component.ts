@@ -1,7 +1,7 @@
 import { Component, ElementRef, input, Renderer2, ViewChild } from '@angular/core';
 import { Movie, Serie } from '../../../interfaces/interfaces';
 import { PlayTrailerEmbeedComponent } from '../../play-trailer-embeed/play-trailer-embeed.component';
-import { startTimeOut, startAnimationFrame, getKeyTrailer, clearAllTimeouts, clearAllAnimationsFrame, waitForTransitionEnd, waitForAnimationFrame, getKeyTrailerOf } from '../../../utils/carousel';
+import { startTimeOut, startAnimationFrame, getKeyTrailer, clearAllTimeouts, clearAllAnimationsFrame, waitForTransitionEnd, waitForAnimationFrame, getKeyTrailerOf } from '../../../utils/helpers';
 import { getTallImage, getWideImage } from '../../../utils/images-by-default';
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';

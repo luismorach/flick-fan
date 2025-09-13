@@ -2,20 +2,20 @@ import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, ElementRef, input, Renderer2, ViewChild } from '@angular/core';
 import { Movie } from '../../../interfaces/interfaces';
 import { MinutesToTimePipe } from '../../../pipes/minutes-to-time.pipe';
-import { getWideImage } from '../../../utils//images-by-default';
+import { getWideImage } from '../../../utils/images-by-default';
 import { RouterLink } from '@angular/router';
-import { clearAllAnimationsFrame, getKeyTrailer, getKeyTrailerOf, startAnimationFrame } from '../../../utils/carousel';
+import { clearAllAnimationsFrame, getKeyTrailer, getKeyTrailerOf, startAnimationFrame } from '../../../utils/helpers';
 import { PlayTrailerEmbeedComponent } from '../../play-trailer-embeed/play-trailer-embeed.component';
 
 @Component({
-  selector: 'app-movie-carousel',
+  selector: 'app-card-movie',
   standalone: true,
   imports: [NgOptimizedImage, CommonModule, DatePipe, MinutesToTimePipe, RouterLink,
     PlayTrailerEmbeedComponent],
-  templateUrl: './movie-carousel.component.html',
-  styleUrls: ['./movie-carousel.component.css']
+  templateUrl: './card-movie.component.html',
+  styleUrls: ['./card-movie.component.css']
 })
-export class MovieCarouselComponent {
+export class CardMovieComponent {
   getWideImage = getWideImage
   movie = input.required<Movie>();
   isHovered = false
@@ -36,7 +36,7 @@ export class MovieCarouselComponent {
     this.renderer.appendChild(this.mainContainer.nativeElement.firstChild,
       this.trailerEmbeedElement.nativeElement)
     this.trailerEmbeed.setPlayerVideoData(videoId, id)
-    this.renderer.setStyle(this.mainContainer.nativeElement,'z-index','100')
+    this.renderer.setStyle(this.mainContainer.nativeElement,'z-index','10')
 
     startAnimationFrame(() => {
       this.renderer.addClass(this.trailerEmbeedElement.nativeElement, 'active')

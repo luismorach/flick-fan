@@ -1,15 +1,16 @@
 import { Component, ElementRef, input, ViewChild } from '@angular/core';
-import { SlideSkeletonComponent } from './slide-skeleton/slide-skeleton.component';
+import { CardMovieSkeletonComponent} from '../card-movie-skeleton/card-movie-skeleton.component';
 
 @Component({
   selector: 'app-carousel-skeleton',
-  imports: [SlideSkeletonComponent],
+  imports: [CardMovieSkeletonComponent],
   templateUrl: './carousel-skeleton.component.html',
   styleUrl: './carousel-skeleton.component.css'
 })
 export class CarouselSkeletonComponent {
   @ViewChild('container') container!: ElementRef
-  @ViewChild(SlideSkeletonComponent,{read:ElementRef}) slide!: ElementRef
+  @ViewChild(CardMovieSkeletonComponent, { read: ElementRef }) slide!: ElementRef
+  hasHeader = input<boolean>(true)
   numElements = [1]
 
   ngAfterViewInit() {

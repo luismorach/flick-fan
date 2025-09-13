@@ -9,9 +9,9 @@ import {
   setPaddingToSwiperContainer, startAnimationFrame, startTimeOut,
   waitForAnimationFrame,
   waitForTransitionEnd
-} from '../../utils/carousel';
+} from '../../utils/helpers';
 import { fade } from '../../animations/animations';
-import { SlideSkeletonComponent } from './slide-skeleton/slide-skeleton.component';
+import { CardSerieSkeletonComponent } from './card-serie-skeleton/card-serie-skeleton.component';
 import { PlayTrailerEmbeedComponent } from '../play-trailer-embeed/play-trailer-embeed.component';
 import { getTallImage, getWideImage } from '../../utils/images-by-default';
 import { CardSerieComponent } from './card-serie/card-serie.component';
@@ -20,7 +20,7 @@ register();
 
 @Component({
   selector: 'app-carousel-series',
-  imports: [NgOptimizedImage, NgClass, SlideSkeletonComponent, PlayTrailerEmbeedComponent, DecimalPipe, CardSerieComponent],
+  imports: [NgOptimizedImage, NgClass, CardSerieSkeletonComponent, PlayTrailerEmbeedComponent, DecimalPipe, CardSerieComponent],
   templateUrl: './carousel-series.component.html',
   styleUrl: './carousel-series.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

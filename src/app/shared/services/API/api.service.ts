@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, WritableSignal, inject } from '@angular/core';
 import { Credits, listMovies, listSeries, Movie, Serie } from '../../interfaces/interfaces';
-import { concatMap, map, mergeAll, mergeMap, Observable, tap, toArray } from 'rxjs';
+import { concatMap, distinct, forkJoin, map, merge, mergeAll, mergeMap, Observable, tap, toArray } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -139,9 +139,36 @@ export class ApiService {
     return this.joinDetailsSeries(recomendations)
   }
 
-  searchMovie(name_movie: string, page: number) {
+  searchMovie(page: number,name_movie: string) {
     let movies = this.http.get(this.API + `search/movie?query=${name_movie}&language=es-VE&page=${page}`)
     return this.joinDetailsMovie(movies)
+  }
+  searchSerie(page: number,name_serie: string) {
+    let movies = this.http.get(this.API + `search/tv?query=${name_serie}&language=es-VE&page=${page}`)
+    return this.joinDetailsSeries(movies)
+  }
+  getGenres() {
+    let genresMovies$ = this.http.get(this.API + `genre/movie/list?language=es-VE`) as Observable<any>
+    let genresSeries$ = this.http.get(this.API + `genre/tv/list?language=es-VE`) as Observable<any>
+    let genres$ = forkJoin([genresMovies$, genresSeries$]).pipe(
+      map(([movies, series]) => {
+        const all = [...movies.genres, ...series.genres];
+        // eliminar duplicados por id
+        return all.filter((g, index, self) =>
+          index === self.findIndex(t => t.id === g.id)
+        );
+      })
+    );
+    genres$.subscribe(res => console.log(res))
+    return genres$
+  }
+  getMoviesByGenre(genre_id:number,page:number){
+    const moviesByGenre$=this.http.get(this.API + `discover/movie?language=es-VE&page=${page}&sort_by=popularity.desc&with_genres=${genre_id}`) as Observable<any>
+    return this.joinDetailsMovie(moviesByGenre$)
+  }
+  getSeriesByGenre(genre_id:number,page:number){
+    const seriesByGenre$=this.http.get(this.API + `discover/tv?language=es-VE&page=${page}&sort_by=popularity.desc&with_genres=${genre_id}`) as Observable<any>
+    return this.joinDetailsSeries(seriesByGenre$)
   }
 
   /*  getMoreData(MethodApi: Function, currentData: WritableSignal<listMovies | listSeries | undefined>) {

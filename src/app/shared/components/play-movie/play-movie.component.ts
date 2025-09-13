@@ -7,7 +7,6 @@ import { listMovies} from '../../interfaces/interfaces';
 import {  DOCUMENT, NgOptimizedImage, } from '@angular/common';
 
 import { ComunicatorService } from '../../services/comunicator/comunicator.service';
-import { AnimationsService } from '../../services/animations/animations.service';
 import { carouselComponent } from '../carousel/carousel.component';
 import { CarouselSkeletonComponent } from '../carousel/carousel-skeleton/carousel-skeleton.component';
 import { fade } from '../../animations/animations';
@@ -30,7 +29,7 @@ export default class PlayMovieComponent {
   id_movie=0
 
   constructor(private rutaActiva: ActivatedRoute, public API: ApiService,
-    private comunicatorService: ComunicatorService, private animationsService: AnimationsService) {
+    private comunicatorService: ComunicatorService) {
 
     this.comunicatorService.setBackgroundNav(true)
     this.getUrlMovie()

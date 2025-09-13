@@ -1,4 +1,4 @@
-<main class=" w-full bg-[#0f0f0f] pb-8 relative  overflow-x-hidden" #container>
+<main class=" w-full  pb-8 relative  overflow-x-hidden" #container>
     <header class="p-6 pl-12">
         <div class="h-6 w-64 bg-zinc-700 rounded mb-1 animate-pulse"></div>
         <div class="h-1 bg-zinc-700 rounded-full w-32 animate-pulse"></div>
@@ -7,11 +7,9 @@
     <section class="relative">
         <section class="min-w-screen h-[75vh] flex grow-0  pb-4 gap-10">
             @for(a of numElements;track a;let first=$first){
-            <app-slide-skeleton [class.ml-12]="first"></app-slide-skeleton>
+            <app-card-serie-skeleton [class.ml-12]="first"></app-card-serie-skeleton>
             }
         </section>
-
-
     </section>
 
     

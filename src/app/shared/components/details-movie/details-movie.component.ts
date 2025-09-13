@@ -9,7 +9,7 @@ import { register, SwiperContainer } from 'swiper/element/bundle'
 import 'swiper/css'
 import { getSquareImage, getTallImage, getWideImage } from '../../utils/images-by-default';
 import { MinutesToTimePipe } from '../../pipes/minutes-to-time.pipe';
-import { calculateNumSlides, initSwiper, setOptionsToSwiperWhitMultiplesSlidesPerView } from '../../utils/carousel';
+import { calculateNumSlides, initSwiper, setOptionsToSwiperWhitMultiplesSlidesPerView } from '../../utils/helpers';
 import { SwiperOptions } from 'swiper/types/swiper-options';
 register();
 

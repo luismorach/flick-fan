@@ -11,9 +11,8 @@ import { RouterLink } from '@angular/router';
 import { AnimationsService } from '../../../shared/services/animations/animations.service';
 import { RatingComponent } from '../../../shared/components/rating/rating.component';
 import { ComunicatorService } from '../../../shared/services/comunicator/comunicator.service';
-import { LoadingComponent } from '../loading/loading.component';
 import { fade } from '../../../shared/animations/animations';
-import { getKeyTrailer } from '../../../shared/utils/carousel';
+import { getKeyTrailer } from '../../../shared/utils/helpers';
 import { MinutesToTimePipe } from '../../../shared/pipes/minutes-to-time.pipe';
 import { BannerSkeletonComponent } from './banner-skeleton/banner-skeleton.component';
 register()
@@ -21,7 +20,7 @@ register()
 @Component({
   selector: 'app-banner',
   imports: [DatePipe, NgOptimizedImage, RouterLink, NgClass, RatingComponent, 
-    LoadingComponent, MinutesToTimePipe,BannerSkeletonComponent],
+    MinutesToTimePipe,BannerSkeletonComponent],
   templateUrl: './banner.component.html',
   styleUrl: './banner.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -134,7 +133,6 @@ export default class BannerComponent {
     console.log('indeexx', this.indexCurrentElement)
     let page = this.listMovies()()?.page ?? 0;
     let total_pages = this.listMovies()()?.total_pages ?? 0;
-   
     if (this.isEnd() && (page < total_pages)) {
       this.isLoading.set(true)
       this.requestMoreData.emit()

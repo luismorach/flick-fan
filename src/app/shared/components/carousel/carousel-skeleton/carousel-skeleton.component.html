@@ -1,13 +1,15 @@
 <main class=" w-auto overflow-x-hidden mb-20" #container>
+    @if(hasHeader()){
     <header class="p-6 pl-6">
         <div class="h-6 w-64 bg-zinc-700 rounded mb-1 animate-pulse"></div>
         <div class="h-1 bg-zinc-700 rounded-full w-32 animate-pulse"></div>
     </header>
+    }
 
     <section class="flex gap-3 grow-0 overflow-hidden min-w-screen h-80 pb-1">
 
         @for(a of numElements;track a;let first=$first){
-        <app-slide-skeleton [class.ml-[24px]]="first"></app-slide-skeleton>
+        <app-card-movie-skeleton [class.ml-[24px]]="first"></app-card-movie-skeleton>
         }
 
     </section>

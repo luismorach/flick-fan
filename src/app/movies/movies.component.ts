@@ -1,21 +1,21 @@
 import { Component, effect, ElementRef, inject, Renderer2, signal, ViewChild, viewChild, WritableSignal } from '@angular/core';
-import BannerComponent from '../inicio/components/banner/banner.component';
-import { BannerSkeletonComponent } from '../inicio/components/banner/banner-skeleton/banner-skeleton.component';
 import { fade } from '../shared/animations/animations';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer.component';
 import { listMovies, playerTrailer } from '../shared/interfaces/interfaces';
 import { ApiService } from '../shared/services/API/api.service';
-import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
-import { calculateNumSlides} from '../shared/utils/carousel';
-import { MovieCarouselComponent } from '../shared/components/carousel/movie-carousel/movie-carousel.component';
+import { CarouselSkeletonComponent} from '../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
+import { calculateNumSlides } from '../shared/utils/helpers';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
-import { SlideSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/slide-skeleton/slide-skeleton.component';
+import { CardMovieSkeletonComponent } from '../shared/components/carousel/card-movie-skeleton/card-movie-skeleton.component';
+import { CardMovieComponent } from '../shared/components/carousel/card-movie/card-movie.component';
+import BannerComponent from '../shared/components/banner/banner.component';
+import { BannerSkeletonComponent } from '../shared/components/banner/banner-skeleton/banner-skeleton.component';
 
 @Component({
   selector: 'app-movies',
   imports: [BannerComponent, BannerSkeletonComponent, PlayTrailerComponent, CarouselSkeletonComponent,
-    SlideSkeletonComponent, MovieCarouselComponent, CommonModule,InfiniteScrollDirective],
+    CardMovieSkeletonComponent, CardMovieComponent, CommonModule, InfiniteScrollDirective],
   templateUrl: './movies.component.html',
   styleUrl: './movies.component.css',
   animations: [fade]
@@ -29,8 +29,8 @@ export default class MoviesComponent {
   player: playerTrailer = { videoId: signal(''), isPlaying: false }
   doc = inject(DOCUMENT)
   numMovies = 0
-  numElements!:number[]
-  isLoading:WritableSignal<boolean> =signal(false)
+  numElements!: number[]
+  isLoading: WritableSignal<boolean> = signal(false)
 
   constructor() {
     this.doc.scrollingElement?.scrollTo(0, 0)
@@ -44,10 +44,10 @@ export default class MoviesComponent {
       this.API.getUpcoming(1).subscribe(data => this.upcomingMovies.set(data))
     })
     effect(() => {
-      console.log('data recargada',this.nowPlaying())
+      console.log('data recargada', this.nowPlaying())
       this.isLoading.set(false)
     })
-   
+
 
   }
   ngAfterViewInit() {
@@ -57,10 +57,15 @@ export default class MoviesComponent {
 
   }
 
-  onScroll(){
+  onScroll() {
+    let page = this.nowPlaying()?.page ?? 0;
+    let total_pages = this.nowPlaying()?.total_pages ?? 0;
+    if (page >= total_pages) {
+      this.isLoading.set(false)
+      return
+    }
     this.isLoading.set(true)
-    console.log('pidiendo mas datos')
-    this.API.getMoreData(this.API.getNowPlaying.bind(this.API),this.nowPlaying)
+    this.API.getMoreData(this.API.getNowPlaying.bind(this.API), this.nowPlaying)
   }
 
   playTrailer(player: playerTrailer) {

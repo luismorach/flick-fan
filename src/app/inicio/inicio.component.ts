@@ -1,22 +1,18 @@
-import { Component, ChangeDetectionStrategy, inject, viewChild, HostListener, signal, Signal, runInInjectionContext, EnvironmentInjector, effect, WritableSignal } from '@angular/core';
-import { NavBarComponent } from '../nav-bar/nav-bar.component';
-import BannerComponent from './components/banner/banner.component';
+import { Component, ChangeDetectionStrategy, inject, viewChild, signal, effect, WritableSignal } from '@angular/core';
 import { carouselComponent } from '../shared/components/carousel/carousel.component';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { Observable } from 'rxjs';
 import { listMovies, listSeries, playerTrailer } from '../shared/interfaces/interfaces';
 import { ApiService } from '../shared/services/API/api.service';
 import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer.component';
-import { BannerSeriesComponent } from './components/banner-series/banner-series.component';
 import { CarouselSeriesComponent } from '../shared/components/carousel-series/carousel-series.component';
 import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
 import { fade } from '../shared/animations/animations';
-import { BannerSkeletonComponent } from './components/banner/banner-skeleton/banner-skeleton.component';
 import { LoadingComponent } from './components/loading/loading.component';
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
 import { DOCUMENT } from '@angular/common';
-import { SlideSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/slide-skeleton/slide-skeleton.component';
-import { SkeletonComponent } from './components/banner-series/skeleton/skeleton.component';
+import { BannerSkeletonComponent } from '../shared/components/banner/banner-skeleton/banner-skeleton.component';
+import BannerComponent from '../shared/components/banner/banner.component';
+import { BannerSeriesComponent } from '../shared/components/banner-series/banner-series.component';
+import { SkeletonComponent } from '../shared/components/banner-series/skeleton/skeleton.component';
 
 @Component({
   selector: 'app-inicio',

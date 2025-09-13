@@ -7,20 +7,21 @@ import { register, SwiperContainer } from 'swiper/element/bundle'
 import { listMovies, playerTrailer } from '../../interfaces/interfaces';
 import { DatePipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { PlayTrailerEmbeedComponent } from '../play-trailer-embeed/play-trailer-embeed.component';
-import { SlideSkeletonComponent } from './carousel-skeleton/slide-skeleton/slide-skeleton.component';
+import { CardMovieSkeletonComponent } from './card-movie-skeleton/card-movie-skeleton.component';
 import { fade } from '../../animations/animations';
 import {
-  calculateNumSlides, calculatePaddingToSetSwiperContainer, clearAllAnimationsFrame,
-  deletePaddingToSwiperContainer, getKeyTrailer, getRange, initSwiper, setOptionsToSwiperWhitMultiplesSlidesPerView, setPaddingToSwiperContainer, setStylesToFirstSlide, startAnimationFrame
-} from '../../utils/carousel';
-import { MovieCarouselComponent } from './movie-carousel/movie-carousel.component';
+  calculateNumSlides, calculatePaddingToSetSwiperContainer,
+  deletePaddingToSwiperContainer, getRange, initSwiper, setOptionsToSwiperWhitMultiplesSlidesPerView, setPaddingToSwiperContainer, setStylesToFirstSlide, startAnimationFrame
+} from '../../utils/helpers';
+import { CardMovieComponent } from './card-movie/card-movie.component';
 
 
 register();
 
 @Component({
   selector: 'app-carousel',
-  imports: [NgOptimizedImage, DatePipe, NgClass, PlayTrailerEmbeedComponent, SlideSkeletonComponent, MovieCarouselComponent],
+  imports: [NgOptimizedImage, DatePipe, NgClass, PlayTrailerEmbeedComponent, CardMovieSkeletonComponent, 
+    CardMovieComponent],
   templateUrl: './carousel.component.html',
   styleUrl: './carousel.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

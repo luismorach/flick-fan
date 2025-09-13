@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SlideSkeletonComponent } from './slide-skeleton.component';
+import { SlideSkeletonComponent } from './card-movie-skeleton.component';
 
 describe('SlideSkeletonComponent', () => {
   let component: SlideSkeletonComponent;

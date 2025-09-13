@@ -6,7 +6,7 @@ import { Credits, season, Serie } from '../../interfaces/interfaces';
 import { ApiService } from '../../services/API/api.service';
 import { ComunicatorService } from '../../services/comunicator/comunicator.service';
 import { DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
-import { getRange } from '../../utils/carousel';
+import { getRange } from '../../utils/helpers';
 import { getWideImage, getTallImage } from '../../utils/images-by-default';
 
 register()

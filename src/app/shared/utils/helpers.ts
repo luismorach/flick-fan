@@ -4,9 +4,11 @@ import { SwiperContainer } from "swiper/element";
 import { FreeMode, Mousewheel } from "swiper/modules";
 import { SwiperOptions } from "swiper/types";
 import { listMovies, listSeries, Movie, Serie } from "../interfaces/interfaces";
+import { Subscription } from "rxjs";
 
 var timeouts: number[] = []
-export var animationsID: number[] = []
+var animationsID: number[] = []
+var subscriptions: Subscription[] = []
 
 export function setOptionsToSwiperWhitMultiplesSlidesPerView(numSlides: number, spaceBetween: number) {
     const swiperOptions: SwiperOptions = {
@@ -108,11 +110,21 @@ export function getKeyTrailer(index: number, data: listMovies | listSeries | und
     const key = trailer?.key || '';
     return key;
 }
+
 export function getKeyTrailerOf(data: Movie | Serie | undefined): string {
-    if (data=== undefined) return ''
+    if (data === undefined) return ''
     const trailer = data?.videos?.results.find((element: any) => element.type === 'Trailer');
     const key = trailer?.key || '';
     return key;
+}
+
+export function setSubscription(subscription: Subscription) {
+    subscriptions.push(subscription)
+}
+export function removeAllSubscription() {
+    subscriptions.forEach(subscription => {
+        subscription.unsubscribe()
+    })
 }
 
 

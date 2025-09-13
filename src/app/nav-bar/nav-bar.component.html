@@ -28,7 +28,7 @@
         <div class="h-10 m-4 max-w-72 lg:w-72 flex bg-neutral-900 justify-center
         items-center rounded-lg focus-within:bg-neutral-800 shadow-md shadow-[#e50914]">
             <i class="fas fa-search text-neutral-300 px-4 text-sm"></i>
-            <input placeholder="¿Qué estas buscando?" type="text"
+            <input placeholder="¿Qué estas buscando?" type="text" (keyup)="search($event)" [(ngModel)]="wordSearch"
              class="text-neutral-300 bg-transparent grow text-sm h-10 outline-hidden
              placeholder-neutral-300">
         </div>
