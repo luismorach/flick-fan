@@ -24,7 +24,7 @@ export const routes: Routes = [
         path: 'details-movie/:id_movie', loadComponent: () => import('./movies/details-movie/details-movie.component'),
     },
     {
-        path: 'details-serie/:id_serie', loadComponent: () => import('./shared/components/details-serie/details-serie.component'),
+        path: 'details-serie/:id_serie', loadComponent: () => import('./series/details-serie/details-serie.component'),
     },
     { path: '', redirectTo: 'home', pathMatch: 'full' },
 ];

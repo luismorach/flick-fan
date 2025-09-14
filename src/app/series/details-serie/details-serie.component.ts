@@ -1,13 +1,12 @@
+import { NgOptimizedImage, DatePipe, DecimalPipe } from '@angular/common';
 import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, Renderer2, signal, ViewChild, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Params, RouterLink } from '@angular/router';
 import { map, concatAll } from 'rxjs';
 import { register, SwiperContainer } from 'swiper/element/bundle';
-import { Credits, season, Serie } from '../../interfaces/interfaces';
-import { ApiService } from '../../services/API/api.service';
-import { ComunicatorService } from '../../services/comunicator/comunicator.service';
-import { DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
-import { getRange } from '../../utils/helpers';
-import { getWideImage, getTallImage } from '../../utils/images-by-default';
+import { Serie, Credits } from '../../shared/interfaces/interfaces';
+import { ApiService } from '../../shared/services/API/api.service';
+import { ComunicatorService } from '../../shared/services/comunicator/comunicator.service';
+import { getTallImage, getWideImage } from '../../shared/utils/images-by-default';
 
 register()
 @Component({
