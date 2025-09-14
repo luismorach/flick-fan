@@ -2,7 +2,6 @@ import { Component, inject, signal, ViewChild,  WritableSignal } from '@angular/
 import { fade } from '../shared/animations/animations';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer.component';
-import { listMovies, playerTrailer } from '../core/interfaces/interfaces';
 import { ApiService } from '../core/services/API/api.service';
 import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
@@ -14,6 +13,8 @@ import { ComunicatorService } from '../core/services/comunicator/comunicator.ser
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { calculateNumSlides, scrollToTop } from '../shared/utils/helpers';
 import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
+import { PlayerTrailer } from '../core/interfaces/shared/player.interface';
+import { MovieList } from '../core/interfaces/movie/movie.interface';
 
 @Component({
   selector: 'app-movies',
@@ -34,9 +35,9 @@ import { BackgroundNavScrollDirective } from '../core/directives/background-nav-
 export default class MoviesComponent {
   api = inject(ApiService)
   @ViewChild(PlayTrailerComponent) playTrailerComponent !:PlayTrailerComponent
-  upcomingMovies: WritableSignal<listMovies | undefined> = signal(undefined)
-  nowPlaying: WritableSignal<listMovies | undefined> = signal(undefined)
-  player: playerTrailer = { videoId: signal(''), isPlaying: false }
+  upcomingMovies: WritableSignal<MovieList | undefined> = signal(undefined)
+  nowPlaying: WritableSignal<MovieList | undefined> = signal(undefined)
+  player: PlayerTrailer = { videoId: signal(''), isPlaying: false }
   doc = inject(DOCUMENT)
   numSlides = 0
   skeletonsIndexes!: number[]
@@ -65,7 +66,7 @@ export default class MoviesComponent {
     this.api.getMoreData(this.api.getNowPlaying.bind(this.api), this.nowPlaying)
   }
 
-  playTrailer(player: playerTrailer) {
+  playTrailer(player: PlayerTrailer) {
     this.player = player
     if (player.isPlaying)
       this.playTrailerComponent?.openTrailer()

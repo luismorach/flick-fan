@@ -3,9 +3,10 @@ import Swiper from "swiper"
 import { SwiperContainer } from "swiper/element";
 import { FreeMode, Mousewheel } from "swiper/modules";
 import { SwiperOptions } from "swiper/types";
-import { listMovies, listSeries, Movie, Serie } from "../../core/interfaces/interfaces";
 import { take } from "rxjs";
 import { DOCUMENT } from "@angular/common";
+import { Movie, MovieList } from "../../core/interfaces/movie/movie.interface";
+import { SerieList, Serie } from "../../core/interfaces/serie/serie.interface";
 
 var timeouts: number[] = []
 var animationsID: number[] = []
@@ -104,7 +105,7 @@ export function waitForTransitionEnd(element: HTMLElement) {
     })
 }
 
-export function getKeyTrailer(index: number, data: listMovies | listSeries | undefined): string {
+export function getKeyTrailer(index: number, data: MovieList | SerieList | undefined): string {
     if (data?.results[index] === undefined) return ''
     const trailer = data?.results[index].videos?.results.find((element: any) => element.type === 'Trailer');
     const key = trailer?.key || '';

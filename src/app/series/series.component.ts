@@ -1,7 +1,6 @@
 import { Component, computed, effect, inject, signal, WritableSignal } from '@angular/core';
 import { ApiService } from '../core/services/API/api.service';
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { listSeries, Serie } from '../core/interfaces/interfaces';
 import { fade } from '../shared/animations/animations';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { calculateNumSlides, createChunks, handleCardHover, resetCardHover, scrollToTop } from '../shared/utils/helpers';
@@ -12,6 +11,7 @@ import { BannerSeriesComponent } from '../shared/components/banner-series/banner
 import { SkeletonComponent } from '../shared/components/banner-series/skeleton/skeleton.component';
 import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SerieList } from '../core/interfaces/serie/serie.interface';
 
 @Component({
   selector: 'app-series',
@@ -32,9 +32,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export default class SeriesComponent {
   api = inject(ApiService)
   doc = inject(DOCUMENT)
-  airingToday: WritableSignal<listSeries | undefined> = signal(undefined)
-  onTheAir: WritableSignal<listSeries | undefined> = signal(undefined)
-  popularSeries: WritableSignal<listSeries | undefined> = signal(undefined)
+  airingToday: WritableSignal<SerieList | undefined> = signal(undefined)
+  onTheAir: WritableSignal<SerieList | undefined> = signal(undefined)
+  popularSeries: WritableSignal<SerieList | undefined> = signal(undefined)
   chunkSize = 0
   chunkSkeletons: number[] = []
   isLoading: WritableSignal<boolean> = signal(false)

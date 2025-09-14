@@ -1,11 +1,11 @@
 import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, ElementRef, input, Renderer2, ViewChild } from '@angular/core';
-import { Movie } from '../../../../core/interfaces/interfaces';
 import { MinutesToTimePipe } from '../../../pipes/minutes-to-time.pipe';
 import { getWideImage } from '../../../utils/images-by-default';
 import { RouterLink } from '@angular/router';
 import { clearAllAnimationsFrame, getKeyTrailer, getKeyTrailerOf, startAnimationFrame } from '../../../utils/helpers';
 import { PlayTrailerEmbeedComponent } from '../../play-trailer-embeed/play-trailer-embeed.component';
+import { Movie } from '../../../../core/interfaces/movie/movie.interface';
 
 @Component({
   selector: 'app-card-movie',

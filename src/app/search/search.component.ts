@@ -1,7 +1,6 @@
 import { Component, computed, effect, inject, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../core/services/API/api.service';
-import { genre, listMovies, listSeries } from '../core/interfaces/interfaces';
 import { calculateNumSlides, createChunks, handleCardHover, resetCardHover} from '../shared/utils/helpers';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { CardSerieComponent } from '../shared/components/carousel-series/card-serie/card-serie.component';
@@ -12,6 +11,9 @@ import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-s
 import { CardMovieSkeletonComponent } from '../shared/components/carousel/card-movie-skeleton/card-movie-skeleton.component';
 import { CardMovieComponent } from '../shared/components/carousel/card-movie/card-movie.component';
 import { CardSerieSkeletonComponent } from '../shared/components/carousel-series/card-serie-skeleton/card-serie-skeleton.component';
+import { Genre } from '../core/interfaces/shared/genre.interface';
+import { MovieList } from '../core/interfaces/movie/movie.interface';
+import { SerieList } from '../core/interfaces/serie/serie.interface';
 
 @Component({
   selector: 'app-search',
@@ -22,11 +24,11 @@ import { CardSerieSkeletonComponent } from '../shared/components/carousel-series
   animations: [fade]
 })
 export default class SearchComponent {
-  movies: WritableSignal<listMovies | undefined> = signal(undefined)
-  series: WritableSignal<listSeries | undefined> = signal(undefined)
-  currentMovies: WritableSignal<listMovies | undefined> = signal(undefined)
-  currentSeries: WritableSignal<listSeries | undefined> = signal(undefined)
-  genres: WritableSignal<genre[] | undefined> = signal(undefined)
+  movies: WritableSignal<MovieList | undefined> = signal(undefined)
+  series: WritableSignal<SerieList | undefined> = signal(undefined)
+  currentMovies: WritableSignal<MovieList | undefined> = signal(undefined)
+  currentSeries: WritableSignal<SerieList | undefined> = signal(undefined)
+  genres: WritableSignal<Genre[] | undefined> = signal(undefined)
   moviesLoading: WritableSignal<boolean> = signal(false)
   seriesLoading: WritableSignal<boolean> = signal(false)
   chunkSkeletons: number[] = []
@@ -77,7 +79,7 @@ export default class SearchComponent {
   getMovies() {
     this.movies.set(undefined)
     let searchedMovies$ = this.api.searchMovie(1, this.searchQuery)
-    searchedMovies$.subscribe((movies: listMovies) => {
+    searchedMovies$.subscribe((movies: MovieList) => {
       console.log(movies)
       document.scrollingElement?.scrollTo(0, 0)
       this.movies.set(movies)
@@ -87,7 +89,7 @@ export default class SearchComponent {
   getSeries() {
     this.series.set(undefined)
     let searchedSeries$ = this.api.searchSerie(1, this.searchQuery)
-    searchedSeries$.subscribe((series: listSeries) => {
+    searchedSeries$.subscribe((series: SerieList) => {
       console.log(series)
       document.scrollingElement?.scrollTo(0, 0)
       this.series.set(series)
@@ -104,7 +106,7 @@ export default class SearchComponent {
     this.updateSeries()
   }
 
-  filterDataByGenre<T extends listMovies | listSeries | undefined>
+  filterDataByGenre<T extends MovieList | SerieList | undefined>
     (data: WritableSignal<T>, genre_id: number) {
     if (!data()) return
     const filteredData = data()?.results.filter((data) =>

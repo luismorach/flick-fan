@@ -1,6 +1,5 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, ElementRef, input, output, Renderer2, signal, ViewChild, WritableSignal } from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle';
-import { listSeries } from '../../../core/interfaces/interfaces';
 import {
   calculateNumSlides, clearAllAnimationsFrame, clearAllTimeouts, deletePaddingToSwiperContainer, getKeyTrailer,
   getRange, initSwiper,
@@ -13,6 +12,7 @@ import { fade } from '../../animations/animations';
 import { CardSerieSkeletonComponent } from './card-serie-skeleton/card-serie-skeleton.component';
 import { getTallImage, getWideImage } from '../../utils/images-by-default';
 import { CardSerieComponent } from './card-serie/card-serie.component';
+import { SerieList } from '../../../core/interfaces/serie/serie.interface';
 
 register();
 
@@ -30,7 +30,7 @@ export class CarouselSeriesComponent {
   @ViewChild('main') mainContainer!: ElementRef<HTMLElement>
 /*   @ViewChild(PlayTrailerEmbeedComponent) trailerEmbeed!: PlayTrailerEmbeedComponent
   @ViewChild(PlayTrailerEmbeedComponent, { read: ElementRef }) trailerEmbeedElement !: ElementRef */
-  listSeries = input.required<WritableSignal<listSeries | undefined>>()
+  listSeries = input.required<WritableSignal<SerieList | undefined>>()
   title = input.required<string>()
   id = input.required<string>()
   requestMoreData = output<void>()

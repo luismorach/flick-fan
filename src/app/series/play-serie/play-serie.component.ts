@@ -6,13 +6,13 @@ import { ActivatedRoute, ParamMap, Params, RouterLink, } from '@angular/router';
 import { UrlSafePipe } from '../../shared/pipes/url-safe.pipe';
 import { combineLatest, concatAll, map, Subscription } from 'rxjs';
 import { ApiService } from '../../core/services/API/api.service';
-import { episode, listSeries, season, Serie } from '../../core/interfaces/interfaces';
 import { DatePipe, DOCUMENT, NgOptimizedImage, } from '@angular/common';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
 import { fade } from '../../shared/animations/animations';
 import { register, SwiperContainer } from 'swiper/element/bundle';
 import { getTallImage, getWideImage } from '../../shared/utils/images-by-default';
 import { CarouselSeriesComponent } from '../../shared/components/carousel-series/carousel-series.component';
+import { Serie, SerieList, Episode, Season } from '../../core/interfaces/serie/serie.interface';
 register()
 @Component({
   selector: 'app-play-serie',
@@ -27,8 +27,8 @@ register()
 export default class PlaySerieComponent implements AfterViewInit {
   serie: WritableSignal<Serie | undefined> = signal(undefined)
   url_serie = signal('https://vidsrc.to/embed/tv/')
-  similarSeries: WritableSignal<listSeries | undefined> = signal(undefined)
-  recomendedSeries: WritableSignal<listSeries | undefined> = signal(undefined)
+  similarSeries: WritableSignal<SerieList | undefined> = signal(undefined)
+  recomendedSeries: WritableSignal<SerieList | undefined> = signal(undefined)
   @ViewChild('swiperSeason') swiperSeasons!: ElementRef<SwiperContainer>
   @ViewChild('swiperEpisodes') swiperEpisodes!: ElementRef<SwiperContainer>
   subscription: Subscription[] = []
@@ -36,8 +36,8 @@ export default class PlaySerieComponent implements AfterViewInit {
   season_number = -1
   episode_number = -1
   id_serie = 0
-  episode!: episode
-  season!: season
+  episode!: Episode
+  season!: Season
 
   getTallImage = getTallImage
   getWideImage = getWideImage
@@ -132,13 +132,13 @@ export default class PlaySerieComponent implements AfterViewInit {
     this.episode = detailSerie.seasons[(this.season_number - remainingToIndex)].episodes[(this.episode_number - 1)]
   }
 
-  getSeasonNumber(seasons: season[] | undefined) {
+  getSeasonNumber(seasons: Season[] | undefined) {
     if (seasons === undefined) return 0;
     const season = seasons.find((element: any) => element.name === 'Temporada 1');
     return season?.season_number || 0 ;
   }
 
-  HasEspecial(seasons: season[] | undefined) {
+  HasEspecial(seasons: Season[] | undefined) {
     if (seasons === undefined) return false;
     const season = seasons.find((element: any) => element.name === 'Especiales');
     return (season) ? true : false;

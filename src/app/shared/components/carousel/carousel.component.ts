@@ -4,8 +4,7 @@ import {
   WritableSignal
 } from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle'
-import { listMovies, playerTrailer } from '../../../core/interfaces/interfaces';
-import { DatePipe, NgClass} from '@angular/common';
+import { NgClass} from '@angular/common';
 import { CardMovieSkeletonComponent } from './card-movie-skeleton/card-movie-skeleton.component';
 import { fade } from '../../animations/animations';
 import {
@@ -13,6 +12,8 @@ import {
   deletePaddingToSwiperContainer, getRange, initSwiper, setOptionsToSwiperWhitMultiplesSlidesPerView, setPaddingToSwiperContainer, setStylesToFirstSlide, startAnimationFrame
 } from '../../utils/helpers';
 import { CardMovieComponent } from './card-movie/card-movie.component';
+import { PlayerTrailer } from '../../../core/interfaces/shared/player.interface';
+import { MovieList } from '../../../core/interfaces/movie/movie.interface';
 
 
 register();
@@ -32,9 +33,9 @@ export class carouselComponent {
 
   @ViewChild('swiper', { static: false }) swiperContainer!: ElementRef<SwiperContainer>
   @ViewChild('main') mainContainer!: ElementRef<HTMLElement>
-  onPlayTrailer = output<playerTrailer>()
+  onPlayTrailer = output<PlayerTrailer>()
   requestMoreData = output<void>()
-  listMovies = input.required<WritableSignal<listMovies | undefined>>()
+  listMovies = input.required<WritableSignal<MovieList | undefined>>()
   title = input.required<string>()
   importance = input.required<number>()
   id = input.required<string>()

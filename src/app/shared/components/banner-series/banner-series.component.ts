@@ -1,6 +1,5 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, ElementRef, inject, input, output, signal, ViewChild, WritableSignal } from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle';
-import { listMovies, listSeries, playerTrailer, Serie } from '../../../core/interfaces/interfaces';
 import { AnimationsService } from '../../../core/services/animations/animations.service';
 import { ComunicatorService } from '../../../core/services/comunicator/comunicator.service';
 import { SwiperOptions } from 'swiper/types';
@@ -8,6 +7,7 @@ import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { RatingComponent } from '../../../shared/components/rating/rating.component';
 import { RouterLink } from '@angular/router';
 import { SkeletonComponent } from './skeleton/skeleton.component';
+import { SerieList, Serie } from '../../../core/interfaces/serie/serie.interface';
 
 @Component({
   selector: 'app-banner-series',
@@ -19,13 +19,13 @@ import { SkeletonComponent } from './skeleton/skeleton.component';
 export class BannerSeriesComponent {
 
   @ViewChild('swiper') swiperContainer!: ElementRef<SwiperContainer>
-  onPlayTrailer = output<playerTrailer>()
+  //onPlayTrailer = output<PlayerTrailer>()
   animationsService = inject(AnimationsService)
   indexCurrentElement = signal(0)
   index = 0
   previousIndex = signal(0)
   nextIndex = signal(1)
-  listSeries = input.required<WritableSignal<listSeries | undefined>>()
+  listSeries = input.required<WritableSignal<SerieList | undefined>>()
   serie: WritableSignal<Serie | undefined> = signal(undefined)
   isSwiperRegistered = false
   isBeginning = signal(true)

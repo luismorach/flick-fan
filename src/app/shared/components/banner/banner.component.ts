@@ -6,7 +6,6 @@ import { DOCUMENT, DatePipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { register, SwiperContainer } from 'swiper/element/bundle'
 import { SwiperOptions } from 'swiper/types';
 import 'swiper/css'
-import { listMovies, Movie, playerTrailer } from '../../../core/interfaces/interfaces';
 import { RouterLink } from '@angular/router';
 import { AnimationsService } from '../../../core/services/animations/animations.service';
 import { RatingComponent } from '../../../shared/components/rating/rating.component';
@@ -15,6 +14,8 @@ import { fade } from '../../../shared/animations/animations';
 import { getKeyTrailer } from '../../../shared/utils/helpers';
 import { MinutesToTimePipe } from '../../../shared/pipes/minutes-to-time.pipe';
 import { BannerSkeletonComponent } from './banner-skeleton/banner-skeleton.component';
+import { PlayerTrailer } from '../../../core/interfaces/shared/player.interface';
+import { MovieList, Movie } from '../../../core/interfaces/movie/movie.interface';
 register()
 
 @Component({
@@ -32,10 +33,10 @@ register()
 export default class BannerComponent {
 
   @ViewChild('swiper') swiperContainer!: ElementRef<SwiperContainer>
-  onPlayTrailer = output<playerTrailer>()
+  onPlayTrailer = output<PlayerTrailer>()
   animationsService = inject(AnimationsService)
   indexCurrentElement: number = 0
-  listMovies = input.required<WritableSignal<listMovies | undefined>>()
+  listMovies = input.required<WritableSignal<MovieList | undefined>>()
   movie: WritableSignal<Movie | undefined> = signal(undefined)
   isBeginning = signal(true)
   isEnd = signal(false)

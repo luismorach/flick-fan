@@ -5,10 +5,10 @@ import {  DOCUMENT, NgOptimizedImage, } from '@angular/common';
 import { fade } from '../../shared/animations/animations';
 import { CarouselSkeletonComponent } from '../../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
 import { carouselComponent } from '../../shared/components/carousel/carousel.component';
-import { listMovies } from '../../core/interfaces/interfaces';
 import { UrlSafePipe } from '../../shared/pipes/url-safe.pipe';
 import { ApiService } from '../../core/services/API/api.service';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
+import { MovieList } from '../../core/interfaces/movie/movie.interface';
 
 
 @Component({
@@ -22,8 +22,8 @@ import { ComunicatorService } from '../../core/services/comunicator/comunicator.
 export default class PlayMovieComponent {
   movie: WritableSignal<any | undefined> = signal(undefined)
   url_movie = signal('https://vidsrc.to/embed/movie/')
-  similarMovies: WritableSignal<listMovies | undefined> = signal(undefined)
-  recomendedMovies: WritableSignal<listMovies | undefined> = signal(undefined)
+  similarMovies: WritableSignal<MovieList | undefined> = signal(undefined)
+  recomendedMovies: WritableSignal<MovieList | undefined> = signal(undefined)
   subscription: Subscription[] = []
   doc = inject(DOCUMENT)
   id_movie=0

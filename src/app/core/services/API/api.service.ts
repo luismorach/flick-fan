@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, WritableSignal, inject } from '@angular/core';
-import { Credits, listMovies, listSeries, Movie, Serie } from '../../interfaces/interfaces';
 import { concatMap, distinct, forkJoin, map, merge, mergeAll, mergeMap, Observable, tap, toArray } from 'rxjs';
+import { Credits } from '../../interfaces/people/credits.interface';
+import { MovieList, Movie } from '../../interfaces/movie/movie.interface';
+import { Serie } from '../../interfaces/serie/serie.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -75,7 +77,7 @@ export class ApiService {
   }
 
   getNowPlaying(page: number) {
-    let nowPlaying = (this.http.get(this.API + `movie/now_playing?language=es-VE&page=${page}`) as Observable<listMovies>)
+    let nowPlaying = (this.http.get(this.API + `movie/now_playing?language=es-VE&page=${page}`) as Observable<MovieList>)
     return this.joinDetailsMovie(nowPlaying)
   }
 

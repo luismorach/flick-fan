@@ -1,6 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, viewChild, signal,  WritableSignal} from '@angular/core';
 import { carouselComponent } from '../shared/components/carousel/carousel.component';
-import { listMovies, listSeries, playerTrailer } from '../core/interfaces/interfaces';
 import { ApiService } from '../core/services/API/api.service';
 import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer.component';
 import { CarouselSeriesComponent } from '../shared/components/carousel-series/carousel-series.component';
@@ -15,6 +14,9 @@ import { ComunicatorService } from '../core/services/comunicator/comunicator.ser
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { scrollToTop } from '../shared/utils/helpers';
 import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
+import { PlayerTrailer } from '../core/interfaces/shared/player.interface';
+import { MovieList } from '../core/interfaces/movie/movie.interface';
+import { SerieList } from '../core/interfaces/serie/serie.interface';
 
 @Component({
   selector: 'app-inicio',
@@ -31,13 +33,13 @@ export default class InicioComponent {
   api = inject(ApiService)
 
   playTrailerComponent = viewChild(PlayTrailerComponent)
-  popularMovies: WritableSignal<listMovies | undefined> = signal(undefined)
-  upcomingMovies: WritableSignal<listMovies | undefined> = signal(undefined)
-  nowPlaying: WritableSignal<listMovies | undefined> = signal(undefined)
-  airingToday: WritableSignal<listSeries | undefined> = signal(undefined)
-  onTheAir: WritableSignal<listSeries | undefined> = signal(undefined)
-  popularSeries: WritableSignal<listSeries | undefined> = signal(undefined)
-  player: playerTrailer = { videoId: signal(''), isPlaying: false }
+  popularMovies: WritableSignal<MovieList | undefined> = signal(undefined)
+  upcomingMovies: WritableSignal<MovieList | undefined> = signal(undefined)
+  nowPlaying: WritableSignal<MovieList | undefined> = signal(undefined)
+  airingToday: WritableSignal<SerieList | undefined> = signal(undefined)
+  onTheAir: WritableSignal<SerieList | undefined> = signal(undefined)
+  popularSeries: WritableSignal<SerieList | undefined> = signal(undefined)
+  player: PlayerTrailer = { videoId: signal(''), isPlaying: false }
 
   constructor(public comunicatorService: ComunicatorService) {
     scrollToTop()
@@ -60,7 +62,7 @@ export default class InicioComponent {
     });
   }
 
-  playTrailer(player: playerTrailer) {
+  playTrailer(player: PlayerTrailer) {
     this.player = player
     if (player.isPlaying)
       this.playTrailerComponent()?.openTrailer()
