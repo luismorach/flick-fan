@@ -1,36 +1,39 @@
-<nav class='flex items-center justify-between p-8 fixed text-white  h-12 w-full z-50 transition-all ease-in '
-[ngClass]="{'bg-[rgba(22,22,23,.8)] border-b border-[hsla(0,0%,100%,.4)] backdrop-blur-xl 
-    backdrop:saturate-[180%] ':comunicatorService.getBackgroundNav()()}">
-    
+<nav class='flex items-center justify-between p-8 fixed text-white  h-12 w-full z-50 transition-all ease-in ' [ngClass]="{'bg-[rgba(22,22,23,.8)] border-b border-[hsla(0,0%,100%,.4)] backdrop-blur-xl 
+    backdrop-saturate-[180%] ':comunicatorService.getBackgroundNav()()}">
+
     <h1 class="w-72 font-racing font-bold text-xl text-[#e50914]">Flick fan</h1>
-    <i class="fa fa-bars visible md:invisible hover:text-[#e50914] hover:cursor-pointer" 
-    (click)="show=!show" ></i>
+    <button aria-label="Abrir menú" class="fa fa-bars visible md:invisible hover:text-[#e50914] 
+        hover:cursor-pointer" (click)="isMenuOpen=true"></button>
+
+
 
     <section class="flex grow flex-col bg-black absolute -right-72 top-0 h-screen md:visible 
     md:static md:flex-row md:bg-transparent md:h-auto transition-all ease-in-out duration-500"
-        [ngClass]="{'right-0':show}" >
+        [ngClass]="{'right-0':isMenuOpen}">
 
         <ul class='flex flex-col md:flex-row justify-start md:items-center md:justify-center md:grow text-base'>
             <li class="md:invisible m-2 self-end">
-                <i class="fa fa-xmark hover:text-[#e50914] hover:cursor-pointer" (click)="show=false"></i>
+                <button aria-label="Cerrar menú" class="fa fa-xmark hover:text-[#e50914] 
+                 hover:cursor-pointer z-10" (click)="isMenuOpen=false"></button>
             </li>
-            <li [routerLink]="['/home']" class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
-                <a>Inicio</a>
+            <li class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
+                <a [routerLink]="['/home']">Inicio</a>
             </li>
-            <li [routerLink]="['/movies']" class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
-                <a>Peliculas</a>
+            <li class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
+                <a [routerLink]="['/movies']">Peliculas</a>
             </li>
-            <li [routerLink]="['/series']" class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
-                <a>Series</a>
+            <li class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
+                <a [routerLink]="['/series']">Series</a>
             </li>
         </ul>
 
-        <div class="h-10 m-4 max-w-72 lg:w-72 flex bg-neutral-900 justify-center
+        <form role="search" (ngSubmit)="onSearch()" class="h-10 m-4 max-w-72 lg:w-72 flex bg-neutral-900 justify-center
         items-center rounded-lg focus-within:bg-neutral-800 shadow-md shadow-[#e50914]">
             <i class="fas fa-search text-neutral-300 px-4 text-sm"></i>
-            <input placeholder="¿Qué estas buscando?" type="text" (keyup)="search($event)" [(ngModel)]="wordSearch"
-             class="text-neutral-300 bg-transparent grow text-sm h-10 outline-hidden
+            <input name="search" placeholder="¿Qué estas buscando?" aria-label="buscar contenido" type="text"
+                [(ngModel)]="searchQuery" class="text-neutral-300 bg-transparent grow text-sm h-10 outline-hidden
              placeholder-neutral-300">
-        </div>
+             
+        </form>
     </section>
 </nav>

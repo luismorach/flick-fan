@@ -7,7 +7,6 @@ import { CarouselSeriesComponent } from '../shared/components/carousel-series/ca
 import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
 import { fade } from '../shared/animations/animations';
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
-import { DOCUMENT } from '@angular/common';
 import { BannerSkeletonComponent } from '../shared/components/banner/banner-skeleton/banner-skeleton.component';
 import BannerComponent from '../shared/components/banner/banner.component';
 import { BannerSeriesComponent } from '../shared/components/banner-series/banner-series.component';
@@ -29,7 +28,7 @@ import { BackgroundNavScrollDirective } from '../shared/directives/background-na
 })
 export default class InicioComponent {
 
-  API = inject(ApiService)
+  api = inject(ApiService)
 
   playTrailerComponent = viewChild(PlayTrailerComponent)
   popularMovies: WritableSignal<listMovies | undefined> = signal(undefined)
@@ -48,12 +47,12 @@ export default class InicioComponent {
 
   private loadMoviesAndSeries() {
     const loaders = [
-      { call: () => this.API.getNowPlaying(1), signal: this.nowPlaying },
-      { call: () => this.API.getPopular(1), signal: this.popularMovies },
-      { call: () => this.API.getUpcoming(1), signal: this.upcomingMovies },
-      { call: () => this.API.getOnTheAirSeries(1), signal: this.onTheAir },
-      { call: () => this.API.getAiringTodaySeries(1), signal: this.airingToday },
-      { call: () => this.API.getPopularSeries(1), signal: this.popularSeries },
+      { call: () => this.api.getNowPlaying(1), signal: this.nowPlaying },
+      { call: () => this.api.getPopular(1), signal: this.popularMovies },
+      { call: () => this.api.getUpcoming(1), signal: this.upcomingMovies },
+      { call: () => this.api.getOnTheAirSeries(1), signal: this.onTheAir },
+      { call: () => this.api.getAiringTodaySeries(1), signal: this.airingToday },
+      { call: () => this.api.getPopularSeries(1), signal: this.popularSeries },
     ];
 
     loaders.forEach(({ call, signal }) => {
