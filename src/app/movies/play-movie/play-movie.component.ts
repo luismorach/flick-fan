@@ -1,15 +1,15 @@
 import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Params, } from '@angular/router';
-import { UrlSafePipe } from '../../pipes/url-safe.pipe';
 import { concatAll, map, Subscription} from 'rxjs';
-import { ApiService } from '../../services/API/api.service';
-import { listMovies} from '../../interfaces/interfaces';
 import {  DOCUMENT, NgOptimizedImage, } from '@angular/common';
+import { fade } from '../../shared/animations/animations';
+import { CarouselSkeletonComponent } from '../../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
+import { carouselComponent } from '../../shared/components/carousel/carousel.component';
+import { listMovies } from '../../shared/interfaces/interfaces';
+import { UrlSafePipe } from '../../shared/pipes/url-safe.pipe';
+import { ApiService } from '../../shared/services/API/api.service';
+import { ComunicatorService } from '../../shared/services/comunicator/comunicator.service';
 
-import { ComunicatorService } from '../../services/comunicator/comunicator.service';
-import { carouselComponent } from '../carousel/carousel.component';
-import { CarouselSkeletonComponent } from '../carousel/carousel-skeleton/carousel-skeleton.component';
-import { fade } from '../../animations/animations';
 
 @Component({
   selector: 'app-play-movie',

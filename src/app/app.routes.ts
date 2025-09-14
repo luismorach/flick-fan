@@ -14,11 +14,11 @@ export const routes: Routes = [
         path: 'search/:wordSearch', loadComponent: () => import('./search/search.component'),
     },
     {
-        path: 'watch-movie/:id_movie', loadComponent: () => import('./shared/components/play-movie/play-movie.component'),
+        path: 'watch-movie/:id_movie', loadComponent: () => import('./movies/play-movie/play-movie.component'),
     },
     {
         path: 'watch-serie/:id_serie',
-        loadComponent: () => import('./shared/components/play-serie/play-serie.component'),
+        loadComponent: () => import('./series/play-serie/play-serie.component'),
     },
     {
         path: 'details-movie/:id_movie', loadComponent: () => import('./movies/details-movie/details-movie.component'),
