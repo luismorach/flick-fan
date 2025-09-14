@@ -1,16 +1,16 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, Renderer2, signal, ViewChild, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Params, RouterLink } from '@angular/router';
-import { ApiService } from '../../services/API/api.service';
-import { ComunicatorService } from '../../services/comunicator/comunicator.service';
 import { concatAll, map } from 'rxjs/operators';
-import { Credits, Movie } from '../../interfaces/interfaces';
 import { CurrencyPipe, DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { register, SwiperContainer } from 'swiper/element/bundle'
 import 'swiper/css'
-import { getSquareImage, getTallImage, getWideImage } from '../../utils/images-by-default';
-import { MinutesToTimePipe } from '../../pipes/minutes-to-time.pipe';
-import { calculateNumSlides, initSwiper, setOptionsToSwiperWhitMultiplesSlidesPerView } from '../../utils/helpers';
 import { SwiperOptions } from 'swiper/types/swiper-options';
+import { Movie, Credits } from '../../shared/interfaces/interfaces';
+import { MinutesToTimePipe } from '../../shared/pipes/minutes-to-time.pipe';
+import { ApiService } from '../../shared/services/API/api.service';
+import { ComunicatorService } from '../../shared/services/comunicator/comunicator.service';
+import { calculateNumSlides, setOptionsToSwiperWhitMultiplesSlidesPerView, initSwiper } from '../../shared/utils/helpers';
+import { getTallImage, getWideImage, getSquareImage } from '../../shared/utils/images-by-default';
 register();
 
 @Component({
