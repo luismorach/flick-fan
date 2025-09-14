@@ -5,10 +5,10 @@ import {
 import { ActivatedRoute, ParamMap, Params, RouterLink, } from '@angular/router';
 import { UrlSafePipe } from '../../shared/pipes/url-safe.pipe';
 import { combineLatest, concatAll, map, Subscription } from 'rxjs';
-import { ApiService } from '../../shared/services/API/api.service';
-import { episode, listSeries, season, Serie } from '../../shared/interfaces/interfaces';
+import { ApiService } from '../../core/services/API/api.service';
+import { episode, listSeries, season, Serie } from '../../core/interfaces/interfaces';
 import { DatePipe, DOCUMENT, NgOptimizedImage, } from '@angular/common';
-import { ComunicatorService } from '../../shared/services/comunicator/comunicator.service';
+import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
 import { fade } from '../../shared/animations/animations';
 import { register, SwiperContainer } from 'swiper/element/bundle';
 import { getTallImage, getWideImage } from '../../shared/utils/images-by-default';

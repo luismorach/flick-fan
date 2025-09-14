@@ -1,6 +1,6 @@
 import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, ElementRef, input, Renderer2, ViewChild } from '@angular/core';
-import { Movie } from '../../../interfaces/interfaces';
+import { Movie } from '../../../../core/interfaces/interfaces';
 import { MinutesToTimePipe } from '../../../pipes/minutes-to-time.pipe';
 import { getWideImage } from '../../../utils/images-by-default';
 import { RouterLink } from '@angular/router';

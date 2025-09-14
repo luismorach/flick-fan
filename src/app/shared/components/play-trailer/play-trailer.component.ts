@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, Component, ElementRef, Renderer2, computed, inject, input, viewChild } from '@angular/core';
 import { UrlSafePipe } from '../../pipes/url-safe.pipe';
-import { AnimationsService } from '../../services/animations/animations.service';
+import { AnimationsService } from '../../../core/services/animations/animations.service';
 
 @Component({
   selector: 'app-play-trailer',

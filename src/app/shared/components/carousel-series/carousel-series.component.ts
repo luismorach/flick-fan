@@ -1,6 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, ElementRef, input, output, Renderer2, signal, ViewChild, WritableSignal } from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle';
-import { listSeries } from '../../interfaces/interfaces';
+import { listSeries } from '../../../core/interfaces/interfaces';
 import {
   calculateNumSlides, clearAllAnimationsFrame, clearAllTimeouts, deletePaddingToSwiperContainer, getKeyTrailer,
   getRange, initSwiper,

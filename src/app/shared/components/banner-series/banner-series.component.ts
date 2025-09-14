@@ -1,8 +1,8 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, ElementRef, inject, input, output, signal, ViewChild, WritableSignal } from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle';
-import { listMovies, listSeries, playerTrailer, Serie } from '../../../shared/interfaces/interfaces';
-import { AnimationsService } from '../../../shared/services/animations/animations.service';
-import { ComunicatorService } from '../../../shared/services/comunicator/comunicator.service';
+import { listMovies, listSeries, playerTrailer, Serie } from '../../../core/interfaces/interfaces';
+import { AnimationsService } from '../../../core/services/animations/animations.service';
+import { ComunicatorService } from '../../../core/services/comunicator/comunicator.service';
 import { SwiperOptions } from 'swiper/types';
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { RatingComponent } from '../../../shared/components/rating/rating.component';

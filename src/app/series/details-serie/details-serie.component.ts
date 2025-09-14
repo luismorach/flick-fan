@@ -3,9 +3,9 @@ import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, Renderer2
 import { ActivatedRoute, Params, RouterLink } from '@angular/router';
 import { map, concatAll } from 'rxjs';
 import { register, SwiperContainer } from 'swiper/element/bundle';
-import { Serie, Credits } from '../../shared/interfaces/interfaces';
-import { ApiService } from '../../shared/services/API/api.service';
-import { ComunicatorService } from '../../shared/services/comunicator/comunicator.service';
+import { Serie, Credits } from '../../core/interfaces/interfaces';
+import { ApiService } from '../../core/services/API/api.service';
+import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
 import { getTallImage, getWideImage } from '../../shared/utils/images-by-default';
 
 register()

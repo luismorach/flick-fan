@@ -2,18 +2,18 @@ import { Component, inject, signal, ViewChild,  WritableSignal } from '@angular/
 import { fade } from '../shared/animations/animations';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer.component';
-import { listMovies, playerTrailer } from '../shared/interfaces/interfaces';
-import { ApiService } from '../shared/services/API/api.service';
+import { listMovies, playerTrailer } from '../core/interfaces/interfaces';
+import { ApiService } from '../core/services/API/api.service';
 import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { CardMovieSkeletonComponent } from '../shared/components/carousel/card-movie-skeleton/card-movie-skeleton.component';
 import { CardMovieComponent } from '../shared/components/carousel/card-movie/card-movie.component';
 import BannerComponent from '../shared/components/banner/banner.component';
 import { BannerSkeletonComponent } from '../shared/components/banner/banner-skeleton/banner-skeleton.component';
-import { ComunicatorService } from '../shared/services/comunicator/comunicator.service';
+import { ComunicatorService } from '../core/services/comunicator/comunicator.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { calculateNumSlides, scrollToTop } from '../shared/utils/helpers';
-import { BackgroundNavScrollDirective } from '../shared/directives/background-nav-scroll.directive';
+import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
 
 @Component({
   selector: 'app-movies',

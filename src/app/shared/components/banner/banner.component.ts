@@ -6,11 +6,11 @@ import { DOCUMENT, DatePipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { register, SwiperContainer } from 'swiper/element/bundle'
 import { SwiperOptions } from 'swiper/types';
 import 'swiper/css'
-import { listMovies, Movie, playerTrailer } from '../../../shared/interfaces/interfaces';
+import { listMovies, Movie, playerTrailer } from '../../../core/interfaces/interfaces';
 import { RouterLink } from '@angular/router';
-import { AnimationsService } from '../../../shared/services/animations/animations.service';
+import { AnimationsService } from '../../../core/services/animations/animations.service';
 import { RatingComponent } from '../../../shared/components/rating/rating.component';
-import { ComunicatorService } from '../../../shared/services/comunicator/comunicator.service';
+import { ComunicatorService } from '../../../core/services/comunicator/comunicator.service';
 import { fade } from '../../../shared/animations/animations';
 import { getKeyTrailer } from '../../../shared/utils/helpers';
 import { MinutesToTimePipe } from '../../../shared/pipes/minutes-to-time.pipe';

@@ -3,7 +3,7 @@ import Swiper from "swiper"
 import { SwiperContainer } from "swiper/element";
 import { FreeMode, Mousewheel } from "swiper/modules";
 import { SwiperOptions } from "swiper/types";
-import { listMovies, listSeries, Movie, Serie } from "../interfaces/interfaces";
+import { listMovies, listSeries, Movie, Serie } from "../../core/interfaces/interfaces";
 import { take } from "rxjs";
 import { DOCUMENT } from "@angular/common";
 

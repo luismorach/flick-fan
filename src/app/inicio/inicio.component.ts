@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, viewChild, signal,  WritableSignal} from '@angular/core';
 import { carouselComponent } from '../shared/components/carousel/carousel.component';
-import { listMovies, listSeries, playerTrailer } from '../shared/interfaces/interfaces';
-import { ApiService } from '../shared/services/API/api.service';
+import { listMovies, listSeries, playerTrailer } from '../core/interfaces/interfaces';
+import { ApiService } from '../core/services/API/api.service';
 import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer.component';
 import { CarouselSeriesComponent } from '../shared/components/carousel-series/carousel-series.component';
 import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
@@ -11,10 +11,10 @@ import { BannerSkeletonComponent } from '../shared/components/banner/banner-skel
 import BannerComponent from '../shared/components/banner/banner.component';
 import { BannerSeriesComponent } from '../shared/components/banner-series/banner-series.component';
 import { SkeletonComponent } from '../shared/components/banner-series/skeleton/skeleton.component';
-import { ComunicatorService } from '../shared/services/comunicator/comunicator.service';
+import { ComunicatorService } from '../core/services/comunicator/comunicator.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { scrollToTop } from '../shared/utils/helpers';
-import { BackgroundNavScrollDirective } from '../shared/directives/background-nav-scroll.directive';
+import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
 
 @Component({
   selector: 'app-inicio',

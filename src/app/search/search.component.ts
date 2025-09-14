@@ -1,11 +1,11 @@
 import { Component, computed, effect, inject, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ApiService } from '../shared/services/API/api.service';
-import { genre, listMovies, listSeries } from '../shared/interfaces/interfaces';
+import { ApiService } from '../core/services/API/api.service';
+import { genre, listMovies, listSeries } from '../core/interfaces/interfaces';
 import { calculateNumSlides, createChunks, handleCardHover, resetCardHover} from '../shared/utils/helpers';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { CardSerieComponent } from '../shared/components/carousel-series/card-serie/card-serie.component';
-import { ComunicatorService } from '../shared/services/comunicator/comunicator.service';
+import { ComunicatorService } from '../core/services/comunicator/comunicator.service';
 import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
 import { fade } from '../shared/animations/animations';
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';

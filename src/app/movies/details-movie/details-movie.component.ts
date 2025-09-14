@@ -5,10 +5,10 @@ import { CurrencyPipe, DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/
 import { register, SwiperContainer } from 'swiper/element/bundle'
 import 'swiper/css'
 import { SwiperOptions } from 'swiper/types/swiper-options';
-import { Movie, Credits } from '../../shared/interfaces/interfaces';
+import { Movie, Credits } from '../../core/interfaces/interfaces';
 import { MinutesToTimePipe } from '../../shared/pipes/minutes-to-time.pipe';
-import { ApiService } from '../../shared/services/API/api.service';
-import { ComunicatorService } from '../../shared/services/comunicator/comunicator.service';
+import { ApiService } from '../../core/services/API/api.service';
+import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
 import { calculateNumSlides, setOptionsToSwiperWhitMultiplesSlidesPerView, initSwiper } from '../../shared/utils/helpers';
 import { getTallImage, getWideImage, getSquareImage } from '../../shared/utils/images-by-default';
 register();

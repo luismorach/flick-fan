@@ -5,10 +5,10 @@ import {  DOCUMENT, NgOptimizedImage, } from '@angular/common';
 import { fade } from '../../shared/animations/animations';
 import { CarouselSkeletonComponent } from '../../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
 import { carouselComponent } from '../../shared/components/carousel/carousel.component';
-import { listMovies } from '../../shared/interfaces/interfaces';
+import { listMovies } from '../../core/interfaces/interfaces';
 import { UrlSafePipe } from '../../shared/pipes/url-safe.pipe';
-import { ApiService } from '../../shared/services/API/api.service';
-import { ComunicatorService } from '../../shared/services/comunicator/comunicator.service';
+import { ApiService } from '../../core/services/API/api.service';
+import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
 
 
 @Component({

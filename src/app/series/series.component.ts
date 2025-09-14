@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, signal, WritableSignal } from '@angular/core';
-import { ApiService } from '../shared/services/API/api.service';
+import { ApiService } from '../core/services/API/api.service';
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { listSeries, Serie } from '../shared/interfaces/interfaces';
+import { listSeries, Serie } from '../core/interfaces/interfaces';
 import { fade } from '../shared/animations/animations';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { calculateNumSlides, createChunks, handleCardHover, resetCardHover, scrollToTop } from '../shared/utils/helpers';
@@ -10,7 +10,7 @@ import { CardSerieSkeletonComponent } from '../shared/components/carousel-series
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
 import { BannerSeriesComponent } from '../shared/components/banner-series/banner-series.component';
 import { SkeletonComponent } from '../shared/components/banner-series/skeleton/skeleton.component';
-import { BackgroundNavScrollDirective } from '../shared/directives/background-nav-scroll.directive';
+import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({

@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
-import { ComunicatorService } from '../shared/services/comunicator/comunicator.service';
+import { ComunicatorService } from '../core/services/comunicator/comunicator.service';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule} from '@angular/forms';
 

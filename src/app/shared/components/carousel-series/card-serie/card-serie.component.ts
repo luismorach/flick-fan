@@ -1,5 +1,5 @@
 import { Component, ElementRef, input, Renderer2, ViewChild } from '@angular/core';
-import { Movie, Serie } from '../../../interfaces/interfaces';
+import { Movie, Serie } from '../../../../core/interfaces/interfaces';
 import { PlayTrailerEmbeedComponent } from '../../play-trailer-embeed/play-trailer-embeed.component';
 import { startTimeOut, startAnimationFrame, getKeyTrailer, clearAllTimeouts, clearAllAnimationsFrame, waitForTransitionEnd, waitForAnimationFrame, getKeyTrailerOf } from '../../../utils/helpers';
 import { getTallImage, getWideImage } from '../../../utils/images-by-default';

@@ -4,7 +4,7 @@ import {
   WritableSignal
 } from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle'
-import { listMovies, playerTrailer } from '../../interfaces/interfaces';
+import { listMovies, playerTrailer } from '../../../core/interfaces/interfaces';
 import { DatePipe, NgClass} from '@angular/common';
 import { CardMovieSkeletonComponent } from './card-movie-skeleton/card-movie-skeleton.component';
 import { fade } from '../../animations/animations';
