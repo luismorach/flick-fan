@@ -13,10 +13,10 @@
     <div class="relative m-4 mb-12">
         <div class="absolute inset-0 bg-gradient-to-r from-red-600 to-red-800 rounded-2xl blur-xl opacity-50"></div>
         <div class="relative bg-black/90 backdrop-blur-xl rounded-2xl p-6 shadow-2xl ">
-            @if( (selectedType==='movies' && 1 > resultsMovies.length && !isLoadingMovies() ) ||
-            (selectedType==='series' && 1 > resultsSeries.length && !isLoadingSeries()) ||
-            (selectedType==='all' && 1 > resultsSeries.length && 1 > resultsMovies.length && !isLoadingMovies() &&
-            !isLoadingSeries()) ){
+            @if( (selectedType==='movies' && 1 > resultsMovies.length && !moviesLoading() ) ||
+            (selectedType==='series' && 1 > resultsSeries.length && !seriesLoading()) ||
+            (selectedType==='all' && 1 > resultsSeries.length && 1 > resultsMovies.length && !moviesLoading() &&
+            !seriesLoading()) ){
             <h1 class="text-gray-300 text-3xl font-bold p-4 text-center mb-6">
                 No se han encontrado resultados</h1>
             }
@@ -42,8 +42,6 @@
                         <line x1="17" y1="17" x2="22" y2="17" />
                         <line x1="17" y1="7" x2="22" y2="7" />
                     </svg>
-
-
                     Películas
                 </button>
                 <button class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2"
@@ -82,8 +80,8 @@
         <header class="p-6 pl-6 text-white text-2xl">
             <h2 class="text-3xl font-bold text-white mb-2">
                 <span class="inline-block relative bg-gradient-to-r tracking-tight from-red-500 to-red-300 bg-clip-text text-transparent
-                after:h-1 after:w-3/5 after:bg-gradient-to-r after:from-red-500 after:to-red-300 
-                after:rounded-full after:absolute  after:bottom-0 after:left-0 pb-2">
+                        after:h-1 after:w-3/5 after:bg-gradient-to-r after:from-red-500 after:to-red-300 
+                        after:rounded-full after:absolute  after:bottom-0 after:left-0 pb-2">
                     Películas
                 </span>
             </h2>
@@ -92,20 +90,20 @@
             @for(movie of resultsMovies;track movie.id;let i=$index){
             <app-card-movie [movie]="movie"
                 class="relative z-0 w-80 transition-transform duration-300 hover:scale-125 hover:z-20"
-                [ngClass]="{'origin-left':i % numElements==0,'origin-right':i % numElements==numElements-1}">
+                [ngClass]="{'origin-left':i % chunkSize==0,'origin-right':i % chunkSize==chunkSize-1}">
             </app-card-movie>
             }
-            @if(isLoadingMovies()){
-            @for(loading of listElements;track loading){
+            @if(moviesLoading()){
+            @for(loading of chunkSkeletons;track loading){
             <app-card-movie-skeleton></app-card-movie-skeleton>
             }
             }
-            
+
 
         </section>
-        @if((movies()?.total_pages ?? 0) > (movies()?.page ?? 0) && !isLoadingMovies()){
+        @if((movies()?.total_pages ?? 0) > (movies()?.page ?? 0) && !moviesLoading()){
         <button class="px-4 py-2 rounded-lg font-medium  bg-black/90 backdrop-blur-xl z-50 text-gray-300 mb-16 m-4 opacity-100
-                hover:bg-zinc-800" (click)="loadMoreMovies()">
+                            hover:bg-zinc-800" (click)="loadMoreMovies()">
             Cargar mas peliculas
         </button>
         }
@@ -121,35 +119,33 @@
         <header class="p-6 mb-2 pl-12 text-white text-2xl">
             <h2 class="text-3xl font-bold text-white">
                 <span class="inline-block relative bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent
-                after:h-1 after:w-3/5 after:bg-gradient-to-r after:from-red-500 after:to-red-300 
-                after:rounded-full after:absolute  after:bottom-0 after:left-0 pb-2">
+                        after:h-1 after:w-3/5 after:bg-gradient-to-r after:from-red-500 after:to-red-300 
+                        after:rounded-full after:absolute  after:bottom-0 after:left-0 pb-2">
                     Series
                 </span>
             </h2>
         </header>
         <section class="flex flex-col gap-4 px-[42px] justify-around ">
-            @for (serie of resultsSeries; let i = $index; track serie.id) {
-            @if (i % 4 === 0) {
+            @for (chunk of chunks(); track chunk[0].id) {
             <div class="flex justify-around gap-[42px]  overflow-x-auto hide-scrollbar scroll-smooth">
-                @for (s of resultsSeries.slice(i, i + 4); track s.id;let i=$index) {
-                <app-card-serie [serie]="s" (mouseenter)="mouseEnter($event,i)"
-                    (mouseleave)="mouseLeave($event)"></app-card-serie>
+                @for (serie of chunk; track serie.id;let i=$index;) {
+                <app-card-serie [serie]="serie" (mouseenter)="handleMouseEnterCardSerie($event,i)"
+                    (mouseleave)="handleMouseLeaveCardSerie($event)"></app-card-serie>
                 }
                 <div class="w-[806px] shrink-0"></div>
             </div>
             }
-            }
-            @if(isLoadingSeries()){
+            @if(seriesLoading()){
             <section class="flex justify-around gap-[42px]">
-                @for(loading of listElements;track loading){
+                @for(loading of chunkSkeletons;track loading){
                 <app-card-serie-skeleton></app-card-serie-skeleton>
                 }
             </section>
             }
         </section>
-        @if((series()?.total_pages ?? 0) > (series()?.page ?? 0) && !isLoadingSeries()){
+        @if((series()?.total_pages ?? 0) > (series()?.page ?? 0) && !seriesLoading()){
         <button class="px-4 py-2 rounded-lg font-medium  bg-black/90 backdrop-blur-xl z-50 text-gray-300 
-        mx-[42px] my-4 opacity-100 hover:bg-zinc-800" (click)="loadMoreSeries()">
+                mx-[42px] my-4 opacity-100 hover:bg-zinc-800" (click)="loadMoreSeries()">
             Cargar mas series
         </button>
         }

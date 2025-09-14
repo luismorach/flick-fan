@@ -1,65 +1,73 @@
-import { Component, effect, ElementRef, HostListener, inject, Renderer2, signal, ViewChild, WritableSignal } from '@angular/core';
+import { Component, computed, effect, inject, signal, WritableSignal } from '@angular/core';
 import { ApiService } from '../shared/services/API/api.service';
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { listSeries } from '../shared/interfaces/interfaces';
+import { listSeries, Serie } from '../shared/interfaces/interfaces';
 import { fade } from '../shared/animations/animations';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
-import { calculateNumSlides, startTimeOut} from '../shared/utils/helpers';
+import { calculateNumSlides, createChunks, handleCardHover, resetCardHover, scrollToTop } from '../shared/utils/helpers';
 import { CardSerieComponent } from '../shared/components/carousel-series/card-serie/card-serie.component';
 import { CardSerieSkeletonComponent } from '../shared/components/carousel-series/card-serie-skeleton/card-serie-skeleton.component';
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
-import { ComunicatorService } from '../shared/services/comunicator/comunicator.service';
 import { BannerSeriesComponent } from '../shared/components/banner-series/banner-series.component';
 import { SkeletonComponent } from '../shared/components/banner-series/skeleton/skeleton.component';
+import { BackgroundNavScrollDirective } from '../shared/directives/background-nav-scroll.directive';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-series',
-  imports: [BannerSeriesComponent, SkeletonComponent, InfiniteScrollDirective,
-    CardSerieComponent, CardSerieSkeletonComponent, CarouselSeriesSkeletonComponent, CommonModule],
+  imports: [BannerSeriesComponent,
+    SkeletonComponent,
+    InfiniteScrollDirective,
+    CardSerieComponent,
+    CardSerieSkeletonComponent,
+    CarouselSeriesSkeletonComponent,
+    CommonModule,
+    BackgroundNavScrollDirective
+  ],
   templateUrl: './series.component.html',
   styleUrl: './series.component.css',
   animations: [fade]
 })
+
 export default class SeriesComponent {
-  API = inject(ApiService)
+  api = inject(ApiService)
   doc = inject(DOCUMENT)
   airingToday: WritableSignal<listSeries | undefined> = signal(undefined)
   onTheAir: WritableSignal<listSeries | undefined> = signal(undefined)
   popularSeries: WritableSignal<listSeries | undefined> = signal(undefined)
-  numSeries = 0
-  numElements!: number[]
+  chunkSize = 0
+  chunkSkeletons: number[] = []
   isLoading: WritableSignal<boolean> = signal(false)
   spaceBetween = 42
+  chunks = computed(() => {
+    const data = this.popularSeries()?.results ?? [];
+    return createChunks(data, this.chunkSize);
+  });
 
-  @HostListener("window:scroll", ['$event'])
-  enableBackgroundNav(event: any) {
-    let offset = event.srcElement.children[0].scrollTop
-    if (offset > 20) {
-      this.comunicatorService.setBackgroundNav(true)
-    } else {
-      this.comunicatorService.setBackgroundNav(false)
-    }
+  constructor() {
+    scrollToTop()
+    this.api.getPopularSeries(1).pipe(takeUntilDestroyed())
+      .subscribe(data => this.popularSeries.set(data));
+
+    this.api.getOnTheAirSeries(1).pipe(takeUntilDestroyed())
+      .subscribe(data => this.onTheAir.set(data));
   }
 
-  constructor(private comunicatorService: ComunicatorService) {
-    this.doc.scrollingElement?.scrollTo(0, 0)
+  ngOnInit() {
     effect(() => {
-      this.API.getPopularSeries(1).subscribe(data => this.popularSeries.set(data))
-    })
-    effect(() => {
-      console.log('primeros dattos')
-      this.API.getOnTheAirSeries(1).subscribe(data => this.onTheAir.set(data))
-    })
+      if (this.popularSeries() !== undefined) {
+        this.isLoading.set(false);
+      }
+    });
   }
 
   ngAfterViewInit() {
-    this.numSeries = calculateNumSlides(this.doc.scrollingElement?.scrollWidth ?? 0, 336)
-    this.numElements = Array.from({ length: this.numSeries }, (_, i) => i)
-    console.log(this.numSeries)
-
+    this.chunkSize = calculateNumSlides(this.doc.scrollingElement?.scrollWidth ?? 0, 336)
+    this.chunkSkeletons = Array.from({ length: this.chunkSize }, (_, i) => i)
   }
 
-  onScroll() {
+  loadMoreOnScroll() {
+    if (this.isLoading()) return
     let page = this.popularSeries()?.page ?? 0;
     let total_pages = this.popularSeries()?.total_pages ?? 0;
     if (page >= total_pages) {
@@ -67,31 +75,15 @@ export default class SeriesComponent {
       return
     }
     this.isLoading.set(true)
-    this.API.getMoreData(this.API.getPopularSeries.bind(this.API), this.popularSeries)
-  }
-  
-  get results() {
-    return this.popularSeries()?.results ?? [];
+    this.api.getMoreData(this.api.getPopularSeries.bind(this.api), this.popularSeries)
   }
 
-  mouseEnter(event: any, index: number) {
-    const child = event.target as HTMLElement;
-    const parent = child.parentElement as HTMLElement;
-
-    //parent.style.width =  (this.doc.scrollingElement?.scrollWidth ?? 0)+806 + 'px'
-    console.log('entro', child.offsetLeft, child.offsetWidth, parent.clientWidth, child, index)
-    startTimeOut(() => {
-      if (index > 1)
-        parent.scrollLeft = (child.offsetLeft + Math.floor(child.offsetWidth * 2.8)) - parent.clientWidth - this.spaceBetween
-    }, 300)
-
-    console.log(parent)
+  handleMouseEnterCardSerie(event: MouseEvent, index: number) {
+    handleCardHover(event,index,this.spaceBetween)
   }
 
-  mouseLeave(event: any) {
-    const child = event.target as HTMLElement;
-    const parent = child.parentElement as HTMLElement;
-    parent.scrollLeft = 0
+  handleMouseLeaveCardSerie(event: MouseEvent) {
+    resetCardHover(event)
   }
 
 }

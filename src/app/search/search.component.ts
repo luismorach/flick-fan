@@ -1,8 +1,8 @@
-import { Component, effect, inject, signal, WritableSignal } from '@angular/core';
+import { Component, computed, effect, inject, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../shared/services/API/api.service';
 import { genre, listMovies, listSeries } from '../shared/interfaces/interfaces';
-import { calculateNumSlides, startTimeOut } from '../shared/utils/helpers';
+import { calculateNumSlides, createChunks, handleCardHover, resetCardHover} from '../shared/utils/helpers';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { CardSerieComponent } from '../shared/components/carousel-series/card-serie/card-serie.component';
 import { ComunicatorService } from '../shared/services/comunicator/comunicator.service';
@@ -27,38 +27,42 @@ export default class SearchComponent {
   currentMovies: WritableSignal<listMovies | undefined> = signal(undefined)
   currentSeries: WritableSignal<listSeries | undefined> = signal(undefined)
   genres: WritableSignal<genre[] | undefined> = signal(undefined)
-  isLoadingMovies: WritableSignal<boolean> = signal(false)
-  isLoadingSeries: WritableSignal<boolean> = signal(false)
-  listElements: number[] = []
-  numElements = 0
-  currentGenreID = 0
+  moviesLoading: WritableSignal<boolean> = signal(false)
+  seriesLoading: WritableSignal<boolean> = signal(false)
+  chunkSkeletons: number[] = []
+  chunkSize = 0
+  selectedGenreId = 0
   doc = inject(DOCUMENT)
-  API = inject(ApiService)
+  api = inject(ApiService)
   spaceBetween = 42
-  selectedType = '0'
-  wordSearch = ''
+  selectedType = 'all'
+  searchQuery = ''
+  chunks = computed(() => {
+    const data = this.currentSeries()?.results ?? [];
+    return createChunks(data, this.chunkSize);
+  });
 
   constructor(private activatedRoute: ActivatedRoute, private comunicatorService: ComunicatorService) {
     this.comunicatorService.setBackgroundNav(true)
     this.getGenres()
     this.subscribeToRouteChanges()
     effect(() => {
-      console.log(this.movies(), this.currentGenreID)
+      console.log(this.movies(), this.selectedGenreId)
       this.updateMovies()
-      this.isLoadingMovies.update((value) => !value)
+      this.moviesLoading.update((value) => !value)
     })
     effect(() => {
-      console.log(this.series(), this.currentGenreID)
+      console.log(this.series(), this.selectedGenreId)
       this.updateSeries()
-      this.isLoadingSeries.update((value) => !value)
+      this.seriesLoading.update((value) => !value)
     })
   }
   subscribeToRouteChanges() {
     // Es5cucha cambios en la ruta: /search/:name
-    
+
     this.activatedRoute.paramMap.subscribe(params => {
-      this.wordSearch = params.get('wordSearch') || '';
-      if (this.wordSearch) {
+      this.searchQuery = params.get('wordSearch') || '';
+      if (this.searchQuery) {
         this.getMovies();
         this.getSeries()
       }
@@ -66,13 +70,13 @@ export default class SearchComponent {
   }
 
   ngAfterViewInit() {
-    this.numElements = calculateNumSlides(this.doc.scrollingElement?.scrollWidth ?? 0, 336)
-    this.listElements = Array.from({ length: this.numElements }, (_, i) => i)
+    this.chunkSize = calculateNumSlides(this.doc.scrollingElement?.scrollWidth ?? 0, 336)
+    this.chunkSkeletons = Array.from({ length: this.chunkSize }, (_, i) => i)
   }
 
   getMovies() {
     this.movies.set(undefined)
-    let searchedMovies$ = this.API.searchMovie(1, this.wordSearch)
+    let searchedMovies$ = this.api.searchMovie(1, this.searchQuery)
     searchedMovies$.subscribe((movies: listMovies) => {
       console.log(movies)
       document.scrollingElement?.scrollTo(0, 0)
@@ -82,7 +86,7 @@ export default class SearchComponent {
 
   getSeries() {
     this.series.set(undefined)
-    let searchedSeries$ = this.API.searchSerie(1, this.wordSearch)
+    let searchedSeries$ = this.api.searchSerie(1, this.searchQuery)
     searchedSeries$.subscribe((series: listSeries) => {
       console.log(series)
       document.scrollingElement?.scrollTo(0, 0)
@@ -90,17 +94,17 @@ export default class SearchComponent {
     })
   }
   getGenres() {
-    this.API.getGenres().subscribe((genres: any) => this.genres.set(genres))
+    this.api.getGenres().subscribe((genres: any) => this.genres.set(genres))
   }
 
   filterByGenre(event: Event) {
     const target = event.target as HTMLSelectElement
-    this.currentGenreID = Number(target.value)
+    this.selectedGenreId = Number(target.value)
     this.updateMovies()
     this.updateSeries()
   }
 
-  getDataByGenre<T extends listMovies | listSeries | undefined>
+  filterDataByGenre<T extends listMovies | listSeries | undefined>
     (data: WritableSignal<T>, genre_id: number) {
     if (!data()) return
     const filteredData = data()?.results.filter((data) =>
@@ -110,20 +114,20 @@ export default class SearchComponent {
   }
 
   updateMovies() {
-    if (this.currentGenreID === 0) {
+    if (this.selectedGenreId === 0) {
       this.currentMovies.set(this.movies())
       return
     }
-    const movies = this.getDataByGenre(this.movies, this.currentGenreID)
+    const movies = this.filterDataByGenre(this.movies, this.selectedGenreId)
     this.currentMovies.set(movies)
 
   }
   updateSeries() {
-    if (this.currentGenreID === 0) {
+    if (this.selectedGenreId === 0) {
       this.currentSeries.set(this.series())
       return
     }
-    const series = this.getDataByGenre(this.series, this.currentGenreID)
+    const series = this.filterDataByGenre(this.series, this.selectedGenreId)
     this.currentSeries.set(series)
 
   }
@@ -132,21 +136,21 @@ export default class SearchComponent {
     let page = this.movies()?.page ?? 0;
     let total_pages = this.movies()?.total_pages ?? 0;
     if (page >= total_pages) {
-      this.isLoadingMovies.set(false)
+      this.moviesLoading.set(false)
       return
     }
-    this.isLoadingMovies.set(true)
-    this.API.getMoreData(this.API.searchMovie.bind(this.API), this.movies, this.wordSearch)
+    this.moviesLoading.set(true)
+    this.api.getMoreData(this.api.searchMovie.bind(this.api), this.movies, this.searchQuery)
   }
   loadMoreSeries() {
     let page = this.series()?.page ?? 0;
     let total_pages = this.series()?.total_pages ?? 0;
     if (page >= total_pages) {
-      this.isLoadingSeries.set(false)
+      this.seriesLoading.set(false)
       return
     }
-    this.isLoadingSeries.set(true)
-    this.API.getMoreData(this.API.searchSerie.bind(this.API), this.series, this.wordSearch)
+    this.seriesLoading.set(true)
+    this.api.getMoreData(this.api.searchSerie.bind(this.api), this.series, this.searchQuery)
   }
 
   get resultsSeries() {
@@ -157,24 +161,11 @@ export default class SearchComponent {
     return this.currentMovies()?.results ?? [];
   }
 
-  mouseEnter(event: any, index: number) {
-    const child = event.target as HTMLElement;
-    const parent = child.parentElement as HTMLElement;
-
-    //parent.style.width =  (this.doc.scrollingElement?.scrollWidth ?? 0)+806 + 'px'
-    console.log('entro', child.offsetLeft, child.offsetWidth, parent.clientWidth, child, index)
-    startTimeOut(() => {
-      if (index > 1)
-        parent.scrollLeft = (child.offsetLeft + Math.floor(child.offsetWidth * 2.8)) -
-          parent.clientWidth - this.spaceBetween
-    }, 300)
-
-    console.log(parent)
+  handleMouseEnterCardSerie(event: MouseEvent, index: number) {
+    handleCardHover(event, index, this.spaceBetween)
   }
 
-  mouseLeave(event: any) {
-    const child = event.target as HTMLElement;
-    const parent = child.parentElement as HTMLElement;
-    parent.scrollLeft = 0
+  handleMouseLeaveCardSerie(event: MouseEvent) {
+    resetCardHover(event)
   }
 }

@@ -15,7 +15,7 @@ register();
 
 @Component({
   selector: 'app-details-movie',
-  imports: [DatePipe, NgOptimizedImage, DecimalPipe, CurrencyPipe, RouterLink, MinutesToTimePipe],
+  imports: [DatePipe, NgOptimizedImage, DecimalPipe, RouterLink, MinutesToTimePipe],
   templateUrl: './details-movie.component.html',
   styleUrl: './details-movie.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

@@ -1,59 +1,57 @@
-@defer(when nowPlaying()){
-<app-banner [listMovies]="nowPlaying" (onPlayTrailer)="playTrailer($event)" 
-(requestMoreData)="API.getMoreData(this.API.getNowPlaying.bind(this.API),nowPlaying)" @fade></app-banner>
-}
-@placeholder{
-    <app-banner-skeleton @fade></app-banner-skeleton>
-}
+<main appBackgroundNavScroll>
+    @defer(when nowPlaying()){
+        <app-banner [listMovies]="nowPlaying" (onPlayTrailer)="playTrailer($event)" 
+        (requestMoreData)="API.getMoreData(this.API.getNowPlaying.bind(this.API),nowPlaying)" @fade></app-banner>
+    }
+    @placeholder{
+        <app-banner-skeleton @fade></app-banner-skeleton>
+    }
 
+    @defer(when popularMovies()){
+        <app-carousel @fade [listMovies]="popularMovies" title="Películas populares" [importance]="3" id="popularMovies"
+            (onPlayTrailer)="playTrailer($event)" (requestMoreData)="API.getMoreData(this.API.getPopular.bind(this.API),popularMovies)">
+        </app-carousel>
+    } @placeholder{
+        <app-carousel-skeleton @fade ></app-carousel-skeleton>
+    }
+    
+    @defer(when upcomingMovies() ){
+        <app-carousel @fade [listMovies]="upcomingMovies" title="Películas recientes" [importance]="2" id="upComingMovies"
+            (onPlayTrailer)="playTrailer($event)" (requestMoreData)="API.getMoreData(this.API.getUpcoming.bind(this.API),upcomingMovies)">
+        </app-carousel>
 
-@defer(when popularMovies()){
-    <app-carousel @fade [listMovies]="popularMovies" title="Películas populares" [importance]="3" id="popularMovies"
-        (onPlayTrailer)="playTrailer($event)" (requestMoreData)="API.getMoreData(this.API.getPopular.bind(this.API),popularMovies)">
-    </app-carousel>
-} @placeholder{
-    <app-carousel-skeleton @fade ></app-carousel-skeleton>
-}
- 
-@defer(when upcomingMovies() ){
-    <app-carousel @fade [listMovies]="upcomingMovies" title="Películas recientes" [importance]="2" id="upComingMovies"
-        (onPlayTrailer)="playTrailer($event)" (requestMoreData)="API.getMoreData(this.API.getUpcoming.bind(this.API),upcomingMovies)">
-    </app-carousel>
+    } @placeholder{
+        <app-carousel-skeleton @fade ></app-carousel-skeleton>
+    }
+    
 
-} @placeholder{
-    <app-carousel-skeleton @fade ></app-carousel-skeleton>
-}
- 
+    @defer(when airingToday()){
+        <app-banner-series [listSeries]="airingToday" 
+        (requestMoreData)="API.getMoreData(this.API.getAiringTodaySeries.bind(this.API),airingToday)" @fade>
+        </app-banner-series>
+    }@placeholder{
+        <app-skeleton [hasSlides]="true" @fade></app-skeleton>
+    }
+    @defer(when onTheAir()){
+        <app-carousel-series [listSeries]="onTheAir" id="onTheAirSeries" title="Series al aire"
+        (requestMoreData)="API.getMoreData(this.API.getOnTheAirSeries.bind(this.API),onTheAir)">
+        </app-carousel-series>
+    } @placeholder{
+        <app-carousel-series-skeleton @fade></app-carousel-series-skeleton>
+    }
 
-@defer(when airingToday()){
-<app-banner-series [listSeries]="airingToday" 
-(requestMoreData)="API.getMoreData(this.API.getAiringTodaySeries.bind(this.API),airingToday)" @fade>
-</app-banner-series>
-}@placeholder{
-   <app-skeleton [hasSlides]="true" @fade></app-skeleton>
-}
-@defer(when onTheAir() && nowPlaying()){
-<app-carousel-series [listSeries]="onTheAir" id="onTheAirSeries" title="Series al aire"
-(requestMoreData)="API.getMoreData(this.API.getOnTheAirSeries.bind(this.API),onTheAir)">
-</app-carousel-series>
-} @placeholder{
-   <app-carousel-series-skeleton @fade></app-carousel-series-skeleton>
-}
- 
+    @defer(when popularSeries() ){
+        <app-carousel-series [listSeries]="popularSeries" id="popularSeries" title="Series populares"
+        (requestMoreData)="API.getMoreData(this.API.getPopularSeries.bind(this.API),popularSeries)">
+        </app-carousel-series>
+    }@placeholder{
+    <app-carousel-series-skeleton @fade></app-carousel-series-skeleton>
+    }
 
-@defer(when popularSeries() && nowPlaying()){
-<app-carousel-series [listSeries]="popularSeries" id="popularSeries" title="Series populares"
-(requestMoreData)="API.getMoreData(this.API.getPopularSeries.bind(this.API),popularSeries)">
-</app-carousel-series>
-}@placeholder{
-   <app-carousel-series-skeleton @fade></app-carousel-series-skeleton>
-}
- 
-
-
-@defer(when player.isPlaying){
-<app-play-trailer [videoKey]="player.videoId()"></app-play-trailer>
-}
-@placeholder{
-<span></span>
-} 
+    @defer(when player.isPlaying){
+        <app-play-trailer [videoKey]="player.videoId()"></app-play-trailer>
+    }
+    @placeholder{
+        <span></span>
+    } 
+</main>

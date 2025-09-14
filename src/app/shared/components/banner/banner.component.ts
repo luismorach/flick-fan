@@ -45,18 +45,8 @@ export default class BannerComponent {
   private paginationObserver?: MutationObserver;
   private shadowChildObserver?: MutationObserver;
 
-  @HostListener("window:scroll", ['$event'])
-  enableBackgroundNav(event: any) {
-    let offset = event.srcElement.children[0].scrollTop
-    if (offset > 20) {
-      this.comunicatorService.setBackgroundNav(true)
-    } else {
-      this.comunicatorService.setBackgroundNav(false)
-    }
-  }
+ 
   constructor(@Inject(DOCUMENT) private document: Document, public comunicatorService: ComunicatorService) {
-
-    this.comunicatorService.setBackgroundNav(false)
     effect(() => {
       this.movie.set(this.listMovies()()?.results[this.indexCurrentElement])
       this.isLoading.set(false)

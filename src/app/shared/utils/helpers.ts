@@ -1,14 +1,14 @@
-import { ElementRef, Renderer2 } from "@angular/core"
+import { ElementRef, inject, NgZone, Renderer2 } from "@angular/core"
 import Swiper from "swiper"
 import { SwiperContainer } from "swiper/element";
 import { FreeMode, Mousewheel } from "swiper/modules";
 import { SwiperOptions } from "swiper/types";
 import { listMovies, listSeries, Movie, Serie } from "../interfaces/interfaces";
-import { Subscription } from "rxjs";
+import { take } from "rxjs";
+import { DOCUMENT } from "@angular/common";
 
 var timeouts: number[] = []
 var animationsID: number[] = []
-var subscriptions: Subscription[] = []
 
 export function setOptionsToSwiperWhitMultiplesSlidesPerView(numSlides: number, spaceBetween: number) {
     const swiperOptions: SwiperOptions = {
@@ -118,13 +118,50 @@ export function getKeyTrailerOf(data: Movie | Serie | undefined): string {
     return key;
 }
 
-export function setSubscription(subscription: Subscription) {
-    subscriptions.push(subscription)
+export function scrollToTop() {
+    const ngZone = inject(NgZone);
+    const doc = inject(DOCUMENT);
+
+    ngZone.onStable.pipe(take(1)).subscribe(() => {
+        const el = doc.scrollingElement || doc.documentElement || doc.body;
+        if ('scrollTo' in el) {
+            (el as HTMLElement).scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        }
+    });
 }
-export function removeAllSubscription() {
-    subscriptions.forEach(subscription => {
-        subscription.unsubscribe()
-    })
+export function createChunks(data: Serie[], chunkSize: number) {
+    const newChunks: typeof data[] = [];
+    for (let i = 0; i < data.length; i += chunkSize) {
+        newChunks.push(data.slice(i, i + chunkSize));
+    }
+    return newChunks
 }
+
+export function handleCardHover(
+  event: MouseEvent, 
+  index: number, 
+  spaceBetween: number, 
+  timeoutDelay = 300
+) {
+  const child = event.target as HTMLElement;
+  const parent = child.parentElement as HTMLElement;
+  if (!child || !parent) return;
+
+  startTimeOut(() => {
+    if (index > 1) {
+      parent.scrollLeft = (child.offsetLeft + Math.floor(child.offsetWidth * 2.8)) 
+                           - parent.clientWidth - spaceBetween;
+    }
+  }, timeoutDelay);
+}
+
+export function resetCardHover(event: MouseEvent) {
+  clearAllTimeouts();
+  const child = event.target as HTMLElement;
+  const parent = child.parentElement as HTMLElement;
+  if (!child || !parent) return;
+  parent.scrollLeft = 0;
+}
+
 
 

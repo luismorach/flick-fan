@@ -1,19 +1,9 @@
 @import 'tailwindcss';
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap') layer(utilities);
 
 @theme {
   --font-racing: 'racing sans one';
   --font-roboto: Roboto;
 
-  @keyframes leftToRight {
-    0% {
-      left: -1000;
-    }
-
-    100% {
-      left: 0;
-    }
-  }
 }
 
 /*
@@ -41,13 +31,6 @@
     font-family: 'racing sans one';
     src: url('./assets/fonts/racing-sans-one/RacingSansOne-Regular.ttf');
   }
-
-  @font-face {
-    font-family: 'Roboto';
-    src: url('./assets/fonts/roboto/Roboto-Regular.ttf');
-  }
-
-
 }
 
 body,

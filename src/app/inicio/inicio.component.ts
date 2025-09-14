@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, viewChild, signal, effect, WritableSignal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, viewChild, signal,  WritableSignal} from '@angular/core';
 import { carouselComponent } from '../shared/components/carousel/carousel.component';
 import { listMovies, listSeries, playerTrailer } from '../shared/interfaces/interfaces';
 import { ApiService } from '../shared/services/API/api.service';
@@ -6,18 +6,22 @@ import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer
 import { CarouselSeriesComponent } from '../shared/components/carousel-series/carousel-series.component';
 import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
 import { fade } from '../shared/animations/animations';
-import { LoadingComponent } from './components/loading/loading.component';
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
 import { DOCUMENT } from '@angular/common';
 import { BannerSkeletonComponent } from '../shared/components/banner/banner-skeleton/banner-skeleton.component';
 import BannerComponent from '../shared/components/banner/banner.component';
 import { BannerSeriesComponent } from '../shared/components/banner-series/banner-series.component';
 import { SkeletonComponent } from '../shared/components/banner-series/skeleton/skeleton.component';
+import { ComunicatorService } from '../shared/services/comunicator/comunicator.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { scrollToTop } from '../shared/utils/helpers';
+import { BackgroundNavScrollDirective } from '../shared/directives/background-nav-scroll.directive';
 
 @Component({
   selector: 'app-inicio',
   imports: [BannerComponent, carouselComponent, PlayTrailerComponent, BannerSeriesComponent, SkeletonComponent,
-    CarouselSeriesComponent, CarouselSkeletonComponent,BannerSkeletonComponent,LoadingComponent,CarouselSeriesSkeletonComponent],
+    CarouselSeriesComponent, CarouselSkeletonComponent, BannerSkeletonComponent, 
+    CarouselSeriesSkeletonComponent,BackgroundNavScrollDirective],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,36 +30,35 @@ import { SkeletonComponent } from '../shared/components/banner-series/skeleton/s
 export default class InicioComponent {
 
   API = inject(ApiService)
+
   playTrailerComponent = viewChild(PlayTrailerComponent)
   popularMovies: WritableSignal<listMovies | undefined> = signal(undefined)
   upcomingMovies: WritableSignal<listMovies | undefined> = signal(undefined)
-  nowPlaying : WritableSignal<listMovies | undefined> = signal(undefined)
-  airingToday : WritableSignal<listSeries | undefined> = signal(undefined)
-  onTheAir:WritableSignal<listSeries | undefined> = signal(undefined)
-  popularSeries:WritableSignal<listSeries | undefined> = signal(undefined)
+  nowPlaying: WritableSignal<listMovies | undefined> = signal(undefined)
+  airingToday: WritableSignal<listSeries | undefined> = signal(undefined)
+  onTheAir: WritableSignal<listSeries | undefined> = signal(undefined)
+  popularSeries: WritableSignal<listSeries | undefined> = signal(undefined)
   player: playerTrailer = { videoId: signal(''), isPlaying: false }
-  doc = inject(DOCUMENT)
 
-  constructor() {
-    this.doc.scrollingElement?.scrollTo(0, 0)
-     effect(() => {
-      this.API.getNowPlaying(1).subscribe(data => this.nowPlaying.set(data))
-    })
-    effect(() => {
-      this.API.getPopular(1).subscribe(data => this.popularMovies.set(data))
-    })
-    effect(() => {
-      this.API.getUpcoming(1).subscribe(data => this.upcomingMovies.set(data))
-    })
-    effect(() => {
-      this.API.getOnTheAirSeries(1).subscribe(data => this.onTheAir.set(data))
-    })
-    effect(() => {
-      this.API.getAiringTodaySeries(1).subscribe(data => this.airingToday.set(data))
-    })
-    effect(() => {
-      this.API.getPopularSeries(1).subscribe(data => this.popularSeries.set(data))
-    })
+  constructor(public comunicatorService: ComunicatorService) {
+    scrollToTop()
+    this.comunicatorService.setBackgroundNav(false)
+    this.loadMoviesAndSeries()
+  }
+
+  private loadMoviesAndSeries() {
+    const loaders = [
+      { call: () => this.API.getNowPlaying(1), signal: this.nowPlaying },
+      { call: () => this.API.getPopular(1), signal: this.popularMovies },
+      { call: () => this.API.getUpcoming(1), signal: this.upcomingMovies },
+      { call: () => this.API.getOnTheAirSeries(1), signal: this.onTheAir },
+      { call: () => this.API.getAiringTodaySeries(1), signal: this.airingToday },
+      { call: () => this.API.getPopularSeries(1), signal: this.popularSeries },
+    ];
+
+    loaders.forEach(({ call, signal }) => {
+      call().pipe(takeUntilDestroyed()).subscribe(data => signal.set(data));
+    });
   }
 
   playTrailer(player: playerTrailer) {

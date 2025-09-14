@@ -1,7 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, ElementRef, input, output, Renderer2, signal, ViewChild, WritableSignal } from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle';
 import { listSeries } from '../../interfaces/interfaces';
-import { DecimalPipe, NgClass, NgOptimizedImage } from '@angular/common';
 import {
   calculateNumSlides, clearAllAnimationsFrame, clearAllTimeouts, deletePaddingToSwiperContainer, getKeyTrailer,
   getRange, initSwiper,
@@ -12,7 +11,6 @@ import {
 } from '../../utils/helpers';
 import { fade } from '../../animations/animations';
 import { CardSerieSkeletonComponent } from './card-serie-skeleton/card-serie-skeleton.component';
-import { PlayTrailerEmbeedComponent } from '../play-trailer-embeed/play-trailer-embeed.component';
 import { getTallImage, getWideImage } from '../../utils/images-by-default';
 import { CardSerieComponent } from './card-serie/card-serie.component';
 
@@ -20,7 +18,7 @@ register();
 
 @Component({
   selector: 'app-carousel-series',
-  imports: [NgOptimizedImage, NgClass, CardSerieSkeletonComponent, PlayTrailerEmbeedComponent, DecimalPipe, CardSerieComponent],
+  imports: [ CardSerieSkeletonComponent,  CardSerieComponent],
   templateUrl: './carousel-series.component.html',
   styleUrl: './carousel-series.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

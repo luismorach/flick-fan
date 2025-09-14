@@ -5,8 +5,7 @@ import {
 } from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle'
 import { listMovies, playerTrailer } from '../../interfaces/interfaces';
-import { DatePipe, NgClass, NgOptimizedImage } from '@angular/common';
-import { PlayTrailerEmbeedComponent } from '../play-trailer-embeed/play-trailer-embeed.component';
+import { DatePipe, NgClass} from '@angular/common';
 import { CardMovieSkeletonComponent } from './card-movie-skeleton/card-movie-skeleton.component';
 import { fade } from '../../animations/animations';
 import {
@@ -20,8 +19,7 @@ register();
 
 @Component({
   selector: 'app-carousel',
-  imports: [NgOptimizedImage, DatePipe, NgClass, PlayTrailerEmbeedComponent, CardMovieSkeletonComponent, 
-    CardMovieComponent],
+  imports: [NgClass, CardMovieSkeletonComponent, CardMovieComponent],
   templateUrl: './carousel.component.html',
   styleUrl: './carousel.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -34,8 +32,6 @@ export class carouselComponent {
 
   @ViewChild('swiper', { static: false }) swiperContainer!: ElementRef<SwiperContainer>
   @ViewChild('main') mainContainer!: ElementRef<HTMLElement>
-  @ViewChild(PlayTrailerEmbeedComponent) trailerEmbeed!: PlayTrailerEmbeedComponent
-  @ViewChild(PlayTrailerEmbeedComponent, { read: ElementRef }) trailerEmbeedElement !: ElementRef
   onPlayTrailer = output<playerTrailer>()
   requestMoreData = output<void>()
   listMovies = input.required<WritableSignal<listMovies | undefined>>()
