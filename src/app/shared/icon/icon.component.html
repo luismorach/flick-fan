@@ -1,0 +1,25 @@
+<!-- icon.component.html -->
+<ng-container [ngSwitch]="name">
+    <svg *ngSwitchCase="'plus'" class="{{ size }} {{ color }} {{backgroundColor}}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+
+    <svg *ngSwitchCase="'clock'" class="{{ size }} {{ color }} {{backgroundColor}}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12,6 12,12 16,14"></polyline>
+    </svg>
+
+    <svg *ngSwitchCase="'info'" class="{{ size }} {{ color }} {{backgroundColor}}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+        width="20" height="20" fill="none" stroke="currentColor" stroke-width="46">
+        <circle cx="256" cy="256" r="216" />
+        <line x1="256" y1="230" x2="256" y2="352" stroke-linecap="round" />
+        <circle cx="256" cy="144" r="36" fill="currentColor" stroke="none" />
+    </svg>
+
+    <svg *ngSwitchCase="'star'" class="{{ size }} {{ color }} {{backgroundColor}}" viewBox="0 0 24 24">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+    </svg>
+</ng-container>

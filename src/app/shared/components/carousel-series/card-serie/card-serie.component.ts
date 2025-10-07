@@ -1,74 +1,94 @@
-import { Component, ElementRef, input, Renderer2, ViewChild } from '@angular/core';
+import { Component, ElementRef, input, output, Renderer2, ViewChild } from '@angular/core';
 import { PlayTrailerEmbeedComponent } from '../../play-trailer-embeed/play-trailer-embeed.component';
-import { startTimeOut, startAnimationFrame, getKeyTrailer, clearAllTimeouts, clearAllAnimationsFrame, waitForTransitionEnd, waitForAnimationFrame, getKeyTrailerOf } from '../../../utils/helpers';
-import { getTallImage, getWideImage } from '../../../utils/images-by-default';
+import {getKeyTrailer} from '../../../utils/helpers';
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Serie } from '../../../../core/interfaces/serie/serie.interface';
+import { runTransition } from '../../../utils/transition-manager';
+import { TimerManager } from '../../../utils/timer-manager';
+import { AutoImagePipe } from '../../../pipes/auto-image.pipe';
 
 @Component({
   selector: 'app-card-serie',
-  imports: [PlayTrailerEmbeedComponent,NgOptimizedImage,DecimalPipe,RouterLink],
+  imports: [PlayTrailerEmbeedComponent, NgOptimizedImage, DecimalPipe, RouterLink,AutoImagePipe],
   templateUrl: './card-serie.component.html',
   styleUrl: './card-serie.component.css'
 })
 export class CardSerieComponent {
   serie = input.required<Serie>();
   numSlides: number = 1
+  hoverEnter = output<HTMLElement>();
+  hoverLeave = output<HTMLElement>();
   slideWidth = 288
   @ViewChild('main') mainContainer!: ElementRef<HTMLElement>
   @ViewChild(PlayTrailerEmbeedComponent) trailerEmbeed!: PlayTrailerEmbeedComponent
   @ViewChild(PlayTrailerEmbeedComponent, { read: ElementRef }) trailerEmbeedElement !: ElementRef
-  getTallImage = getTallImage
-  getWideImage = getWideImage
+  isCardCollapse = true
 
-  constructor(private renderer2: Renderer2) { }
+  constructor(private renderer2: Renderer2, private timerManager:TimerManager) { }
 
-  async onMouseEnterToSlide() {
+  /* ngAfterViewInit() {
+    this.setEventTransition()
+  } */
+  onMouseEnterToSlide() {
+    console.log('entrando al card')
     const slide = this.mainContainer.nativeElement
-    startTimeOut(async () => {
-      this.expandSlide(slide)
-      this.animateImageChange(slide, 0, 1);
+    this.timerManager.addTimeout(() => {
+      this.changeWidthSlide(slide, Math.floor(this.slideWidth * 2.8), '0s')
+      this.animateImageChange(slide, 0, 1, '0s');
+      this.hoverEnter.emit(slide)
       this.moveAndPlayTrailer(slide, 0)
     }, 300)
   }
-
-  private expandSlide(slide: HTMLElement) {
-    startAnimationFrame(() => {
-      this.renderer2.setStyle(slide, 'width', `${Math.floor(this.slideWidth * 2.8)}px`)
-      this.renderer2.setStyle(slide, 'transition', 'width .3s cubic-bezier(.2,.45,0,1)')
-    })
+  onTransitionStart = (event: TransitionEvent) => {
+    const prop = event.propertyName;
+    // solo nos interesa width
+    if (prop !== 'width' || !this.isCardCollapse) return;
+    const slide = this.mainContainer.nativeElement
+    console.log('transicion iniciada en card', this.isCardCollapse)
+    this.hoverLeave.emit(slide)
   }
 
-  private animateImageChange(slide: HTMLElement, posterOpacity: number, hoverOpacity: number) {
+  setEventTransition() {
+    const slide = this.mainContainer.nativeElement
+    slide.addEventListener('transitionstart', this.onTransitionStart, { once: true })
+  }
+
+  private changeWidthSlide(slide: HTMLElement, width: number, delay: string) {
+    this.isCardCollapse = !this.isCardCollapse
+    runTransition(slide, (() => {
+      this.renderer2.setStyle(slide, 'transition', `width .3s cubic-bezier(.2,.45,0,1) ${delay}`)
+      this.renderer2.setStyle(slide, 'width', `${width}px`)
+    }))
+  }
+
+  private animateImageChange(slide: HTMLElement, posterOpacity: number,
+    hoverOpacity: number, delay: string) {
     const poster = slide.children[0]
     const hover = slide.children[1]
 
     if (!poster && !hover) return
-
-    startAnimationFrame(() => {
-      this.renderer2.setStyle(poster, 'transition', 'opacity .3s cubic-bezier(.2,.45,0,1)')
+      this.renderer2.setStyle(poster, 'transition', `opacity .3s cubic-bezier(.2,.45,0,1) ${delay}`)
       this.renderer2.setStyle(poster, 'opacity', `${posterOpacity}`);
-      this.renderer2.setStyle(hover, 'transition', 'opacity .3s cubic-bezier(.2,.45,0,1)')
+      this.renderer2.setStyle(hover, 'transition', `opacity .3s cubic-bezier(.2,.45,0,1) ${delay}`)
       this.renderer2.setStyle(hover, 'opacity', `${hoverOpacity}`);
-    })
   }
 
   private moveAndPlayTrailer(slide: HTMLElement, id: number) {
-    let videoId = getKeyTrailerOf(this.serie());
+    let videoId = getKeyTrailer(this.serie());
 
     if (videoId === '') return
 
     this.renderer2.appendChild(slide, this.trailerEmbeedElement.nativeElement);
-    this.trailerEmbeed.setPlayerVideoData(videoId, id)
-    startTimeOut(() => {
+    this.trailerEmbeed.setPlayerVideoData(videoId)
+    this.timerManager.addTimeout(() => {
       this.renderer2.addClass(this.trailerEmbeedElement.nativeElement, 'active')
-    },3000)
+    }, 3000)
   }
 
   onMouseLeaveToSlide() {
-    clearAllTimeouts()
-    clearAllAnimationsFrame()
+   this.timerManager.clearAllTimeouts()
+   this.timerManager.clearAllAnimationFrames()
     this.resetSlide()
   }
 
@@ -77,13 +97,12 @@ export class CardSerieComponent {
 
     this.closeTrailerPlayer()
 
-    setTimeout(async () => {
-      this.collapseSlide(slide)
-      this.animateImageChange(slide, 1, 0)
 
-      await waitForTransitionEnd(slide)
-      await waitForAnimationFrame()
-    }, 300)
+    //this.renderer2.setStyle(slide,'transition-delay','300ms')
+    this.changeWidthSlide(slide, this.slideWidth, '300ms')
+    this.animateImageChange(slide, 1, 0, '300ms')
+    //this.setEventTransition()
+    this.hoverLeave.emit(slide)
   }
 
   closeTrailerPlayer() {
@@ -91,11 +110,5 @@ export class CardSerieComponent {
     this.renderer2.removeChild(this.mainContainer.nativeElement,
       this.trailerEmbeedElement.nativeElement)
     this.trailerEmbeed.destroy()
-  }
-
-  collapseSlide(slide: HTMLElement) {
-    startAnimationFrame(() => {
-      this.renderer2.setStyle(slide, 'width', `${this.slideWidth}px`);
-    })
   }
 }

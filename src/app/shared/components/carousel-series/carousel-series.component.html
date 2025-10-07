@@ -1,109 +1,37 @@
 <main class=" w-full  pb-8 relative" #main>
-    <header class="p-6 mb-2 pl-12 text-white text-2xl">
-        <h2 class="text-3xl font-bold text-white">
-            <span class="inline-block relative bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent
-            after:h-1 after:w-3/5 after:bg-gradient-to-r after:from-red-500 after:to-red-300 
-            after:rounded-full after:absolute  after:bottom-0 after:left-0 pb-2">
-                {{title()}}
-            </span>
-        </h2>
+    <header class="p-6 mb-2 pl-12">
+        <h2 class="text-title"> {{title()}}</h2>
     </header>
 
-    <section class="relative">
-     
-        <swiper-container init="false" class="w-full" (mouseenter)="isSwiperHover=true"
-            (mouseleave)="isSwiperHover=false" #swiper>
+    <section class="relative" (mouseenter)="swiperHelper.isHoveredOverCarousel=true" 
+    (mouseleave)="swiperHelper.isHoveredOverCarousel=false">
 
-            @for(serie of listSeries()()?.results;track serie;let i = $index){
-            <!-- <swiper-slide (mouseenter)="onMouseEnterToSlide(i)" (mouseleave)="onMouseLeaveToSlide(i)"
-                class="relative w-72 h-[29rem]" @fade>
-
-
-                <figure class="h-full absolute w-72">
-                    <img ngSrc="{{getTallImage(serie.poster_path)}}" fill #img
-                        class="object-cover object-center text-white bg-black rounded-xl">
-                </figure>
-
-                <figure class="w-full h-full relative opacity-0">
-                    <div class="w-full h-full absolute">
-                        <img ngSrc="{{getWideImage(serie.backdrop_path)}}" fill #img
-                            class="object-cover object-center text-white bg-black aspect-auto rounded-xl"
-                            alt="imagen no disponible">
-                    </div>
-                    <figcaption class="pl-4 text-white absolute flex flex-col justify-end z-50 w-full h-[29rem]
-                            bg-linear-to-r from-[rgba(0,0,0,1)] from-0% via-[rgba(20,20,20,0.7)] via-35% 
-                            to-transparent to-100% rounded-xl">
-                        <h1 class="font-racing text-3xl">{{serie.name}}</h1>
-
-                        <div class="text-2xl py-4 pb-16 flex gap-6">
-                            <a class="flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-800 text-white 
-                            px-4 rounded-lg font-semibold transition-all duration-300 h-14 cursor-pointer
-                            hover:from-red-700 hover:to-red-900 hover:shadow-lg hover:shadow-red-500/25"
-                                (click)="trailerEmbeed.redirectDetailsSerie(serie.id)">
-                                <svg class="w-5 h-5 " xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
-                                    width="20" height="20" fill="none" stroke="currentColor" stroke-width="64">
-                                    <circle cx="256" cy="256" r="216" />
-                                    <line x1="256" y1="220" x2="256" y2="352" stroke-linecap="round" />
-                                    <circle cx="256" cy="144" r="36" fill="currentColor" stroke="none" />
-                                </svg>
-                                <span>Más información</span>
-                            </a>
-
-                            <div class="p-3 rounded-full border-2 border-white/30 text-white 
-                                hover:border-[#e50914] hover:text-[#e50914] my-1 transition-all 
-                                transform hover:scale-110 cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                            </div>
-                        </div>
-                    </figcaption>
-                </figure>
-
-                <div class="absolute top-4 right-4 bg-black/80 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1 border border-red-900/30">
-                    <svg class="w-5 h-5 text-red-500 fill-red-500" viewBox="0 0 24 24">
-                        <path
-                            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                    <span class="font-semibold text-white text-sm">{{ serie.vote_average | number:'1.1-1'
-                        :'en-US'}}</span>
-                </div>
-            </swiper-slide> -->
-            <swiper-slide class="relative w-auto h-[29rem]" @fade >
-                <app-card-serie [serie]="serie" (mouseenter)="provisionalMouseEnter(i)" 
-                (mouseleave)="provisionalMouseLeave(i)"></app-card-serie>
-            </swiper-slide>    
-        }
-
-            @if(isLoading()){
-            @for(loading of slidesLoading;track loading){
-            <swiper-slide class="w-72 h-[29rem]">
-                <app-card-serie-skeleton [hasMargin]="false" @fade></app-card-serie-skeleton>
+        <swiper-container init="false" class="w-full" #swiper>
+            @for(serie of seriesList()?.results;track serie;let i = $index){
+            <swiper-slide class="relative w-auto h-[29rem]" @fade>
+                <app-card-serie [serie]="serie" (hoverEnter)="onSlideExpandHover(i)"
+                    (hoverLeave)="onSlideCollapseHover(i)"></app-card-serie>
             </swiper-slide>
             }
+
+            @if(swiperHelper?.isFetchingMoreData()){
+                @for(skeleton of slides.skeletonSlideIndexes();track skeleton){
+                    <swiper-slide class="w-72 h-[29rem]">
+                        <app-card-serie-skeleton [hasMargin]="false" @fade></app-card-serie-skeleton>
+                    </swiper-slide>
+                }
             }
         </swiper-container>
 
-         <div class="proxy-prev-{{id()}}  z-10 absolute left-2 top-1/2 w-12 h-12 flex justify-center items-center 
-        hover:cursor-pointer ease-in hover:scale-110 text-center text-sm  bg-black/80
-        backdrop-blur-sm text-white rounded-full transition-all duration-300 
-        cursor-pointer border border-red-900/50" [class.opacity-0]="isBeginning() || !isSwiperHover" 
-            (mouseenter)="isSwiperHover=true" (mouseleave)="isSwiperHover=false">
+        <button type="button" (click)="swiperHelper.goToPrevSlide()" class="btn-navigation btn-navigation-prev"
+            [class.opacity-0]="swiperHelper?.atCarouselStart() || !swiperHelper.isHoveredOverCarousel">
             <i class="fa-solid fa-chevron-left "></i>
-        </div>
-        <div class=" proxy-next-{{id()}} z-10 absolute right-2 top-1/2 w-12 h-12
-        flex justify-center items-center hover:cursor-pointer ease-in 
-        hover:hover:scale-110 text-center text-sm  bg-black/80
-            backdrop-blur-sm text-white rounded-full transition-all duration-300 cursor-pointer border border-red-900/50"
-            [class.opacity-0]="isEnd()|| !isSwiperHover" (mouseenter)="isSwiperHover=true" (mouseleave)="isSwiperHover=false">
+        </button>
+        
+        <button type="button" (click)="swiperHelper.goToNextSlide()" class="btn-navigation btn-navigation-next"
+            [class.opacity-0]="swiperHelper?.atCarouselEnd()|| !swiperHelper.isHoveredOverCarousel">
             <i class="fa-solid fa-chevron-right"></i>
-        </div>
+        </button>
 
     </section>
 </main>
-
-<!-- <app-play-trailer-embeed #trailer class="opacity-0 w-72 h-[29rem]" [size]="[806,464]" (isEnded)="closeTrailerPlayer()"
-    [isMovie]="false"></app-play-trailer-embeed> -->

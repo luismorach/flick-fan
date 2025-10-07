@@ -11,7 +11,7 @@
     <section class="flex flex-col gap-4 p-[42px] justify-around mb-16" infiniteScroll [infiniteScrollDistance]="2"
       [infiniteScrollThrottle]="300" (scrolled)="loadMoreOnScroll()">
       @for (chunk of chunks(); track chunk[0].id) {
-        <div class="flex justify-around gap-[42px]  overflow-x-auto hide-scrollbar scroll-smooth">
+        <div class="flex justify-around gap-[42px]  overflow-x-auto hide-scrollbar scroll-smooth" @fade>
           @for (serie of chunk; track serie.id;let i=$index;) {
           <app-card-serie [serie]="serie" (mouseenter)="handleMouseEnterCardSerie($event,i)"
             (mouseleave)="handleMouseLeaveCardSerie($event)"></app-card-serie>
@@ -20,8 +20,8 @@
         </div>
       }
       @if(isLoading()){
-        <div class="flex gap-[42px]">
-          @for(loading of chunkSkeletons;track loading){
+        <div class="flex gap-[42px]" @fade>
+          @for(skeleton of slides.skeletonSlideIndexes();track skeleton){
           <app-card-serie-skeleton @fade></app-card-serie-skeleton>
           }
         </div>

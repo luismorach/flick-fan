@@ -5,14 +5,14 @@ import { map, concatAll } from 'rxjs';
 import { register, SwiperContainer } from 'swiper/element/bundle';
 import { ApiService } from '../../core/services/API/api.service';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
-import { getTallImage, getWideImage } from '../../shared/utils/images-by-default';
 import { Credits } from '../../core/interfaces/people/credits.interface';
 import { Serie } from '../../core/interfaces/serie/serie.interface';
+import { AutoImagePipe } from '../../shared/pipes/auto-image.pipe';
 
 register()
 @Component({
   selector: 'app-details-serie',
-  imports: [RouterLink, NgOptimizedImage, DatePipe, DecimalPipe],
+  imports: [RouterLink, NgOptimizedImage, DatePipe, DecimalPipe,AutoImagePipe],
   templateUrl: './details-serie.component.html',
   styleUrl: './details-serie.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -23,8 +23,6 @@ export default class DetailsSerieComponent {
   isLiked = false;
   isBookmarked = false;
   @ViewChild('swiper', { static: false }) swiperContainer!: ElementRef<SwiperContainer>
-  getTallImage = getTallImage
-  getWideImage = getWideImage
 
   constructor(private rutaActiva: ActivatedRoute, private API: ApiService,
     private comunicatorService: ComunicatorService, private renderer: Renderer2) {

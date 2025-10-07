@@ -1,63 +1,58 @@
 import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, ElementRef, input, Renderer2, ViewChild } from '@angular/core';
 import { MinutesToTimePipe } from '../../../pipes/minutes-to-time.pipe';
-import { getWideImage } from '../../../utils/images-by-default';
 import { RouterLink } from '@angular/router';
-import { clearAllAnimationsFrame, getKeyTrailer, getKeyTrailerOf, startAnimationFrame } from '../../../utils/helpers';
+import { getKeyTrailer} from '../../../utils/helpers';
 import { PlayTrailerEmbeedComponent } from '../../play-trailer-embeed/play-trailer-embeed.component';
 import { Movie } from '../../../../core/interfaces/movie/movie.interface';
+import { IconComponent } from '../../../icon/icon.component';
+import { AutoImagePipe } from '../../../pipes/auto-image.pipe';
+import { TimerManager } from '../../../utils/timer-manager';
 
 @Component({
   selector: 'app-card-movie',
   standalone: true,
   imports: [NgOptimizedImage, CommonModule, DatePipe, MinutesToTimePipe, RouterLink,
-    PlayTrailerEmbeedComponent],
+    PlayTrailerEmbeedComponent, IconComponent, AutoImagePipe],
   templateUrl: './card-movie.component.html',
   styleUrls: ['./card-movie.component.css']
 })
 export class CardMovieComponent {
-  getWideImage = getWideImage
   movie = input.required<Movie>();
-  isHovered = false
-  numSlides: number = 1
-  @ViewChild('main') mainContainer!: ElementRef<HTMLElement>
-  @ViewChild(PlayTrailerEmbeedComponent) trailerEmbeed!: PlayTrailerEmbeedComponent
-  @ViewChild(PlayTrailerEmbeedComponent, { read: ElementRef }) trailerEmbeedElement !: ElementRef
+  private videoId = ''
+  @ViewChild('movieCard') movieCard!: ElementRef<HTMLElement>
+  @ViewChild(PlayTrailerEmbeedComponent) trailerEmbed!: PlayTrailerEmbeedComponent
+  @ViewChild(PlayTrailerEmbeedComponent, { read: ElementRef }) trailerEmbedElement !: ElementRef
 
-  constructor(private renderer: Renderer2) { }
+  constructor(private renderer: Renderer2,private timerManager:TimerManager) { }
 
-  onMouseEnterToSlide( id: number) {
-    let videoId = getKeyTrailerOf(this.movie());
-    /*  this.hoverStates[index] = true;
-     this.currentIndex = index */
-     this.isHovered=true
-    if (videoId === '') return
+  ngAfterViewInit() {
+    this.videoId = getKeyTrailer(this.movie());
+  }
 
-    this.renderer.appendChild(this.mainContainer.nativeElement.firstChild,
-      this.trailerEmbeedElement.nativeElement)
-    this.trailerEmbeed.setPlayerVideoData(videoId, id)
-    this.renderer.setStyle(this.mainContainer.nativeElement,'z-index','10')
+  handleMouseEnterCard() {
+    if (this.videoId === '') return
 
-    startAnimationFrame(() => {
-      this.renderer.addClass(this.trailerEmbeedElement.nativeElement, 'active')
+    this.renderer.appendChild(this.movieCard.nativeElement.firstChild,
+      this.trailerEmbedElement.nativeElement)
+    this.trailerEmbed.setPlayerVideoData(this.videoId)
+    this.renderer.setStyle(this.movieCard.nativeElement, 'z-index', '10')
+
+   this.timerManager.addAnimationFrame(() => {
+      this.renderer.addClass(this.trailerEmbedElement.nativeElement, 'active')
     })
   }
 
-  onMouseLeaveToSlide() {
-    let videoId = getKeyTrailerOf(this.movie());
-    /* this.hoverStates[index] = false; */
-    this.isHovered=false
-
-    if (videoId === '') return
-
+  handleMouseLeaveCard() {
+    if (this.videoId === '') return
     this.closeTrailerPlayer()
-    clearAllAnimationsFrame()
-  }
-  closeTrailerPlayer() {
-    this.renderer.removeClass(this.trailerEmbeedElement.nativeElement, 'active')
-    this.renderer.removeChild(this.mainContainer.nativeElement.firstChild,
-      this.trailerEmbeedElement.nativeElement)
-    this.trailerEmbeed.destroy()
+    this.timerManager.clearAllAnimationFrames()
   }
 
+  closeTrailerPlayer() {
+    this.renderer.removeClass(this.trailerEmbedElement.nativeElement, 'active')
+    this.renderer.removeChild(this.movieCard.nativeElement.firstChild,
+      this.trailerEmbedElement.nativeElement)
+    this.trailerEmbed.destroy()
+  }
 }

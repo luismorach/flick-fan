@@ -8,15 +8,17 @@ import { SwiperOptions } from 'swiper/types/swiper-options';
 import { MinutesToTimePipe } from '../../shared/pipes/minutes-to-time.pipe';
 import { ApiService } from '../../core/services/API/api.service';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
-import { calculateNumSlides, setOptionsToSwiperWhitMultiplesSlidesPerView, initSwiper } from '../../shared/utils/helpers';
-import { getTallImage, getWideImage, getSquareImage } from '../../shared/utils/images-by-default';
 import { Credits } from '../../core/interfaces/people/credits.interface';
 import { Movie } from '../../core/interfaces/movie/movie.interface';
+import { SwiperHelper } from '../../shared/utils/swiper/swiper-helper';
+import { CarouselSeriesComponent } from '../../shared/components/carousel-series/carousel-series.component';
+import { SkeletonSlidesHook, useSkeletonSlides } from '../../shared/utils/use-skeleton-slides';
+import { AutoImagePipe } from '../../shared/pipes/auto-image.pipe';
 register();
 
 @Component({
   selector: 'app-details-movie',
-  imports: [DatePipe, NgOptimizedImage, DecimalPipe, RouterLink, MinutesToTimePipe],
+  imports: [DatePipe, NgOptimizedImage, DecimalPipe, RouterLink, MinutesToTimePipe,AutoImagePipe],
   templateUrl: './details-movie.component.html',
   styleUrl: './details-movie.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -35,32 +37,37 @@ export default class DetailsMovieComponent {
   isSwiperHover = [false, false]
   isEnd = [false, false]
   isBeginning = [true, true]
-  getTallImage = getTallImage
-  getWideImage = getWideImage
-  getSquareImage = getSquareImage
+  private swiperHelperCast: SwiperHelper
+  private swiperHelperCrew: SwiperHelper
+  private static readonly SLIDE_CONFIG = {
+    width: 144,
+    spacing: 12
+  } as const;
+  slides: SkeletonSlidesHook = useSkeletonSlides(
+      DetailsMovieComponent.SLIDE_CONFIG.width,
+      DetailsMovieComponent.SLIDE_CONFIG.spacing
+  );
 
   constructor(private rutaActiva: ActivatedRoute,
     private api: ApiService, private comunicatorService: ComunicatorService, private renderer: Renderer2) {
+    this.swiperHelperCast = new SwiperHelper(this.slides)
+    this.swiperHelperCrew = new SwiperHelper(this.slides)
     this.comunicatorService.setBackgroundNav(true)
     this.getDetailsMovie()
     this.getCreditsMovie()
   }
   ngAfterViewInit() {
-     const numSlides = calculateNumSlides(this.containerCrew.nativeElement.scrollWidth, this.slideWidth+18)
-    console.log(numSlides)
-    const swiperOptions=setOptionsToSwiperWhitMultiplesSlidesPerView(numSlides,18)
-    initSwiper(this.swiperCast,swiperOptions)
-    initSwiper(this.swiperCrew,swiperOptions)
+    
+    this.swiperHelperCast.initSwiper(this.swiperCast)
+    this.swiperHelperCrew.initSwiper(this.swiperCrew)
     this.addEventSlideChange()
-    this.setEventsNavigation(this.swiperCast,'cast')
-    this.setEventsNavigation(this.swiperCrew,'crew')
+    this.setEventsNavigation(this.swiperCast, 'cast')
+    this.setEventsNavigation(this.swiperCrew, 'crew')
   }
-  setOptionsSwiper(type: string,swiper:ElementRef<SwiperContainer>) {
-    const numSlides = calculateNumSlides(this.containerCrew.nativeElement.scrollWidth, this.slideWidth+18)
-    console.log(numSlides)
-    const swiperOptions: SwiperOptions = {
+  setOptionsSwiper(type: string, swiper: ElementRef<SwiperContainer>) {
+      const swiperOptions: SwiperOptions = {
       slidesPerView: 'auto',
-      slidesPerGroup: numSlides,
+      slidesPerGroup: 4,
       spaceBetween: 18,
       navigation: {
         enabled: true,
@@ -68,12 +75,12 @@ export default class DetailsMovieComponent {
         prevEl: `.swiper-prev-${type}`
       }
     }
-    initSwiper(swiper,swiperOptions)
+    //initSwiper(swiper, swiperOptions)
   }
 
   addEventSlideChange() {
     this.swiperCast.nativeElement.addEventListener('swiperslidechange', (event: any) => {
-      console.log('es el final',event.detail[0].isEnd)
+      console.log('es el final', event.detail[0].isEnd)
       this.isBeginning[0] = event.detail[0].isBeginning;
       this.isEnd[0] = event.detail[0].isEnd;
     })
@@ -83,7 +90,7 @@ export default class DetailsMovieComponent {
     })
 
   }
-    setEventsNavigation(swiperContainer:ElementRef<SwiperContainer>,type:string) {
+  setEventsNavigation(swiperContainer: ElementRef<SwiperContainer>, type: string) {
     let swiper = swiperContainer.nativeElement.swiper;
     const prevProxy = document.querySelector(`.swiper-prev-${type}`) as HTMLElement;
     const nextProxy = document.querySelector(`.swiper-next-${type}`) as HTMLElement;

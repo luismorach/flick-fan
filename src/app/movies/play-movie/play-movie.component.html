@@ -107,7 +107,7 @@ min-h-screen pt-16 overflow-x-hidden">
 
     </div>
     @defer(when similarMovies()){
-    <app-carousel [listMovies]="similarMovies" title="similares" [importance]="2" id="similar"
+    <app-carousel [movieList]="similarMovies()" title="similares" [importance]="2" 
         (requestMoreData)="API.getMoreData(this.API.getSimilarMovies.bind(this.API),similarMovies,id_movie)" @fade>
     </app-carousel>
     }
@@ -116,7 +116,7 @@ min-h-screen pt-16 overflow-x-hidden">
     }
 
     @defer(when recomendedMovies()){
-    <app-carousel [listMovies]="recomendedMovies" title="recomendadas" [importance]="1" id="recomended"
+    <app-carousel [movieList]="recomendedMovies()" title="recomendadas" [importance]="1"
         (requestMoreData)="API.getMoreData(this.API.getRecomendedMovies.bind(this.API),recomendedMovies,id_movie)"
         @fade>
     </app-carousel>

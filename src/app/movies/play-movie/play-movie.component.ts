@@ -4,7 +4,7 @@ import { concatAll, map, Subscription} from 'rxjs';
 import {  DOCUMENT, NgOptimizedImage, } from '@angular/common';
 import { fade } from '../../shared/animations/animations';
 import { CarouselSkeletonComponent } from '../../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
-import { carouselComponent } from '../../shared/components/carousel/carousel.component';
+import { CarouselComponent } from '../../shared/components/carousel/carousel.component';
 import { UrlSafePipe } from '../../shared/pipes/url-safe.pipe';
 import { ApiService } from '../../core/services/API/api.service';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
@@ -13,7 +13,7 @@ import { MovieList } from '../../core/interfaces/movie/movie.interface';
 
 @Component({
   selector: 'app-play-movie',
-  imports: [UrlSafePipe, NgOptimizedImage,carouselComponent, CarouselSkeletonComponent],
+  imports: [UrlSafePipe, NgOptimizedImage,CarouselComponent, CarouselSkeletonComponent],
   templateUrl: './play-movie.component.html',
   styleUrl: './play-movie.component.css',
   animations: [fade]

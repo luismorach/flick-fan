@@ -10,3 +10,7 @@
   opacity: 1; /* usa 1, no 100% */
   pointer-events: auto;
 }
+
+.delay{
+  transition-delay:300ms;
+}

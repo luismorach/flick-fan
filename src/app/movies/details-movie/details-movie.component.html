@@ -10,7 +10,7 @@
             <div class="flex flex-col lg:flex-row gap-8 items-end px-16 mx-1 pb-8">
                 <!-- Poster -->
                 <figure class="flex-shrink-0">
-                    <img ngSrc="{{ getTallImage(movie()?.poster_path || '')}}"
+                    <img [ngSrc]="movie()?.poster_path | autoImage : 'tall'"
                         class="w-64 h-96 object-cover rounded-2xl shadow-2xl ring-4 ring-red-500/30 transform hover:scale-105 transition-transform duration-300" />
                 </figure>
 
@@ -123,7 +123,7 @@
                         <swiper-slide class="flex-col rounded-xl w-36">
                             <div class="relative">
                                 <figure class="w-36 h-36 rounded-full  relative text-white">
-                                    <img ngSrc="{{getSquareImage(cast.profile_path)}}" fill
+                                    <img [ngSrc]="cast.profile_path| autoImage : 'square'" fill
                                         class="object-contain rounded-full  flex items-center justify-center bg-white">
                                 </figure>
                             </div>
@@ -164,7 +164,7 @@
                         <swiper-slide class="flex-col rounded-xl w-36">
                             <div class="relative">
                                 <figure class="w-36 h-36 rounded-full  relative text-white">
-                                    <img ngSrc="{{getSquareImage(crew.profile_path)}}" alt="Imagen no disponible" fill
+                                    <img [ngSrc]="crew.profile_path | autoImage : 'square'" alt="Imagen no disponible" fill
                                         class="object-contain rounded-full  flex items-center justify-center  bg-white">
                                 </figure>
                             </div>

@@ -10,14 +10,14 @@ import { DatePipe, DOCUMENT, NgOptimizedImage, } from '@angular/common';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
 import { fade } from '../../shared/animations/animations';
 import { register, SwiperContainer } from 'swiper/element/bundle';
-import { getTallImage, getWideImage } from '../../shared/utils/images-by-default';
 import { CarouselSeriesComponent } from '../../shared/components/carousel-series/carousel-series.component';
 import { Serie, SerieList, Episode, Season } from '../../core/interfaces/serie/serie.interface';
+import { AutoImagePipe } from '../../shared/pipes/auto-image.pipe';
 register()
 @Component({
   selector: 'app-play-serie',
   imports: [UrlSafePipe, NgOptimizedImage, CarouselSeriesComponent, DatePipe,
-    RouterLink],
+    RouterLink,AutoImagePipe],
   templateUrl: './play-serie.component.html',
   styleUrl: './play-serie.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -38,9 +38,6 @@ export default class PlaySerieComponent implements AfterViewInit {
   id_serie = 0
   episode!: Episode
   season!: Season
-
-  getTallImage = getTallImage
-  getWideImage = getWideImage
 
   constructor(private rutaActiva: ActivatedRoute, public API: ApiService,
     private comunicatorService: ComunicatorService, private renderer: Renderer2) {

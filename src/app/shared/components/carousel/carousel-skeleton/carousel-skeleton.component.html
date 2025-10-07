@@ -6,10 +6,10 @@
     </header>
     }
 
-    <section class="flex gap-3 grow-0 overflow-hidden min-w-screen h-80 pb-1">
+    <section class="flex gap-3 grow-0 overflow-hidden h-80 pb-1">
 
-        @for(a of numElements;track a;let first=$first){
-        <app-card-movie-skeleton [class.ml-[24px]]="first"></app-card-movie-skeleton>
+        @for(a of skeletonItems;track a;let first=$first){
+        <app-card-movie-skeleton  [ngClass]="{ 'ml-[24px]': first }"></app-card-movie-skeleton>
         }
 
     </section>

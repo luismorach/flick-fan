@@ -2,13 +2,13 @@
     class="relative w-72 h-[29rem]" #main>
 
     <figure class="h-full absolute w-72">
-        <img ngSrc="{{getTallImage(serie().poster_path || '')}}" fill #img
+        <img [ngSrc]="serie().poster_path | autoImage : 'tall'" fill #img
             class="object-cover object-center text-white bg-black rounded-xl">
     </figure>
 
     <figure class="w-full h-full relative opacity-0">
         <div class="w-full h-full absolute">
-            <img ngSrc="{{getWideImage(serie().backdrop_path || '')}}" fill #img
+            <img [ngSrc]="serie().backdrop_path | autoImage : 'wide'" fill #img
                 class="object-cover object-center text-white bg-black aspect-auto rounded-xl"
                 alt="imagen no disponible">
         </div>
@@ -55,4 +55,5 @@
     <app-play-trailer-embeed #trailer class="trailer w-72 h-[29rem]" [size]="[806,464]" (isEnded)="closeTrailerPlayer()"
     [isMovie]="false"></app-play-trailer-embeed>
 </main>
+
 

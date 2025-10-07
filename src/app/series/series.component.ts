@@ -3,7 +3,7 @@ import { ApiService } from '../core/services/API/api.service';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { fade } from '../shared/animations/animations';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
-import { calculateNumSlides, createChunks, handleCardHover, resetCardHover, scrollToTop } from '../shared/utils/helpers';
+import { createChunks, hasNextPage, scrollToTop } from '../shared/utils/helpers';
 import { CardSerieComponent } from '../shared/components/carousel-series/card-serie/card-serie.component';
 import { CardSerieSkeletonComponent } from '../shared/components/carousel-series/card-serie-skeleton/card-serie-skeleton.component';
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
@@ -12,6 +12,8 @@ import { SkeletonComponent } from '../shared/components/banner-series/skeleton/s
 import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SerieList } from '../core/interfaces/serie/serie.interface';
+import { SkeletonSlidesHook,useSkeletonSlides } from '../shared/utils/use-skeleton-slides';
+import { HandleCardSeries } from '../shared/utils/handle-card-series';
 
 @Component({
   selector: 'app-series',
@@ -31,29 +33,23 @@ import { SerieList } from '../core/interfaces/serie/serie.interface';
 
 export default class SeriesComponent {
   api = inject(ApiService)
-  doc = inject(DOCUMENT)
-  airingToday: WritableSignal<SerieList | undefined> = signal(undefined)
   onTheAir: WritableSignal<SerieList | undefined> = signal(undefined)
   popularSeries: WritableSignal<SerieList | undefined> = signal(undefined)
-  chunkSize = 0
-  chunkSkeletons: number[] = []
   isLoading: WritableSignal<boolean> = signal(false)
-  spaceBetween = 42
+  slides: SkeletonSlidesHook = useSkeletonSlides(288,40);
   chunks = computed(() => {
     const data = this.popularSeries()?.results ?? [];
-    return createChunks(data, this.chunkSize);
+    return createChunks(data, this.slides.getCurrentSlidesPerView());
   });
 
-  constructor() {
+  constructor(private handleCardSeries:HandleCardSeries) {
     scrollToTop()
     this.api.getPopularSeries(1).pipe(takeUntilDestroyed())
       .subscribe(data => this.popularSeries.set(data));
 
     this.api.getOnTheAirSeries(1).pipe(takeUntilDestroyed())
       .subscribe(data => this.onTheAir.set(data));
-  }
 
-  ngOnInit() {
     effect(() => {
       if (this.popularSeries() !== undefined) {
         this.isLoading.set(false);
@@ -61,29 +57,21 @@ export default class SeriesComponent {
     });
   }
 
-  ngAfterViewInit() {
-    this.chunkSize = calculateNumSlides(this.doc.scrollingElement?.scrollWidth ?? 0, 336)
-    this.chunkSkeletons = Array.from({ length: this.chunkSize }, (_, i) => i)
-  }
-
   loadMoreOnScroll() {
-    if (this.isLoading()) return
-    let page = this.popularSeries()?.page ?? 0;
-    let total_pages = this.popularSeries()?.total_pages ?? 0;
-    if (page >= total_pages) {
-      this.isLoading.set(false)
-      return
-    }
-    this.isLoading.set(true)
-    this.api.getMoreData(this.api.getPopularSeries.bind(this.api), this.popularSeries)
+    const canFetchNext = hasNextPage(this.popularSeries());
+
+    if (!canFetchNext || this.isLoading()) return;
+
+    this.isLoading.set(true);
+    this.api.getMoreData(this.api.getPopularSeries.bind(this.api), this.popularSeries);
   }
 
   handleMouseEnterCardSerie(event: MouseEvent, index: number) {
-    handleCardHover(event,index,this.spaceBetween)
+    this.handleCardSeries.handleCardHover(event, index, this.slides.spaceBetween())
   }
 
   handleMouseLeaveCardSerie(event: MouseEvent) {
-    resetCardHover(event)
+    this.handleCardSeries.resetCardHover(event)
   }
 
 }

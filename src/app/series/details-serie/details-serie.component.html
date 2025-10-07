@@ -10,7 +10,7 @@
       <div class="flex flex-col lg:flex-row gap-8 items-end px-16 mx-1 pb-8">
         <!-- Poster -->
         <figure class="flex-shrink-0">
-          <img ngSrc="{{ getTallImage(serie()?.poster_path || '')}}" 
+          <img [ngSrc]="serie()?.poster_path | autoImage : 'tall'" 
             class="w-64 h-96 object-cover rounded-2xl shadow-2xl ring-4 ring-red-500/30 transform hover:scale-105 transition-transform duration-300" />
         </figure>
 
@@ -117,7 +117,7 @@
 
             <article class="grid grid-cols-3">
               <figure class="flex-shrink-0 relative w-48 h-72">
-                <img ngSrc=" {{getTallImage(season.poster_path)}}"
+                <img [ngSrc]="season.poster_path | autoImage : 'tall'"
                   class="w-48 h-72 object-cover rounded-2xl shadow-2xl ring-4 ring-red-500/30 transform hover:scale-105 transition-transform duration-300"
                   fill>
               </figure>
@@ -131,7 +131,7 @@
               @for(episode of season.episodes;track episode.id){
               <swiper-slide class="grid grid-cols-3 rounded-2xl border border-red-500/20">
                 <figure class="flex-shrink-0 relative w-56 h-40">
-                  <img ngSrc="{{getWideImage(episode.still_path)}}"
+                  <img [ngSrc]="episode.still_path | autoImage : 'wide'"
                     class="object-cover rounded-2xl shadow-2xl text-red-300 text-center p-2" fill>
                 </figure>
                 <header class="col-span-2 text-red-100 pt-2 pr-2">

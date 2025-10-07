@@ -15,7 +15,6 @@ export class PlayTrailerEmbeedComponent {
   mutedState = true
   size = input.required<number[]>()
   isMovie = input.required<boolean>()
-  id = 0
   videoID: WritableSignal<string> = signal('')
   isEnded = output<void>()
   playerVars: YT.PlayerVars = {
@@ -47,9 +46,8 @@ export class PlayTrailerEmbeedComponent {
     event.stopPropagation()
   }
 
-  setPlayerVideoData(videoId: string, id: number) {
+  setPlayerVideoData(videoId: string) {
     this.videoID.set(videoId)
-    this.id = id
     this.mutedState = true
     console.log('qactivqaknkdo', this.videoID())
 
@@ -69,10 +67,6 @@ export class PlayTrailerEmbeedComponent {
   destroy() {
     this.videoID.set('')
     this.mutedState = true
-  }
-
-  redirect() {
-    (this.isMovie()) ? this.redirectDetailsMovie(this.id) : this.redirectDetailsSerie(this.id)
   }
 
   redirectDetailsMovie(id: number) {

@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../core/services/API/api.service';
-import { calculateNumSlides, createChunks, handleCardHover, resetCardHover} from '../shared/utils/helpers';
+import { createChunks, hasNextPage} from '../shared/utils/helpers';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { CardSerieComponent } from '../shared/components/carousel-series/card-serie/card-serie.component';
 import { ComunicatorService } from '../core/services/comunicator/comunicator.service';
@@ -14,6 +14,8 @@ import { CardSerieSkeletonComponent } from '../shared/components/carousel-series
 import { Genre } from '../core/interfaces/shared/genre.interface';
 import { MovieList } from '../core/interfaces/movie/movie.interface';
 import { SerieList } from '../core/interfaces/serie/serie.interface';
+import { HandleCardSeries } from '../shared/utils/handle-card-series';
+import { SkeletonSlidesHook, useSkeletonSlides } from '../shared/utils/use-skeleton-slides';
 
 @Component({
   selector: 'app-search',
@@ -31,20 +33,19 @@ export default class SearchComponent {
   genres: WritableSignal<Genre[] | undefined> = signal(undefined)
   moviesLoading: WritableSignal<boolean> = signal(false)
   seriesLoading: WritableSignal<boolean> = signal(false)
-  chunkSkeletons: number[] = []
-  chunkSize = 0
   selectedGenreId = 0
   doc = inject(DOCUMENT)
   api = inject(ApiService)
-  spaceBetween = 42
   selectedType = 'all'
   searchQuery = ''
+  slides: SkeletonSlidesHook = useSkeletonSlides(288,40);
   chunks = computed(() => {
     const data = this.currentSeries()?.results ?? [];
-    return createChunks(data, this.chunkSize);
+    return createChunks(data, this.slides.getCurrentSlidesPerView());
   });
 
-  constructor(private activatedRoute: ActivatedRoute, private comunicatorService: ComunicatorService) {
+  constructor(private activatedRoute: ActivatedRoute, private comunicatorService: ComunicatorService,
+    private handleCardSeries:HandleCardSeries) {
     this.comunicatorService.setBackgroundNav(true)
     this.getGenres()
     this.subscribeToRouteChanges()
@@ -60,8 +61,6 @@ export default class SearchComponent {
     })
   }
   subscribeToRouteChanges() {
-    // Es5cucha cambios en la ruta: /search/:name
-
     this.activatedRoute.paramMap.subscribe(params => {
       this.searchQuery = params.get('wordSearch') || '';
       if (this.searchQuery) {
@@ -69,11 +68,6 @@ export default class SearchComponent {
         this.getSeries()
       }
     });
-  }
-
-  ngAfterViewInit() {
-    this.chunkSize = calculateNumSlides(this.doc.scrollingElement?.scrollWidth ?? 0, 336)
-    this.chunkSkeletons = Array.from({ length: this.chunkSize }, (_, i) => i)
   }
 
   getMovies() {
@@ -135,23 +129,20 @@ export default class SearchComponent {
   }
 
   loadMoreMovies() {
-    let page = this.movies()?.page ?? 0;
-    let total_pages = this.movies()?.total_pages ?? 0;
-    if (page >= total_pages) {
-      this.moviesLoading.set(false)
-      return
-    }
-    this.moviesLoading.set(true)
+    const canFetchNext = hasNextPage(this.movies());
+
+    if (!canFetchNext) return;
+
+    this.moviesLoading.set(true);
     this.api.getMoreData(this.api.searchMovie.bind(this.api), this.movies, this.searchQuery)
   }
+
   loadMoreSeries() {
-    let page = this.series()?.page ?? 0;
-    let total_pages = this.series()?.total_pages ?? 0;
-    if (page >= total_pages) {
-      this.seriesLoading.set(false)
-      return
-    }
-    this.seriesLoading.set(true)
+    const canFetchNext = hasNextPage(this.series());
+
+    if (!canFetchNext) return;
+
+    this.seriesLoading.set(true);
     this.api.getMoreData(this.api.searchSerie.bind(this.api), this.series, this.searchQuery)
   }
 
@@ -164,10 +155,10 @@ export default class SearchComponent {
   }
 
   handleMouseEnterCardSerie(event: MouseEvent, index: number) {
-    handleCardHover(event, index, this.spaceBetween)
+    this.handleCardSeries.handleCardHover(event, index, this.slides.spaceBetween())
   }
 
   handleMouseLeaveCardSerie(event: MouseEvent) {
-    resetCardHover(event)
+   this.handleCardSeries. resetCardHover(event)
   }
 }

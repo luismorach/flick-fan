@@ -1,13 +1,13 @@
 import { Component, ChangeDetectionStrategy, inject, viewChild, signal,  WritableSignal} from '@angular/core';
-import { carouselComponent } from '../shared/components/carousel/carousel.component';
+import { CarouselComponent } from '../shared/components/carousel/carousel.component';
 import { ApiService } from '../core/services/API/api.service';
 import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer.component';
 import { CarouselSeriesComponent } from '../shared/components/carousel-series/carousel-series.component';
 import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
 import { fade } from '../shared/animations/animations';
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
-import { BannerSkeletonComponent } from '../shared/components/banner/banner-skeleton/banner-skeleton.component';
-import BannerComponent from '../shared/components/banner/banner.component';
+import { BannerSkeletonComponent } from '../shared/components/banner-movie/banner-skeleton/banner-skeleton.component';
+import BannerMovieComponent from '../shared/components/banner-movie/banner-movie.component';
 import { BannerSeriesComponent } from '../shared/components/banner-series/banner-series.component';
 import { SkeletonComponent } from '../shared/components/banner-series/skeleton/skeleton.component';
 import { ComunicatorService } from '../core/services/comunicator/comunicator.service';
@@ -20,7 +20,7 @@ import { SerieList } from '../core/interfaces/serie/serie.interface';
 
 @Component({
   selector: 'app-inicio',
-  imports: [BannerComponent, carouselComponent, PlayTrailerComponent, BannerSeriesComponent, SkeletonComponent,
+  imports: [BannerMovieComponent, CarouselComponent, PlayTrailerComponent, BannerSeriesComponent, SkeletonComponent,
     CarouselSeriesComponent, CarouselSkeletonComponent, BannerSkeletonComponent, 
     CarouselSeriesSkeletonComponent,BackgroundNavScrollDirective],
   templateUrl: './inicio.component.html',

@@ -110,7 +110,7 @@ min-h-screen pt-16 overflow-x-hidden">
 
                                 <article class="grid grid-cols-3 gap-16">
                                     <figure class="flex-shrink-0 relative w-60 h-96">
-                                        <img ngSrc=" {{getTallImage(season.poster_path)}}" class="object-cover rounded-2xl shadow-2xl ring-4 ring-red-500/30 
+                                        <img [ngSrc]=" season.poster_path | autoImage : 'tall'" class="object-cover rounded-2xl shadow-2xl ring-4 ring-red-500/30 
                                             transform hover:scale-105 transition-transform duration-300" fill>
                                     </figure>
                                     <p class="text-red-100 line-clamp-[12] col-span-2"> {{ season.overview }} </p>
@@ -127,7 +127,7 @@ min-h-screen pt-16 overflow-x-hidden">
                                     <swiper-slide
                                         class="grid grid-cols-1 gap-2 rounded-2xl border border-red-500/20 p-2">
                                         <figure class="flex-shrink-0 relative w-full h-48">
-                                            <img ngSrc="{{getWideImage(episode.still_path)}}"
+                                            <img [ngSrc]="episode.still_path | autoImage : 'wide'"
                                                 class="object-cover rounded-2xl shadow-2xl text-red-300 text-center"
                                                 fill>
                                         </figure>
@@ -202,7 +202,7 @@ min-h-screen pt-16 overflow-x-hidden">
 
     </div>
     @defer(when similarSeries()){
-    <app-carousel-series [listSeries]="similarSeries" id="similar" title="Series similares"
+    <app-carousel-series [seriesList]="similarSeries()" id="similar" title="Series similares"
         (requestMoreData)="API.getMoreData(this.API.getSimilarSeries.bind(this.API),similarSeries,id_serie)">
     </app-carousel-series>
     }
@@ -211,7 +211,7 @@ min-h-screen pt-16 overflow-x-hidden">
         } -->
 
     @defer(when recomendedSeries()){
-    <app-carousel-series [listSeries]="recomendedSeries" id="recomended" title="Series recomendadas"
+    <app-carousel-series [seriesList]="recomendedSeries()" id="recomended" title="Series recomendadas"
         (requestMoreData)="API.getMoreData(this.API.getRecomendedSeries.bind(this.API),recomendedSeries,id_serie)">
     </app-carousel-series>
     }
