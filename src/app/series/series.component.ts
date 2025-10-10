@@ -12,7 +12,7 @@ import { SkeletonComponent } from '../shared/components/banner-series/skeleton/s
 import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SerieList } from '../core/interfaces/serie/serie.interface';
-import { SkeletonSlidesHook,useSkeletonSlides } from '../shared/utils/use-skeleton-slides';
+import { SkeletonSlidesHook, useSkeletonSlides } from '../shared/utils/use-skeleton-slides';
 import { HandleCardSeries } from '../shared/utils/handle-card-series';
 
 @Component({
@@ -24,7 +24,8 @@ import { HandleCardSeries } from '../shared/utils/handle-card-series';
     CardSerieSkeletonComponent,
     CarouselSeriesSkeletonComponent,
     CommonModule,
-    BackgroundNavScrollDirective
+    BackgroundNavScrollDirective,
+
   ],
   templateUrl: './series.component.html',
   styleUrl: './series.component.css',
@@ -36,13 +37,13 @@ export default class SeriesComponent {
   onTheAir: WritableSignal<SerieList | undefined> = signal(undefined)
   popularSeries: WritableSignal<SerieList | undefined> = signal(undefined)
   isLoading: WritableSignal<boolean> = signal(false)
-  slides: SkeletonSlidesHook = useSkeletonSlides(288,40);
+  slides: SkeletonSlidesHook = useSkeletonSlides(288);
   chunks = computed(() => {
     const data = this.popularSeries()?.results ?? [];
-    return createChunks(data, this.slides.getCurrentSlidesPerView());
+    return createChunks(data, this.slides.slidesPerView());
   });
 
-  constructor(private handleCardSeries:HandleCardSeries) {
+  constructor(private handleCardSeries: HandleCardSeries) {
     scrollToTop()
     this.api.getPopularSeries(1).pipe(takeUntilDestroyed())
       .subscribe(data => this.popularSeries.set(data));
@@ -66,12 +67,12 @@ export default class SeriesComponent {
     this.api.getMoreData(this.api.getPopularSeries.bind(this.api), this.popularSeries);
   }
 
-  handleMouseEnterCardSerie(event: MouseEvent, index: number) {
-    this.handleCardSeries.handleCardHover(event, index, this.slides.spaceBetween())
+  onSlideExpandHover(card: HTMLElement) {
+    this.handleCardSeries.handleCardHover(card, this.slides.spaceBetween())
   }
 
-  handleMouseLeaveCardSerie(event: MouseEvent) {
-    this.handleCardSeries.resetCardHover(event)
+  onSlideCollapseHover(card: HTMLElement) {
+    this.handleCardSeries.resetCardHover(card)
   }
 
 }

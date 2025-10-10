@@ -36,7 +36,7 @@ export class CardSerieComponent {
     this.timerManager.addTimeout(() => {
       this.changeWidthSlide(slide, Math.floor(this.slideWidth * 2.8), '0s')
       this.animateImageChange(slide, 0, 1, '0s');
-      this.hoverEnter.emit(slide)
+      this.hoverEnter.emit(slide.parentElement as HTMLElement)
       this.moveAndPlayTrailer(slide, 0)
     }, 300)
   }
@@ -46,7 +46,7 @@ export class CardSerieComponent {
     if (prop !== 'width' || !this.isCardCollapse) return;
     const slide = this.mainContainer.nativeElement
     console.log('transicion iniciada en card', this.isCardCollapse)
-    this.hoverLeave.emit(slide)
+    this.hoverLeave.emit(slide.parentElement as HTMLElement)
   }
 
   setEventTransition() {
@@ -102,7 +102,7 @@ export class CardSerieComponent {
     this.changeWidthSlide(slide, this.slideWidth, '300ms')
     this.animateImageChange(slide, 1, 0, '300ms')
     //this.setEventTransition()
-    this.hoverLeave.emit(slide)
+    this.hoverLeave.emit(slide.parentElement as HTMLElement)
   }
 
   closeTrailerPlayer() {

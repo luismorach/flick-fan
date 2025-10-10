@@ -38,10 +38,10 @@ export default class SearchComponent {
   api = inject(ApiService)
   selectedType = 'all'
   searchQuery = ''
-  slides: SkeletonSlidesHook = useSkeletonSlides(288,40);
+  slides: SkeletonSlidesHook = useSkeletonSlides(288);
   chunks = computed(() => {
     const data = this.currentSeries()?.results ?? [];
-    return createChunks(data, this.slides.getCurrentSlidesPerView());
+    return createChunks(data, this.slides.slidesPerView());
   });
 
   constructor(private activatedRoute: ActivatedRoute, private comunicatorService: ComunicatorService,
@@ -155,10 +155,10 @@ export default class SearchComponent {
   }
 
   handleMouseEnterCardSerie(event: MouseEvent, index: number) {
-    this.handleCardSeries.handleCardHover(event, index, this.slides.spaceBetween())
+    //this.handleCardSeries.handleCardHover(event, this.slides.spaceBetween())
   }
 
   handleMouseLeaveCardSerie(event: MouseEvent) {
-   this.handleCardSeries. resetCardHover(event)
+   //this.handleCardSeries. resetCardHover(event)
   }
 }

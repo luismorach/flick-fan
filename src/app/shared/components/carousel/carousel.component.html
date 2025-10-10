@@ -3,8 +3,8 @@
         <h2 class="text-title">{{title()}}</h2>
     </header>
 
-    <section class="relative" (mouseenter)="swiperHelper.isHoveredOverCarousel=true" 
-    (mouseleave)="swiperHelper.isHoveredOverCarousel=false">
+    <section class="relative" (mouseenter)="swiperHelper.setHoverState(true)" 
+    (mouseleave)="swiperHelper.setHoverState(false)">
 
         <swiper-container init="false" class="w-full h-80  z-0 relative" #swiper>
             @for(movie of movieList()?.results;track movie.id;let i = $index;){

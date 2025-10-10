@@ -1,30 +1,48 @@
-import { EffectRef, Renderer2 } from "@angular/core";
+import { EffectRef, ElementRef, Renderer2 } from "@angular/core";
+
+type EventCallback<T = Event> = (event: T) => void
 
 export class ListenerManager {
 
-  constructor(protected renderer: Renderer2) { }
+  constructor(private renderer: Renderer2) { }
 
   private cleanups: (() => void)[] = [];
-  private effectRefs: EffectRef[] = [];
 
-  listen(element: any, eventName: string, callback: (event: any) => void) {
-    const cleanup = this.renderer.listen(element, eventName, callback);
-    this.cleanups.push(cleanup);
-  }
+  listen<T extends Event = Event>(
+    element: HTMLElement | Element | ElementRef<HTMLElement>,
+    eventName: string,
+    callback: EventCallback<T>
+  ): () => void {
 
-  cleanupAll() {
-    for (const fn of this.cleanups) {
-      try { fn(); } catch (err) { console.error(err); }
+    const targetElement = element instanceof ElementRef ? element.nativeElement : element;
+
+    if (!targetElement) {
+      throw new Error('[ListenerManager] Element is required');
     }
+
+    if (!eventName) {
+      throw new Error('[ListenerManager] Event name is required');
+    }
+    const cleanup = this.renderer.listen(targetElement, eventName, callback);
+    this.cleanups.push(cleanup);
+    return cleanup
+  }
+
+  cleanupAll(): void {
+    const errors: Error[] = [];
+
+    for (const fn of this.cleanups) {
+      try {
+        fn();
+      } catch (err) {
+        errors.push(err instanceof Error ? err : new Error(String(err)));
+      }
+    }
+
     this.cleanups = [];
-  }
 
-  addEffectRef(effectRef: EffectRef) {
-    this.effectRefs.push(effectRef)
-  }
-
-  destroyEffectRef() {
-    this.effectRefs.forEach(ref => ref.destroy());
-    this.effectRefs = [];
+    if (errors.length > 0) {
+      console.error('[ListenerManager] Errors during cleanup:', errors);
+    }
   }
 }

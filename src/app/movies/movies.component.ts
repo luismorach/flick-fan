@@ -41,7 +41,7 @@ export default class MoviesComponent {
   player: PlayerTrailer = { videoId: signal(''), isPlaying: false }
   doc = inject(DOCUMENT)
   isLoading: WritableSignal<boolean> = signal(false)
-  slides: SkeletonSlidesHook = useSkeletonSlides(320,12);
+  slides: SkeletonSlidesHook = useSkeletonSlides(320);
 
   constructor(public comunicatorService: ComunicatorService) {
     this.comunicatorService.setBackgroundNav(false)

@@ -33,7 +33,7 @@ export class CarouselComponent {
   @ViewChild('swiper', { static: false, read: ElementRef }) swiperContainer!: ElementRef<SwiperContainer>
 
   swiperHelper!: SwiperHelper
-  slides = useSkeletonSlides(320, 12);
+  slides = useSkeletonSlides(320, true);
 
   constructor() {
     this.swiperHelper = new SwiperHelper(this.slides)

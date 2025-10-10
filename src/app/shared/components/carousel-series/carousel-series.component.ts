@@ -31,12 +31,12 @@ export class CarouselSeriesComponent implements AfterViewInit, OnDestroy {
 
   private static readonly SLIDE_CONFIG = {
     width: 288,
-    spacing: 40
+    isCarousel: true
   } as const;
 
   slides: SkeletonSlidesHook = useSkeletonSlides(
     CarouselSeriesComponent.SLIDE_CONFIG.width,
-    CarouselSeriesComponent.SLIDE_CONFIG.spacing
+    CarouselSeriesComponent.SLIDE_CONFIG.isCarousel
   );
 
   constructor() {
@@ -56,7 +56,7 @@ export class CarouselSeriesComponent implements AfterViewInit, OnDestroy {
     this.swiperHelper.adjustTranslateForExpandedSlide(index)
   }
 
-  async onSlideCollapseHover(index: number) {
+  async onSlideCollapseHover() {
     this.swiperHelper.restoreBaseTranslate()
     await this.swiperHelper.updateSwiperAfterHoverTransition()
   }

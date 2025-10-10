@@ -41,11 +41,11 @@ export default class DetailsMovieComponent {
   private swiperHelperCrew: SwiperHelper
   private static readonly SLIDE_CONFIG = {
     width: 144,
-    spacing: 12
+    isCarousel: true
   } as const;
   slides: SkeletonSlidesHook = useSkeletonSlides(
       DetailsMovieComponent.SLIDE_CONFIG.width,
-      DetailsMovieComponent.SLIDE_CONFIG.spacing
+      DetailsMovieComponent.SLIDE_CONFIG.isCarousel
   );
 
   constructor(private rutaActiva: ActivatedRoute,

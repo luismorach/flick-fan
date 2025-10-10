@@ -1,4 +1,4 @@
-import { inject, NgZone } from "@angular/core"
+import { ElementRef, inject, NgZone } from "@angular/core"
 import { take } from "rxjs";
 import { DOCUMENT } from "@angular/common";
 import { Movie, MovieList } from "../../core/interfaces/movie/movie.interface";
@@ -61,9 +61,26 @@ export function createChunks<T>(data: T[], chunkSize: number): T[][] {
 
 export function hasNextPage(data: MovieList | SerieList | undefined): boolean {
     if (!data) return false;
-    const page = data?.page ?? 0;
-    const totalPages = data?.total_pages ?? 0;
+    const page = data.page ?? 0;
+    const totalPages = data.total_pages ?? 0;
     return page > 0 && totalPages > 0 && page < totalPages;
+}
+
+export function validateElement(element: ElementRef | HTMLElement | undefined | null): void {
+    if (!element) {
+        throw new Error('Element must be provided, received null or undefined');
+    }
+
+    const nativeElement = element instanceof ElementRef ? element.nativeElement : element;
+
+    if (!(nativeElement instanceof HTMLElement)) {
+        throw new Error(`Element must be a valid HTMLElement, received: ${typeof nativeElement}`);
+    }
+
+    if (!nativeElement.isConnected) {
+        console.warn('[TransitionManager] Element is not in the DOM');
+    }
+
 }
 
 

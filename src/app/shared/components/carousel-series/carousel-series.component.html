@@ -3,14 +3,14 @@
         <h2 class="text-title"> {{title()}}</h2>
     </header>
 
-    <section class="relative" (mouseenter)="swiperHelper.isHoveredOverCarousel=true" 
-    (mouseleave)="swiperHelper.isHoveredOverCarousel=false">
+    <section class="relative" (mouseenter)="swiperHelper.setHoverState(true)" 
+    (mouseleave)="swiperHelper.setHoverState(false)">
 
         <swiper-container init="false" class="w-full" #swiper>
             @for(serie of seriesList()?.results;track serie;let i = $index){
             <swiper-slide class="relative w-auto h-[29rem]" @fade>
                 <app-card-serie [serie]="serie" (hoverEnter)="onSlideExpandHover(i)"
-                    (hoverLeave)="onSlideCollapseHover(i)"></app-card-serie>
+                    (hoverLeave)="onSlideCollapseHover()"></app-card-serie>
             </swiper-slide>
             }
 
