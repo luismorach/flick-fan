@@ -1,7 +1,7 @@
 <main appBackgroundNavScroll>
     @defer(when nowPlaying()){
         <app-banner-movie [movieList]="nowPlaying" (onPlayTrailer)="playTrailer($event)" 
-        (requestMoreData)="api.getMoreData(this.api.getNowPlaying.bind(this.api),nowPlaying)" @fade>
+        (requestMoreData)="api.getMoreData(nowPlaying)" @fade>
         </app-banner-movie>
     }
     @placeholder{
@@ -10,7 +10,7 @@
 
     @defer(when popularMovies()){
         <app-carousel @fade [movieList]="popularMovies()" title="Películas populares" [importance]="3"
-            (requestMoreData)="api.getMoreData(this.api.getPopular.bind(this.api),popularMovies)">
+            (requestMoreData)="api.getMoreData(popularMovies)" @fade>
         </app-carousel>
     } @placeholder{
         <app-carousel-skeleton @fade ></app-carousel-skeleton>
@@ -18,24 +18,23 @@
     
     @defer(when upcomingMovies() ){
         <app-carousel @fade [movieList]="upcomingMovies()" title="Películas recientes" [importance]="2"
-           (requestMoreData)="api.getMoreData(this.api.getUpcoming.bind(this.api),upcomingMovies)">
+           (requestMoreData)="api.getMoreData(upcomingMovies)" @fade>
         </app-carousel>
 
     } @placeholder{
         <app-carousel-skeleton @fade ></app-carousel-skeleton>
     }
-    
 
     @defer(when airingToday()){
         <app-banner-series [listSeries]="airingToday" 
-        (requestMoreData)="api.getMoreData(this.api.getAiringTodaySeries.bind(this.api),airingToday)" @fade>
+        (requestMoreData)="api.getMoreData(airingToday)" @fade>
         </app-banner-series>
     }@placeholder{
         <app-skeleton [hasSlides]="true" @fade></app-skeleton>
     }
     @defer(when onTheAir()){
         <app-carousel-series [seriesList]="onTheAir()" title="Series al aire"
-        (requestMoreData)="api.getMoreData(this.api.getOnTheAirSeries.bind(this.api),onTheAir)">
+        (requestMoreData)="api.getMoreData(onTheAir)" @fade>
         </app-carousel-series>
     } @placeholder{
         <app-carousel-series-skeleton @fade></app-carousel-series-skeleton>
@@ -43,8 +42,8 @@
 
     @defer(when popularSeries() ){
         <app-carousel-series [seriesList]="popularSeries()" title="Series populares"
-        (requestMoreData)="api.getMoreData(this.api.getPopularSeries.bind(this.api),popularSeries)">
-        </app-carousel-series>
+        (requestMoreData)="api.getMoreData(popularSeries)" @fade>
+        </app-carousel-series >
     }@placeholder{
     <app-carousel-series-skeleton @fade></app-carousel-series-skeleton>
     }

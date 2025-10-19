@@ -1,7 +1,7 @@
 <main appBackgroundNavScroll>
   @defer(when onTheAir()){
     <app-banner-series [listSeries]="onTheAir"
-      (requestMoreData)="api.getMoreData(this.api.getOnTheAirSeries.bind(this.api),onTheAir)" @fade>
+      (requestMoreData)="api.getMoreData(onTheAir)" @fade>
     </app-banner-series>
   }@placeholder{
     <app-skeleton [hasSlides]="true" @fade></app-skeleton>

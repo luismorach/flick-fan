@@ -134,7 +134,7 @@ export default class SearchComponent {
     if (!canFetchNext) return;
 
     this.moviesLoading.set(true);
-    this.api.getMoreData(this.api.searchMovie.bind(this.api), this.movies, this.searchQuery)
+    this.api.getMoreData(this.movies, this.searchQuery)
   }
 
   loadMoreSeries() {
@@ -143,7 +143,7 @@ export default class SearchComponent {
     if (!canFetchNext) return;
 
     this.seriesLoading.set(true);
-    this.api.getMoreData(this.api.searchSerie.bind(this.api), this.series, this.searchQuery)
+    this.api.getMoreData(this.series, this.searchQuery)
   }
 
   get resultsSeries() {

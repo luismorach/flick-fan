@@ -1,6 +1,6 @@
-import { Component, effect, inject, signal, ViewChild, WritableSignal } from '@angular/core';
+import { Component, effect, inject, signal, viewChild, WritableSignal } from '@angular/core';
 import { fade } from '../shared/animations/animations';
-import { CommonModule, DOCUMENT } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer.component';
 import { ApiService } from '../core/services/API/api.service';
 import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
@@ -9,13 +9,14 @@ import { CardMovieSkeletonComponent } from '../shared/components/carousel/card-m
 import { CardMovieComponent } from '../shared/components/carousel/card-movie/card-movie.component';
 import BannerMovieComponent from '../shared/components/banner-movie/banner-movie.component';
 import { BannerSkeletonComponent } from '../shared/components/banner-movie/banner-skeleton/banner-skeleton.component';
-import { ComunicatorService } from '../core/services/comunicator/comunicator.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { hasNextPage, scrollToTop } from '../shared/utils/helpers';
+import { scrollToTop } from '../shared/utils/helpers';
 import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
 import { PlayerTrailer } from '../core/interfaces/shared/player.interface';
 import { MovieList } from '../core/interfaces/movie/movie.interface';
 import { SkeletonSlidesHook, useSkeletonSlides } from '../shared/utils/use-skeleton-slides';
+import { forkJoin } from 'rxjs';
+import { DataLoaderManager } from '../shared/utils/data-loader-manager';
 
 @Component({
   selector: 'app-movies',
@@ -34,40 +35,41 @@ import { SkeletonSlidesHook, useSkeletonSlides } from '../shared/utils/use-skele
   animations: [fade]
 })
 export default class MoviesComponent {
-  api = inject(ApiService)
-  @ViewChild(PlayTrailerComponent) playTrailerComponent !: PlayTrailerComponent
-  upcomingMovies: WritableSignal<MovieList | undefined> = signal(undefined)
-  nowPlaying: WritableSignal<MovieList | undefined> = signal(undefined)
+
+  private readonly playTrailerComponent = viewChild<PlayTrailerComponent>(PlayTrailerComponent);
+  readonly dataLoaderManager: DataLoaderManager = inject(DataLoaderManager)
+  private readonly api = inject(ApiService);
+  readonly upcomingMovies: WritableSignal<MovieList | undefined> = signal(undefined)
+  readonly nowPlaying: WritableSignal<MovieList | undefined> = signal(undefined)
+  readonly slides: SkeletonSlidesHook = useSkeletonSlides(320);
   player: PlayerTrailer = { videoId: signal(''), isPlaying: false }
-  doc = inject(DOCUMENT)
-  isLoading: WritableSignal<boolean> = signal(false)
-  slides: SkeletonSlidesHook = useSkeletonSlides(320);
+  
+  moreDataEffect = effect(() => {
+    if (this.nowPlaying() !== undefined) {
+      this.dataLoaderManager.completeFetch()
+    }
+  });
 
-  constructor(public comunicatorService: ComunicatorService) {
-    this.comunicatorService.setBackgroundNav(false)
+  constructor() {
     scrollToTop()
-    this.api.getNowPlaying(1).pipe(takeUntilDestroyed()).subscribe(data => this.nowPlaying.set(data))
-    this.api.getUpcoming(1).pipe(takeUntilDestroyed()).subscribe(data => this.upcomingMovies.set(data))
+    this.loadInitialData()
+  }
 
-    effect(() => {
-      if (this.nowPlaying() !== undefined) {
-        this.isLoading.set(false);
-      }
+  private loadInitialData(): void {
+    forkJoin({
+      nowPlaying: this.api.getNowPlaying(1),
+      upcoming: this.api.getUpcoming(1)
+    }).pipe(
+      takeUntilDestroyed(),
+    ).subscribe(({ nowPlaying, upcoming }) => {
+      this.nowPlaying.set(nowPlaying);
+      this.upcomingMovies.set(upcoming);
     });
   }
 
-  loadMoreOnScroll() {
-    const canFetchNext = hasNextPage(this.nowPlaying());
-
-    if (!canFetchNext || this.isLoading()) return;
-
-    this.isLoading.set(true);
-    this.api.getMoreData(this.api.getNowPlaying.bind(this.api), this.nowPlaying)
-  }
-
-  playTrailer(player: PlayerTrailer) {
+  playTrailer(player: PlayerTrailer): void {
     this.player = player
-    if (player.isPlaying)
-      this.playTrailerComponent?.openTrailer()
+    if (player.isPlaying && this.playTrailerComponent())
+      this.playTrailerComponent()?.openTrailer()
   }
 }

@@ -1,4 +1,4 @@
-import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +10,9 @@ export class WindowService {
   );
 
   readonly width = this.windowWidth.asReadonly();
+  readonly isMobile = computed(() => this.width() < 768);
+  readonly isTablet = computed(() => this.width() >= 768 && this.width() < 1024);
+  readonly isDesktop = computed(() => this.width() >= 1024);
 
   constructor() {
     if (typeof window !== 'undefined') {

@@ -1,7 +1,6 @@
 <main appBackgroundNavScroll>
     @defer(when nowPlaying()){
-        <app-banner-movie [movieList]="upcomingMovies" (onPlayTrailer)="playTrailer($event)"
-            (requestMoreData)="api.getMoreData(this.api.getUpcoming.bind(this.api),upcomingMovies)" @fade>
+        <app-banner-movie [movieList]="upcomingMovies" (onPlayTrailer)="playTrailer($event)" @fade>
         </app-banner-movie>
     }
     @placeholder{
@@ -10,7 +9,7 @@
 
     @defer(when nowPlaying()){
         <section class="flex gap-4 flex-wrap p-4 justify-center mb-16" infiniteScroll [infiniteScrollDistance]="2"
-            [infiniteScrollThrottle]="300" (scrolled)="loadMoreOnScroll()">
+            [infiniteScrollThrottle]="300" (scrolled)="dataLoaderManager.loadMoreData(nowPlaying)">
             @for( movie of nowPlaying()?.results;track movie.id; let i=$index){
                 <app-card-movie [movie]="movie"
                     class="relative z-0 w-80 transition-transform duration-300 hover:scale-125 hover:z-20"
@@ -18,7 +17,7 @@
                     'origin-right':i % slides.slidesPerView()==slides.slidesPerView()-1}">
                 </app-card-movie>
             }
-            @if(isLoading()){
+            @if(dataLoaderManager.isFetchingMoreData()){
                 @for(skeleton of slides.skeletonSlideIndexes();track skeleton){
                     <app-card-movie-skeleton></app-card-movie-skeleton>
                 }

@@ -72,6 +72,7 @@ export class SwiperHelper {
         this.swiper = this.swiperContainer.nativeElement.swiper
         this.setupEventListeners()
         this.setupReactiveUpdates()
+        this.setPaddingToSwiperContainer()
     }
 
     private createSwiperOptions(): SwiperOptions {

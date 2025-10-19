@@ -1,207 +1,255 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, WritableSignal, inject } from '@angular/core';
-import { concatMap, distinct, forkJoin, map, merge, mergeAll, mergeMap, Observable, tap, toArray } from 'rxjs';
+import { catchError, concatMap, distinct, forkJoin, from, map, merge, mergeAll, mergeMap, Observable, of, shareReplay, switchMap, tap, toArray } from 'rxjs';
 import { Credits } from '../../interfaces/people/credits.interface';
 import { MovieList, Movie } from '../../interfaces/movie/movie.interface';
-import { Serie } from '../../interfaces/serie/serie.interface';
+import { Serie, SerieList } from '../../interfaces/serie/serie.interface';
+import { environment } from '../../environment/environment';
+import { Genre } from '../../interfaces/shared/genre.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  http = inject(HttpClient)
-  API = 'https://api.themoviedb.org/3/'
+  private readonly http = inject(HttpClient);
+  private readonly API_BASE = environment.tmdb.API_URL;
+  private readonly DEFAULT_LANGUAGE = 'es-VE';
+  private genresCache$?: Observable<Genre[]>;
+  private readonly ENRICHMENT_CONCURRENCY = 4;
 
-  joinDetailsMovie(observable: Observable<object>) {
-    let details = observable.pipe(
-      map((data: any) => data.results),
-      mergeMap((data: any) => data),
-      concatMap((movie: any) => {
-        return this.http.get(this.API + 'movie/' + movie.id + '?append_to_response=videos&language=es-VE')
-      }),
-      toArray(),
-    )
+  private readonly methodMap: { [key: string]: any } = {
+    now_playing: this.getNowPlaying.bind(this),
+    upcoming_movies: this.getUpcoming.bind(this),
+    popular_movies: this.getPopular.bind(this),
+    similar_movies: this.getSimilarMovies.bind(this),
+    recomended_movies: this.getRecomendedMovies.bind(this),
+    movies_by_genre: this.getMoviesByGenre.bind(this),
+    search_movie: this.searchMovie.bind(this),
+    popular_series: this.getPopularSeries.bind(this),
+    airing_today: this.getAiringTodaySeries.bind(this),
+    on_the_air_series: this.getOnTheAirSeries.bind(this),
+    similar_series: this.getSimilarSeries.bind(this),
+    recomended_series: this.getRecomendedSeries.bind(this),
+    series_by_genre: this.getSeriesByGenre.bind(this),
+    search_serie: this.searchSerie.bind(this),
+  };
 
-    let fusion = observable.pipe(
-      map((data: any) => details.pipe(
-        map((movies: any) => {
-          data.results = movies
-          return { page: data.page, total_pages: data.total_pages, total_results: data.total_results, results: movies }
+  // ==================== MOVIES ====================
+
+  getNowPlaying(page: number = 1) {
+    return this.getMoviesWithDetails(`movie/now_playing`, page, 'now_playing')
+  }
+
+  getPopular(page: number = 1) {
+    return this.getMoviesWithDetails(`movie/popular`, page, 'popular_movies')
+  }
+
+  getUpcoming(page: number = 1) {
+    return this.getMoviesWithDetails(`movie/upcoming`, page, 'upcoming_movies')
+  }
+
+  getDetailsMovie(movieId: number): Observable<Movie> {
+    return this.http
+      .get<Movie>(`${this.API_BASE}/movie/${movieId}`, {
+        params: this.buildParams({ append_to_response: 'videos' })
+      })
+  }
+
+  getCreditsMovie(movieId: number): Observable<Credits> {
+    return this.http
+      .get<Credits>(`${this.API_BASE}/movie/${movieId}/credits`, {
+        params: this.buildParams(),
+      })
+  }
+
+  getSimilarMovies(page: number, movieId: number) {
+    return this.getMoviesWithDetails(`movie/${movieId}/similar`, page, 'similar_movies');
+  }
+
+  getRecomendedMovies(page: number, movieId: number) {
+    return this.getMoviesWithDetails(`movie/${movieId}/recommendations`, page, 'recomended_movies');
+  }
+
+  searchMovie(page: number, query: string) {
+    return this.http
+      .get<MovieList>(`${this.API_BASE}/search/movie`, {
+        params: this.buildParams({ page, query }),
+      })
+      .pipe(
+        switchMap((response) => this.enrichMoviesWithDetails(response, 'search_movie')),
+      );
+  }
+
+  getMoviesByGenre(genreId: number, page: number) {
+    return this.http
+      .get<MovieList>(`${this.API_BASE}/discover/movie`, {
+        params: this.buildParams({
+          page,
+          sort_by: 'popularity.desc',
+          with_genres: genreId,
         }),
-      )), mergeAll())
-
-    return fusion
+      })
+      .pipe(
+        switchMap((response) => this.enrichMoviesWithDetails(response, 'movies_by_genre'))
+      );
   }
 
-  joinDetailsSeries(observable: Observable<object>) {
-    let details = observable.pipe(
-      map((data: any) => data.results),
-      mergeMap((data: any) => data),
-      concatMap((serie: any) => {
-        return this.http.get(this.API + 'tv/' + serie.id + '?append_to_response=videos&language=es-VE')
-      }),
-      toArray(),
-    )
-
-    let fusion = observable.pipe(
-      map((data: any) => details.pipe(
-        map((series: any) => {
-          data.results = series
-          return { page: data.page, total_pages: data.total_pages, total_results: data.total_results, results: series }
-        }),
-      )), mergeAll())
-
-    return fusion
+  private getMoviesWithDetails(endpoint: string, page: number, type: string): Observable<MovieList> {
+    return this.http.get<MovieList>(`${this.API_BASE}/${endpoint}`, {
+      params: this.buildParams({ page }),
+    })
+      .pipe(
+        switchMap((response) => this.enrichMoviesWithDetails(response, type))
+      );
   }
 
-  joinDetailsSeason(observable: Observable<object>, serie_id: number) {
-    let details = observable.pipe(
-      map((data: any) => data.seasons),
-      mergeMap((data: any) => data),
-      concatMap((season: any) => {
-        return this.http.get(this.API + 'tv/' + serie_id + '/season/' + season.season_number + '?language=es-VE')
-      }),
-      toArray(),
-    )
-
-    let fusion = observable.pipe(
-      map((data: any) => details.pipe(
-        map((seasons: any) => {
-          data.seasons = seasons
-          console.log(seasons)
-          return { ...data, seasons: seasons }
-        }),
-      )), mergeAll())
-
-    return fusion
+  private enrichMoviesWithDetails(movieList: MovieList, type: string): Observable<MovieList> {
+    return this.enrichMediaWithDetails(movieList, 'movie', type) as Observable<MovieList>;
   }
 
-  getNowPlaying(page: number) {
-    let nowPlaying = (this.http.get(this.API + `movie/now_playing?language=es-VE&page=${page}`) as Observable<MovieList>)
-    return this.joinDetailsMovie(nowPlaying)
+  // ==================== SERIES ====================
+
+  getAiringTodaySeries(page: number = 1) {
+    return this.getSeriesWithDetails('tv/airing_today', page, 'airing_today');
   }
 
-  getPopular(page: number) {
-    let popularMovies = this.http.get(this.API + `movie/popular?language=es-VE&page=${page}`)
-    return this.joinDetailsMovie(popularMovies)
-  }
-
-  getUpcoming(page: number) {
-    let upcomingMovies = this.http.get(this.API + `movie/upcoming?language=es-VE&page=${page}`)
-    return this.joinDetailsMovie(upcomingMovies)
-  }
-
-  getDetailsMovie(movie_id: number): Observable<Movie> {
-    return this.http.get(this.API + 'movie/' + movie_id + '?append_to_response=videos&language=es-VE') as Observable<Movie>
-  }
-
-  getCreditsMovie(movie_id: number): Observable<Credits> {
-    return this.http.get(this.API + 'movie/' + movie_id + '/credits?language=es-VE') as Observable<Credits>
-  }
-
-  getSimilarMovies(page: number, id_movie: number) {
-    let similarMovies = this.http.get(this.API + `movie/ ${id_movie}/similar?language=es-VE&page=${page}`)
-    return this.joinDetailsMovie(similarMovies)
-  }
-
-  getRecomendedMovies(page: number, id_movie: number) {
-    let recomendations = this.http.get(this.API + `movie/${id_movie}/recommendations?language=es-VE&page=${page}`)
-    return this.joinDetailsMovie(recomendations)
-  }
-
-  getAiringTodaySeries(page: number) {
-    let airingToday = this.http.get(this.API + `tv/airing_today?language=es-VE&page=${page}`)
-    return this.joinDetailsSeries(airingToday)
-  }
-
-  getOnTheAirSeries(page: number) {
-    let onTheAirSeries = this.http.get(this.API + `tv/on_the_air?language=es-VE&page=${page}`)
-    return this.joinDetailsSeries(onTheAirSeries)
+  getOnTheAirSeries(page: number = 1) {
+    return this.getSeriesWithDetails('tv/on_the_air', page, 'on_the_air_series');
   }
   getPopularSeries(page: number) {
-    let popularSeries = this.http.get(this.API + `tv/popular?language=es-VE&page=${page}`)
-    return this.joinDetailsSeries(popularSeries)
-  }
-  getDetailsSerie(serie_id: number): Observable<Serie> {
-    let detailsSeason = this.http.get(this.API + 'tv/' + serie_id + '?append_to_response=videos&language=es-VE')
-    return this.joinDetailsSeason(detailsSeason, serie_id)
+    return this.getSeriesWithDetails('tv/popular', page, 'popular_series');
   }
 
-  getCreditsSerie(serie_id: number): Observable<Credits> {
-    return this.http.get(this.API + 'tv/' + serie_id + '/credits?language=es-VE') as Observable<Credits>
-  }
-
-  getSimilarSeries(page: number, serie_id: number) {
-    let similarSeries = this.http.get(this.API + 'tv/' + serie_id + `/similar?language=es-VE&page=${page}`)
-    return this.joinDetailsSeries(similarSeries)
-  }
-
-  getRecomendedSeries(page: number, serie_id: number) {
-    let recomendations = this.http.get(this.API + 'tv/' + serie_id + `/recommendations?language=es-VE&page=${page}`)
-    return this.joinDetailsSeries(recomendations)
-  }
-
-  searchMovie(page: number,name_movie: string) {
-    let movies = this.http.get(this.API + `search/movie?query=${name_movie}&language=es-VE&page=${page}`)
-    return this.joinDetailsMovie(movies)
-  }
-  searchSerie(page: number,name_serie: string) {
-    let movies = this.http.get(this.API + `search/tv?query=${name_serie}&language=es-VE&page=${page}`)
-    return this.joinDetailsSeries(movies)
-  }
-  getGenres() {
-    let genresMovies$ = this.http.get(this.API + `genre/movie/list?language=es-VE`) as Observable<any>
-    let genresSeries$ = this.http.get(this.API + `genre/tv/list?language=es-VE`) as Observable<any>
-    let genres$ = forkJoin([genresMovies$, genresSeries$]).pipe(
-      map(([movies, series]) => {
-        const all = [...movies.genres, ...series.genres];
-        // eliminar duplicados por id
-        return all.filter((g, index, self) =>
-          index === self.findIndex(t => t.id === g.id)
-        );
+  getDetailsSerie(serieId: number): Observable<Serie> {
+    return this.http
+      .get<Serie>(`${this.API_BASE}/tv/${serieId}`, {
+        params: this.buildParams({ append_to_response: 'videos' }),
       })
+      .pipe(
+        switchMap((serie) => this.enrichSerieWithSeasons(serie, serieId))
+      );
+  }
+
+  getCreditsSerie(serieId: number): Observable<Credits> {
+    return this.http
+      .get<Credits>(`${this.API_BASE}/tv/${serieId}/credits`, {
+        params: this.buildParams(),
+      })
+  }
+
+  getSimilarSeries(page: number, serieId: number) {
+    return this.getSeriesWithDetails(`tv/${serieId}/similar`, page, 'similar_series');
+  }
+
+  getRecomendedSeries(page: number, serieId: number) {
+    return this.getSeriesWithDetails(`tv/${serieId}/recommendations`, page, 'recomended_series');
+  }
+
+  searchSerie(page: number, query: string) {
+    return this.http
+      .get<SerieList>(`${this.API_BASE}/search/tv`, {
+        params: this.buildParams({ page, query }),
+      })
+      .pipe(
+        switchMap((response) => this.enrichSeriesWithDetails(response, 'search_serie'))
+      );
+  }
+
+  getSeriesByGenre(genreId: number, page: number) {
+    return this.http
+      .get<SerieList>(`${this.API_BASE}/discover/tv`, {
+        params: this.buildParams({
+          page,
+          sort_by: 'popularity.desc',
+          with_genres: genreId,
+        }),
+      })
+      .pipe(
+        switchMap((response) => this.enrichSeriesWithDetails(response, 'series_by_genre'))
+      );
+  }
+
+  private getSeriesWithDetails(endpoint: string, page: number, type: string): Observable<SerieList> {
+    return this.http
+      .get<SerieList>(`${this.API_BASE}/${endpoint}`, {
+        params: this.buildParams({ page }),
+      })
+      .pipe(
+        switchMap((response) => this.enrichSeriesWithDetails(response, type))
+      );
+  }
+
+  private enrichSeriesWithDetails(serieList: SerieList, type: string): Observable<SerieList> {
+    return this.enrichMediaWithDetails(serieList, 'tv', type) as Observable<SerieList>;
+  }
+
+  private enrichSerieWithSeasons(serie: Serie, serieId: number): Observable<Serie> {
+    if (!serie.seasons || serie.seasons.length === 0) {
+      return of(serie);
+    }
+
+    const seasonRequests = serie.seasons.map((season) =>
+      this.http
+        .get<any>(`${this.API_BASE}/tv/${serieId}/season/${season.season_number}`, {
+          params: this.buildParams(),
+        })
     );
-    genres$.subscribe(res => console.log(res))
-    return genres$
-  }
-  getMoviesByGenre(genre_id:number,page:number){
-    const moviesByGenre$=this.http.get(this.API + `discover/movie?language=es-VE&page=${page}&sort_by=popularity.desc&with_genres=${genre_id}`) as Observable<any>
-    return this.joinDetailsMovie(moviesByGenre$)
-  }
-  getSeriesByGenre(genre_id:number,page:number){
-    const seriesByGenre$=this.http.get(this.API + `discover/tv?language=es-VE&page=${page}&sort_by=popularity.desc&with_genres=${genre_id}`) as Observable<any>
-    return this.joinDetailsSeries(seriesByGenre$)
+
+    return forkJoin(seasonRequests).pipe(
+      map((seasons) => ({
+        ...serie,
+        seasons,
+      }))
+    );
   }
 
-  /*  getMoreData(MethodApi: Function, currentData: WritableSignal<listMovies | listSeries | undefined>) {
-     console.log('solicitando mas datos')
-     let currentPage = currentData()?.page
-     if (currentPage) currentPage += 1
-     console.log('numero de pagina', currentPage)
- 
-     MethodApi(currentPage).subscribe((newData: any) => {
-       currentData.update((data: any) => ({
-         ...data,
-         page: newData.page,
-         results: [...data?.results, ...newData.results]
-       }))
-     })
-   } */
+  // ==================== GENRES ====================
 
-  getMoreData<T extends { page: number; results: any[] }>(
-    MethodApi: (...args: any[]) => Observable<T>,
-    currentData: WritableSignal<T | undefined>,
-    ...extraArgs: any[]
-  ) {
-    console.log('solicitando mas datos');
+  getGenres() {
+    if (!this.genresCache$) {
+      const genresMovies$ = this.http.get<any>(`${this.API_BASE}/genre/movie/list`, {
+        params: this.buildParams(),
+      });
 
-    let currentPage = currentData()?.page ?? 0;
-    currentPage += 1;
+      const genresSeries$ = this.http.get<any>(`${this.API_BASE}/genre/tv/list`, {
+        params: this.buildParams(),
+      });
 
-    console.log('numero de pagina', currentPage);
+      this.genresCache$ = forkJoin([genresMovies$, genresSeries$]).pipe(
+        map(([movies, series]) => {
+          const all = [...movies.genres, ...series.genres];
+          return all.filter(
+            (genre, index, self) => index === self.findIndex((g) => g.id === genre.id)
+          );
+        }),
+        shareReplay(1)
+      );
+    }
 
-    // 👇 pasamos currentPage + extraArgs
-    MethodApi(currentPage, ...extraArgs).subscribe((newData: T) => {
+    return this.genresCache$
+  }
+
+  getMoreData<T extends { page: number; results: any[], type: string }>
+    (
+      currentData: WritableSignal<T | undefined>,
+      ...extraArgs: any[]
+    ) {
+    const currentValue = currentData();
+    if (!currentValue) {
+      console.error('No hay datos actuales');
+      return;
+    }
+
+    const apiMethod = this.methodMap[currentValue.type];
+
+    if (!apiMethod) {
+      console.error(`Unknown data type: ${currentValue.type}`);
+      return;
+    }
+
+    const nextPage = (currentValue.page ?? 0) + 1;
+    console.log('Loading page:', nextPage, 'for type:', currentValue.type);
+    apiMethod(nextPage, ...extraArgs).subscribe((newData: T) => {
       console.log(newData)
       currentData.update((data) => ({
         ...data,
@@ -211,5 +259,41 @@ export class ApiService {
     });
   }
 
+  private enrichMediaWithDetails(
+    mediaList: MovieList | SerieList, 
+    mediaType: 'movie' | 'tv', 
+    type: string
+  ): Observable<MovieList | SerieList> {
+
+    if (!mediaList.results || mediaList.results.length === 0) {
+      return of({ ...mediaList, type, results: [] });
+    }
+
+    return from(mediaList.results).pipe(
+      mergeMap(
+        (media) => this.http.get<Movie | Serie>(`${this.API_BASE}/${mediaType}/${media.id}`, {
+          params: this.buildParams({ append_to_response: 'videos' }),
+        }), this.ENRICHMENT_CONCURRENCY
+      ),
+      toArray(),
+      map((enrichedMedia) => ({
+        ...mediaList,
+        results: enrichedMedia,
+        type,
+      } as MovieList | SerieList))
+    );
+  }
+
+  private buildParams(params: Record<string, any> = {}): HttpParams {
+    let httpParams = new HttpParams().set('language', this.DEFAULT_LANGUAGE);
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        httpParams = httpParams.set(key, value.toString());
+      }
+    });
+
+    return httpParams;
+  }
 
 }

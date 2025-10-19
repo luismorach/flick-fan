@@ -11,6 +11,7 @@ export interface SerieList {
     results: Serie[]
     total_pages: number
     total_results: number
+    type:string
 }
 export interface Serie {
     adult: boolean

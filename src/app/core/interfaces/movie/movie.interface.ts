@@ -7,6 +7,7 @@ export interface MovieList {
     results: Movie[]
     total_pages: number
     total_results: number
+    type: string
 }
 
 export interface Movie {

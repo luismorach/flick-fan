@@ -24,40 +24,71 @@ export default class PlayTrailerComponent {
   constructor(private renderer2: Renderer2) { }
 
   minimize() {
-    let changeSizeTrailer = this.animationsService.changeSize('200ms', '0ms', '100%', '100%', '35%', '45%')
-      .create(this.trailerElement()?.nativeElement)
+    let changeSizeTrailer = this.animationsService.changeSize({
+      duration:'200ms',
+      startWidth:'100%',
+      startHeight:'100%',
+      endWidth:'45%',
+      endHeight:'35%'
+    }).create(this.trailerElement()?.nativeElement)
     changeSizeTrailer.play()
 
-    changeSizeTrailer = this.animationsService.changeSize('200ms', '0ms', '70%', '90%', '100%', '100%')
-      .create(this.videoElement()?.nativeElement)
+    changeSizeTrailer = this.animationsService.changeSize({
+      duration:'200ms',
+      startWidth:'90%',
+      startHeight:'70%',
+      endWidth:'100%',
+      endHeight:'100%'
+    }) .create(this.videoElement()?.nativeElement)
     changeSizeTrailer.play()
 
-    changeSizeTrailer = this.animationsService.changeX('200ms', '0ms', '0', '65%')
-      .create(this.trailerElement()?.nativeElement)
+    changeSizeTrailer = this.animationsService.changeX({
+      duration:'200ms',
+      startPosition:'0',
+      endPosition:'65%'
+    }).create(this.trailerElement()?.nativeElement)
     changeSizeTrailer.play()
 
-    changeSizeTrailer = this.animationsService.changeY('200ms', '0ms', '0', '55%')
-      .create(this.trailerElement()?.nativeElement)
+    changeSizeTrailer = this.animationsService.changeY({
+      duration:'200ms',
+      startPosition:'0',
+      endPosition:'55%'
+    }) .create(this.trailerElement()?.nativeElement)
     changeSizeTrailer.play()
   }
 
   maximize() {
-    let changeSizeTrailer = this.animationsService.changeSize('200ms', '0ms', '35%', '45%', '100%', '100%')
-      .create(this.trailerElement()?.nativeElement)
+    let changeSizeTrailer = this.animationsService.changeSize({
+      duration:'200ms',
+      startWidth:'45%',
+      startHeight:'35%',
+      endWidth:'100%',
+      endHeight:'100%'
+    }).create(this.trailerElement()?.nativeElement)
     changeSizeTrailer.play()
 
-    changeSizeTrailer = this.animationsService.changeSize('200ms', '0ms', '100%', '100%', '70%', '90%')
-      .create(this.videoElement()?.nativeElement)
+    changeSizeTrailer = this.animationsService.changeSize({
+      duration:'200ms',
+      startWidth:'100%',
+      startHeight:'100%',
+      endWidth:'90%',
+      endHeight:'70%'
+    }).create(this.videoElement()?.nativeElement)
     changeSizeTrailer.play()
 
-    changeSizeTrailer = this.animationsService.changeX('200ms', '0ms', '65%', '0')
-      .create(this.trailerElement()?.nativeElement)
+    changeSizeTrailer = this.animationsService.changeX({
+      duration:'200ms',
+      startPosition:'65%',
+      endPosition:'0%'
+    }).create(this.trailerElement()?.nativeElement)
     changeSizeTrailer.play()
 
-    changeSizeTrailer = this.animationsService.changeY('200ms', '0ms', '55%', '0')
-      .create(this.trailerElement()?.nativeElement)
+    changeSizeTrailer = this.animationsService.changeY({
+      duration:'200ms',
+      startPosition:'55%',
+      endPosition:'0%'
+    }) .create(this.trailerElement()?.nativeElement)
     changeSizeTrailer.play()
-
   }
 
   openTrailer() {

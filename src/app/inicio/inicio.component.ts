@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, viewChild, signal,  WritableSignal} from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, viewChild, signal,  WritableSignal, DestroyRef} from '@angular/core';
 import { CarouselComponent } from '../shared/components/carousel/carousel.component';
 import { ApiService } from '../core/services/API/api.service';
 import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer.component';
@@ -17,7 +17,12 @@ import { BackgroundNavScrollDirective } from '../core/directives/background-nav-
 import { PlayerTrailer } from '../core/interfaces/shared/player.interface';
 import { MovieList } from '../core/interfaces/movie/movie.interface';
 import { SerieList } from '../core/interfaces/serie/serie.interface';
+import { Observable } from 'rxjs';
 
+interface Loader<T> {
+  call: () => Observable<T>;
+  signal: WritableSignal<T | undefined>;
+}
 @Component({
   selector: 'app-inicio',
   imports: [BannerMovieComponent, CarouselComponent, PlayTrailerComponent, BannerSeriesComponent, SkeletonComponent,
@@ -31,6 +36,7 @@ import { SerieList } from '../core/interfaces/serie/serie.interface';
 export default class InicioComponent {
 
   api = inject(ApiService)
+  private readonly destroyRef = inject(DestroyRef);
 
   playTrailerComponent = viewChild(PlayTrailerComponent)
   popularMovies: WritableSignal<MovieList | undefined> = signal(undefined)
@@ -48,18 +54,28 @@ export default class InicioComponent {
   }
 
   private loadMoviesAndSeries() {
-    const loaders = [
+       const movieLoaders: Loader<MovieList>[] = [
       { call: () => this.api.getNowPlaying(1), signal: this.nowPlaying },
       { call: () => this.api.getPopular(1), signal: this.popularMovies },
       { call: () => this.api.getUpcoming(1), signal: this.upcomingMovies },
+    ];
+
+    const serieLoaders: Loader<SerieList>[] = [
       { call: () => this.api.getOnTheAirSeries(1), signal: this.onTheAir },
       { call: () => this.api.getAiringTodaySeries(1), signal: this.airingToday },
       { call: () => this.api.getPopularSeries(1), signal: this.popularSeries },
     ];
 
-    loaders.forEach(({ call, signal }) => {
-      call().pipe(takeUntilDestroyed()).subscribe(data => signal.set(data));
+    // Cargar películas
+    movieLoaders.forEach(({ call, signal }) => {
+      call().pipe(takeUntilDestroyed()).subscribe((data:MovieList) => signal.set(data));
     });
+
+    // Cargar series
+    serieLoaders.forEach(({ call, signal }) => {
+      call().pipe(takeUntilDestroyed()).subscribe((data:SerieList) => signal.set(data));
+    });
+
   }
 
   playTrailer(player: PlayerTrailer) {

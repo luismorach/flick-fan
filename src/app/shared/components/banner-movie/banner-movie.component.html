@@ -12,7 +12,7 @@
                 </swiper-slide>
             }
 
-            @if(isLoading()){
+            @if(dataLoaderManager.isFetchingMoreData()){
                 <swiper-slide class="w-full h-full">
                     <app-banner-skeleton @fade></app-banner-skeleton>
                 </swiper-slide>
@@ -25,7 +25,7 @@
         (mouseenter)="isSwiperHover=true" (mouseleave)="isSwiperHover=false">
 
         <button class="w-8 self-center transition-all duration-300 "
-            [class.opacity-0]="isBeginning() || !isSwiperHover || isLoading()">
+            [class.opacity-0]="isBeginning() || !isSwiperHover || dataLoaderManager.isFetchingMoreData()">
             <i class="fa-solid fa-chevron-left  hover:cursor-pointer rounded-full
         text-center text-base transition-all ease-in hover:text-xl swiper-previous"></i>
         </button>

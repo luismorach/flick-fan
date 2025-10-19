@@ -64,7 +64,7 @@ export default class SeriesComponent {
     if (!canFetchNext || this.isLoading()) return;
 
     this.isLoading.set(true);
-    this.api.getMoreData(this.api.getPopularSeries.bind(this.api), this.popularSeries);
+    this.api.getMoreData(this.popularSeries);
   }
 
   onSlideExpandHover(card: HTMLElement) {
