@@ -6,21 +6,27 @@ export function useSkeletonSlides(slideBaseWidth: number, isCarousel: boolean = 
     throw new Error('slideBaseWidth debe ser mayor a 0');
   }
 
+  /**
+    * Multiplicador para el ancho de slides expandidas
+    * 2.8x = slide base + expansión visual + espaciado
+  */
+  const EXPANDED_SLIDE_MULTIPLIER = 2.8;
   const destroyRef = inject(DestroyRef);
-  const CAROUSEL_MIN_SPACING = 10;
-  const PEEK_SPACING_RATIO = 0.04;
+  const MIN_SPACING = 10;
+  const CAROUSEL_PEEK_SPACING_RATIO = 0.04;
   const MIN_SLIDES_PER_VIEW = 1;
   const windowResize = inject(WindowService);
-  const minSpaceBetweenSlides = isCarousel ? CAROUSEL_MIN_SPACING : 0;
+  const minPeekSpacingRatio = isCarousel ? CAROUSEL_PEEK_SPACING_RATIO : 0;
+  const expandedWidth = Math.floor(slideBaseWidth * EXPANDED_SLIDE_MULTIPLIER)
 
   const layout = computed(() => {
-    const peekWidth = Math.floor(slideBaseWidth * PEEK_SPACING_RATIO);
+    const peekWidth = Math.floor(slideBaseWidth * minPeekSpacingRatio);
     const totalPeekWidth = peekWidth * 2;
     const viewportWidth = windowResize.width();
-    const availableWidth = viewportWidth - minSpaceBetweenSlides - totalPeekWidth;
+    const availableWidth = viewportWidth - MIN_SPACING - totalPeekWidth;
 
     // Calcular cuántas slides caben
-    const totalSlideWidth = slideBaseWidth + minSpaceBetweenSlides;
+    const totalSlideWidth = slideBaseWidth + MIN_SPACING;
     const calculatedSlides = Math.floor(availableWidth / totalSlideWidth);
     const slides = Math.max(MIN_SLIDES_PER_VIEW, calculatedSlides);
 
@@ -29,7 +35,7 @@ export function useSkeletonSlides(slideBaseWidth: number, isCarousel: boolean = 
     const remainingSpace = viewportWidth - usedBySlides - totalPeekWidth;
     const totalGaps = slides + 1;
     const spacing = Math.max(
-      minSpaceBetweenSlides,
+      MIN_SPACING,
       Math.floor(remainingSpace / totalGaps)
     );
 
@@ -44,17 +50,21 @@ export function useSkeletonSlides(slideBaseWidth: number, isCarousel: boolean = 
       slidesPerView: slides,
       spaceBetween: spacing,
       paddingX: padding,
-      unallocatedPixels: unallocated
+      unallocatedPixels: unallocated,
+      expandedSlideWidth: expandedWidth
     };
   });
 
   const slidesPerView = computed(() => layout().slidesPerView);
   const spaceBetween = computed(() => layout().spaceBetween);
   const paddingX = computed(() => layout().paddingX);
+  const expandedSlideWidth = computed(() => layout().expandedSlideWidth)
 
-  const skeletonSlideIndexes = computed(() =>
-    Array.from({ length: slidesPerView() }, (_, i) => i)
-  );
+  const skeletonSlideIndexes = computed(() => {
+    console.log(isCarousel)
+    const skeletons = isCarousel ? (slidesPerView()+1) : slidesPerView()
+    return Array.from({ length: skeletons }, (_, i) => i)
+  } );
 
   const slidesCount = computed(() => skeletonSlideIndexes().length);
   const hasSlides = computed(() => slidesCount() > 0);
@@ -68,6 +78,7 @@ export function useSkeletonSlides(slideBaseWidth: number, isCarousel: boolean = 
     slideBaseWidth,
     spaceBetween,
     paddingX,
+    expandedSlideWidth,
 
     // Hook para reaccionar a cambios
     onSlidesChange: (callback: (indexes: readonly number[]) => void) => {

@@ -106,23 +106,9 @@ min-h-screen pt-16 overflow-x-hidden">
 
 
     </div>
-    @defer(when similarMovies()){
-    <app-carousel [movieList]="similarMovies()" title="similares" [importance]="2" 
-        (requestMoreData)="API.getMoreData(similarMovies,id_movie)" @fade>
-    </app-carousel>
-    }
-    @placeholder{
-    <app-carousel-skeleton @fade></app-carousel-skeleton>
-    }
-
-    @defer(when recomendedMovies()){
-    <app-carousel [movieList]="recomendedMovies()" title="recomendadas" [importance]="1"
-        (requestMoreData)="API.getMoreData(recomendedMovies,id_movie)"
-        @fade>
-    </app-carousel>
-    }
-    @placeholder{
-    <app-carousel-skeleton @fade></app-carousel-skeleton>
-    }
+    
+    <app-carousel-movies [movieList]="similarMovies()" title="similares" @fade></app-carousel-movies>
+    
+    <app-carousel-movies [movieList]="recomendedMovies()" title="recomendadas" @fade></app-carousel-movies>
 
 </main>

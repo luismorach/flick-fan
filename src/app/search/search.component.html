@@ -104,14 +104,14 @@
         </section>
         @if((movies()?.total_pages ?? 0) > (movies()?.page ?? 0) && !moviesLoading()){
         <button class="px-4 py-2 rounded-lg font-medium  bg-black/90 backdrop-blur-xl z-50 text-gray-300 mb-16 m-4 opacity-100
-                            hover:bg-zinc-800" (click)="loadMoreMovies()">
+                            hover:bg-zinc-800" (click)="dataLoaderManager.loadMoreData(movies)">
             Cargar mas peliculas
         </button>
         }
     </section>
     }
     }@else if(selectedType==='movies' || selectedType==='all'){
-    <app-carousel-skeleton @fade></app-carousel-skeleton>
+    <app-carousel-skeleton [slides]="slides" @fade></app-carousel-skeleton>
     }
 
     @if(series()){
@@ -146,7 +146,7 @@
         </section>
         @if((series()?.total_pages ?? 0) > (series()?.page ?? 0) && !seriesLoading()){
         <button class="px-4 py-2 rounded-lg font-medium  bg-black/90 backdrop-blur-xl z-50 text-gray-300 
-                mx-[42px] my-4 opacity-100 hover:bg-zinc-800" (click)="loadMoreSeries()">
+                mx-[42px] my-4 opacity-100 hover:bg-zinc-800" (click)="dataLoaderManager.loadMoreData(series)">
             Cargar mas series
         </button>
         }

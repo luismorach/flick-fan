@@ -1,0 +1,53 @@
+@defer(when movieList()){
+<main class=" w-full  mb-12">
+    <header class="mb-2" [style.padding.px]="slides.spaceBetween()+ slides.paddingX()">
+        <h2 class="text-title">{{title()}}</h2>
+    </header>
+
+    <section 
+        class="relative" 
+        (mouseenter)="swiperHelper.setHoverState(true)"
+        (mouseleave)="swiperHelper.setHoverState(false)">
+
+        <swiper-container init="false" class="w-full h-80  z-0 relative" [style.z-index]="zIndex" #swiper>
+            @for(movie of swiperHelper?.localData()?.results;track movie.id;let i = $index;){
+            <swiper-slide class="w-80 overflow-visible" @fade>
+                <app-card-movie 
+                    [movie]="movie" 
+                    class="card-base" 
+                    [ngClass]="gridHelper.getCardOriginClass(i,slides)">
+                </app-card-movie>
+            </swiper-slide>
+            }
+
+            @if(swiperHelper.isFetchingMoreData()){
+                <swiper-slide>
+                    <app-carousel-skeleton [slides]="slides" [hasHeader]="false" [insideCarousel]="true"
+                        @fade></app-carousel-skeleton>
+                </swiper-slide>
+            }
+        </swiper-container>
+
+        <button 
+            type="button" 
+            aria-label="Diapositiva anterior" 
+            (click)="swiperHelper.goToPrevSlide()" 
+            class="btn-navigation btn-navigation-prev"
+            [class.opacity-0]="swiperHelper?.atCarouselStart() || !swiperHelper.isHoveredOverCarousel">
+            <i class="fa-solid fa-chevron-left " aria-hidden="true"></i>
+        </button>
+
+        <button 
+            type="button" 
+            aria-label="Diapositiva siguiente" 
+            (click)="swiperHelper.goToNextSlide()" 
+            class="btn-navigation btn-navigation-next"
+            [class.opacity-0]="swiperHelper?.atCarouselEnd()|| !swiperHelper.isHoveredOverCarousel">
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+
+    </section>
+</main>
+}@placeholder{
+<app-carousel-skeleton [slides]="slides" @fade></app-carousel-skeleton>
+}

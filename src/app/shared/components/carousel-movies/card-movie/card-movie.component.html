@@ -1,4 +1,4 @@
-<main class="card-base group" (mouseenter)="handleMouseEnterCard()" 
+<main class="card-base-movie group" (mouseenter)="handleMouseEnterCard()" 
 (mouseleave)="handleMouseLeaveCard()" #movieCard>
     <figure class="relative w-full h-48">
         <img [ngSrc]="movie().backdrop_path | autoImage : 'wide'" fill class="card-image">

@@ -7,7 +7,7 @@
     (mouseleave)="swiperHelper.setHoverState(false)">
 
         <swiper-container init="false" class="w-full" #swiper>
-            @for(serie of seriesList()?.results;track serie;let i = $index){
+            @for(serie of swiperHelper?.localData()?.results;track serie.id;let i = $index){
             <swiper-slide class="relative w-auto h-[29rem]" @fade>
                 <app-card-serie [serie]="serie" (hoverEnter)="onSlideExpandHover(i)"
                     (hoverLeave)="onSlideCollapseHover()"></app-card-serie>

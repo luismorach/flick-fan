@@ -1,5 +1,7 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, 
-  ElementRef, input, OnDestroy, output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit, ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA,
+  ElementRef, input, OnDestroy, signal, ViewChild,
+} from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle';
 import { fade } from '../../animations/animations';
 import { CardSerieSkeletonComponent } from './card-serie-skeleton/card-serie-skeleton.component';
@@ -17,18 +19,20 @@ register();
   styleUrl: './carousel-series.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   animations: [fade],
-  changeDetection:ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class CarouselSeriesComponent implements AfterViewInit, OnDestroy {
-  
-  seriesList = input.required<SerieList | undefined>()
-  title = input.required<string>()
-  requestMoreData = output<void>()
 
+  // Inputs
+  seriesList = input.required<SerieList | undefined>();
+  title = input.required<string>();
+
+  // ViewChild
   @ViewChild('swiper', { static: false, read: ElementRef }) swiperContainer!: ElementRef<SwiperContainer>
-  swiperHelper: SwiperHelper
+  swiperHelper: SwiperHelper<SerieList>;
 
+  //Configuration
   private static readonly SLIDE_CONFIG = {
     width: 288,
     isCarousel: true
@@ -41,22 +45,22 @@ export class CarouselSeriesComponent implements AfterViewInit, OnDestroy {
 
   constructor() {
     this.swiperHelper = new SwiperHelper(this.slides)
+    this.swiperHelper.setupInfiniteDataLoading(this.seriesList)
   }
 
-  ngAfterViewInit() {
-      this.swiperHelper.initSwiper(this.swiperContainer);
-      this.swiperHelper.setupInfiniteDataLoading<SerieList>(this.seriesList, this.requestMoreData)
+  ngAfterViewInit(): void {
+    this.swiperHelper.initSwiper(this.swiperContainer);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.swiperHelper.destroy()
   }
 
-  onSlideExpandHover(index: number) {
+  onSlideExpandHover(index: number): void {
     this.swiperHelper.adjustTranslateForExpandedSlide(index)
   }
 
-  async onSlideCollapseHover() {
+  async onSlideCollapseHover(): Promise<void> {
     this.swiperHelper.restoreBaseTranslate()
     await this.swiperHelper.updateSwiperAfterHoverTransition()
   }

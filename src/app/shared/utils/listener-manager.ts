@@ -1,4 +1,4 @@
-import { EffectRef, ElementRef, Renderer2 } from "@angular/core";
+import { ElementRef, Renderer2 } from "@angular/core";
 
 type EventCallback<T = Event> = (event: T) => void
 

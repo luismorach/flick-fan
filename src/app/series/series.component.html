@@ -1,32 +1,50 @@
 <main appBackgroundNavScroll>
+  <app-empty 
+        title="No hay series disponibles" 
+        subtitle="Vuelve más tarde para ver nuevas series"
+        [signals]="[onTheAir,popularSeries]">
+  </app-empty>
+
   @defer(when onTheAir()){
-    <app-banner-series [listSeries]="onTheAir"
-      (requestMoreData)="api.getMoreData(onTheAir)" @fade>
-    </app-banner-series>
+    <app-banner-series [listSeries]="onTheAir" @fade> </app-banner-series>
   }@placeholder{
     <app-skeleton [hasSlides]="true" @fade></app-skeleton>
   }
-   
- <p class="text-white">{{slides.spaceBetween()}}</p>
+
   @defer(when popularSeries()){
-    <section class="flex flex-col gap-4 justify-around mb-16" 
-    [ngClass]="`p-[${slides.spaceBetween()}px]`"
-     infiniteScroll [infiniteScrollDistance]="2"
-      [infiniteScrollThrottle]="300" (scrolled)="loadMoreOnScroll()">
-      @for (chunk of chunks(); track chunk[0].id) {
-        <div class="flex justify-around  overflow-x-auto hide-scrollbar scroll-smooth" @fade
-        [ngClass]="`gap-[${slides.spaceBetween()}px]`">
-          @for (serie of chunk; track serie.id;let i=$index;) {
-          <app-card-serie [serie]="serie" (hoverEnter)="onSlideExpandHover($event)"
-                    (hoverLeave)="onSlideCollapseHover($event)"></app-card-serie>
+    <section 
+      role="feed"
+      aria-label="Series populares"
+      [attr.aria-busy]="dataLoaderManager.isFetchingMoreData()"
+      class="flex flex-col gap-4 justify-around mb-16" 
+      [style.padding.px]="slides.spaceBetween()"
+      infiniteScroll
+      [infiniteScrollDistance]="scrollConfig.SCROLL_CONFIG.distance" 
+      [infiniteScrollThrottle]="scrollConfig.SCROLL_CONFIG.throttle"
+      (scrolled)="dataLoaderManager.loadMoreData(popularSeries)">
+      
+      @for (chunk of gridHelper.getChunks(popularSeries,slides.slidesPerView());
+       track gridHelper.trackByChunk(chunk)) {
+        <div 
+          class="flex justify-around overflow-x-auto hide-scrollbar scroll-smooth" @fade
+          [style.gap.px]="slides.spaceBetween()">
+          
+          @for (serie of chunk; track serie.id) {
+            <app-card-serie 
+              [serie]="serie" 
+              (hoverEnter)="gridHelper.handleCardHover($event, slides)"
+              (hoverLeave)="gridHelper.resetCardHover($event)"
+              @fade>
+            </app-card-serie>
           }
-          <div class="w-[806px] shrink-0"></div>
+          <div class="shrink-0" [style.width.px]="slides.expandedSlideWidth()"></div>
         </div>
       }
-      @if(isLoading()){
-        <div class="flex gap-[42px]" @fade>
+
+      @if(dataLoaderManager.isFetchingMoreData()){
+        <div class="flex" [style.gap.px]="slides.spaceBetween()" @fade>
           @for(skeleton of slides.skeletonSlideIndexes();track skeleton){
-          <app-card-serie-skeleton @fade></app-card-serie-skeleton>
+            <app-card-serie-skeleton @fade></app-card-serie-skeleton>
           }
         </div>
       }

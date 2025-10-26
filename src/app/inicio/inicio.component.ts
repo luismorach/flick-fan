@@ -1,18 +1,16 @@
 import { Component, ChangeDetectionStrategy, inject, viewChild, signal,  WritableSignal, DestroyRef} from '@angular/core';
-import { CarouselComponent } from '../shared/components/carousel/carousel.component';
+import { CarouselComponent } from '../shared/components/carousel-movies/carousel-movies.component';
 import { ApiService } from '../core/services/API/api.service';
 import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer.component';
 import { CarouselSeriesComponent } from '../shared/components/carousel-series/carousel-series.component';
-import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
+import { CarouselSkeletonComponent } from '../shared/components/carousel-movies/carousel-skeleton/carousel-skeleton.component';
 import { fade } from '../shared/animations/animations';
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
 import { BannerSkeletonComponent } from '../shared/components/banner-movie/banner-skeleton/banner-skeleton.component';
 import BannerMovieComponent from '../shared/components/banner-movie/banner-movie.component';
 import { BannerSeriesComponent } from '../shared/components/banner-series/banner-series.component';
 import { SkeletonComponent } from '../shared/components/banner-series/skeleton/skeleton.component';
-import { ComunicatorService } from '../core/services/comunicator/comunicator.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { scrollToTop } from '../shared/utils/helpers';
 import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
 import { PlayerTrailer } from '../core/interfaces/shared/player.interface';
 import { MovieList } from '../core/interfaces/movie/movie.interface';
@@ -36,7 +34,6 @@ interface Loader<T> {
 export default class InicioComponent {
 
   api = inject(ApiService)
-  private readonly destroyRef = inject(DestroyRef);
 
   playTrailerComponent = viewChild(PlayTrailerComponent)
   popularMovies: WritableSignal<MovieList | undefined> = signal(undefined)
@@ -47,9 +44,7 @@ export default class InicioComponent {
   popularSeries: WritableSignal<SerieList | undefined> = signal(undefined)
   player: PlayerTrailer = { videoId: signal(''), isPlaying: false }
 
-  constructor(public comunicatorService: ComunicatorService) {
-    scrollToTop()
-    this.comunicatorService.setBackgroundNav(false)
+  constructor() {
     this.loadMoviesAndSeries()
   }
 

@@ -1,21 +1,22 @@
 import { Component, computed, effect, inject, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../core/services/API/api.service';
-import { createChunks, hasNextPage} from '../shared/utils/helpers';
+import { createChunks} from '../shared/utils/helpers';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { CardSerieComponent } from '../shared/components/carousel-series/card-serie/card-serie.component';
 import { ComunicatorService } from '../core/services/comunicator/comunicator.service';
-import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-skeleton/carousel-skeleton.component';
+import { CarouselSkeletonComponent } from '../shared/components/carousel-movies/carousel-skeleton/carousel-skeleton.component';
 import { fade } from '../shared/animations/animations';
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
-import { CardMovieSkeletonComponent } from '../shared/components/carousel/card-movie-skeleton/card-movie-skeleton.component';
-import { CardMovieComponent } from '../shared/components/carousel/card-movie/card-movie.component';
+import { CardMovieSkeletonComponent } from '../shared/components/carousel-movies/card-movie-skeleton/card-movie-skeleton.component';
+import { CardMovieComponent } from '../shared/components/carousel-movies/card-movie/card-movie.component';
 import { CardSerieSkeletonComponent } from '../shared/components/carousel-series/card-serie-skeleton/card-serie-skeleton.component';
 import { Genre } from '../core/interfaces/shared/genre.interface';
 import { MovieList } from '../core/interfaces/movie/movie.interface';
 import { SerieList } from '../core/interfaces/serie/serie.interface';
-import { HandleCardSeries } from '../shared/utils/handle-card-series';
 import { SkeletonSlidesHook, useSkeletonSlides } from '../shared/utils/use-skeleton-slides';
+import { DataLoaderManager } from '../shared/utils/data-loader-manager';
+import { GridHelperService } from '../core/services/grid-helper/grid-helper.service';
 
 @Component({
   selector: 'app-search',
@@ -39,13 +40,14 @@ export default class SearchComponent {
   selectedType = 'all'
   searchQuery = ''
   slides: SkeletonSlidesHook = useSkeletonSlides(288);
+  readonly dataLoaderManager: DataLoaderManager = inject(DataLoaderManager)
   chunks = computed(() => {
     const data = this.currentSeries()?.results ?? [];
     return createChunks(data, this.slides.slidesPerView());
   });
 
   constructor(private activatedRoute: ActivatedRoute, private comunicatorService: ComunicatorService,
-    private handleCardSeries:HandleCardSeries) {
+    private handleCardSeries:GridHelperService) {
     this.comunicatorService.setBackgroundNav(true)
     this.getGenres()
     this.subscribeToRouteChanges()
@@ -126,24 +128,6 @@ export default class SearchComponent {
     const series = this.filterDataByGenre(this.series, this.selectedGenreId)
     this.currentSeries.set(series)
 
-  }
-
-  loadMoreMovies() {
-    const canFetchNext = hasNextPage(this.movies());
-
-    if (!canFetchNext) return;
-
-    this.moviesLoading.set(true);
-    this.api.getMoreData(this.movies, this.searchQuery)
-  }
-
-  loadMoreSeries() {
-    const canFetchNext = hasNextPage(this.series());
-
-    if (!canFetchNext) return;
-
-    this.seriesLoading.set(true);
-    this.api.getMoreData(this.series, this.searchQuery)
   }
 
   get resultsSeries() {

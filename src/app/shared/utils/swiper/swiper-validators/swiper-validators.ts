@@ -2,9 +2,11 @@ import { ElementRef } from "@angular/core";
 import Swiper from "swiper";
 import { SwiperContainer } from "swiper/element";
 import { SkeletonSlidesHook } from "../../use-skeleton-slides";
+import assert from "assert";
 
 export class SwiperValidators {
-    static validateContainer(container: ElementRef<SwiperContainer> | undefined | null): void {
+    static validateContainer(container: ElementRef<SwiperContainer> | undefined | null):
+     asserts container is ElementRef<SwiperContainer>{
         if (!container?.nativeElement) {
             throw new Error('Swiper container is not available');
         }
