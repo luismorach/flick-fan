@@ -1,37 +1,48 @@
-<main class=" w-full  pb-8 relative" #main>
-    <header class="p-6 mb-2 pl-12">
-        <h2 class="text-title"> {{title()}}</h2>
-    </header>
+@defer(when swiperHelper.localData()){
+    <main class=" w-full mb-8">
+        <header class="mb-2" [style.padding.px]="slides.spaceBetween()+ slides.paddingX()">
+            <h2 class="text-title"> {{title()}}</h2>
+        </header>
 
-    <section class="relative" (mouseenter)="swiperHelper.setHoverState(true)" 
-    (mouseleave)="swiperHelper.setHoverState(false)">
+        <section 
+            class="relative" 
+            (mouseenter)="swiperHelper.setHoverState(true)" 
+            (mouseleave)="swiperHelper.setHoverState(false)">
 
-        <swiper-container init="false" class="w-full" #swiper>
-            @for(serie of swiperHelper?.localData()?.results;track serie.id;let i = $index){
-            <swiper-slide class="relative w-auto h-[29rem]" @fade>
-                <app-card-serie [serie]="serie" (hoverEnter)="onSlideExpandHover(i)"
-                    (hoverLeave)="onSlideCollapseHover()"></app-card-serie>
-            </swiper-slide>
-            }
+            <swiper-container init="false" class="w-full h-[29rem]" #swiper>
+                @for(serie of swiperHelper?.localData()?.results;track serie.id;let i = $index){
+                <swiper-slide class="relative w-auto h-[29rem]" @fade>
+                    <app-card-serie 
+                        [serie]="serie" 
+                        (hoverEnter)="onSlideExpandHover(i)"
+                        (hoverLeave)="onSlideCollapseHover()">
+                    </app-card-serie>
+                </swiper-slide>
+                }
 
-            @if(swiperHelper?.isFetchingMoreData()){
-                @for(skeleton of slides.skeletonSlideIndexes();track skeleton){
-                    <swiper-slide class="w-72 h-[29rem]">
-                        <app-card-serie-skeleton [hasMargin]="false" @fade></app-card-serie-skeleton>
+                @if(swiperHelper?.isFetchingMoreData()){
+                    <swiper-slide class="w-full">
+                        <app-carousel-series-skeleton 
+                            [slides]="slides" 
+                            [hasHeader]="false" 
+                            [insideCarousel]="true" @fade>
+                        </app-carousel-series-skeleton>
                     </swiper-slide>
                 }
-            }
-        </swiper-container>
+            </swiper-container>
 
-        <button type="button" (click)="swiperHelper.goToPrevSlide()" class="btn-navigation btn-navigation-prev"
-            [class.opacity-0]="swiperHelper?.atCarouselStart() || !swiperHelper.isHoveredOverCarousel">
-            <i class="fa-solid fa-chevron-left "></i>
-        </button>
-        
-        <button type="button" (click)="swiperHelper.goToNextSlide()" class="btn-navigation btn-navigation-next"
-            [class.opacity-0]="swiperHelper?.atCarouselEnd()|| !swiperHelper.isHoveredOverCarousel">
-            <i class="fa-solid fa-chevron-right"></i>
-        </button>
+            <button type="button" (click)="swiperHelper.goToPrevSlide()" class="btn-navigation btn-navigation-prev"
+                [class.opacity-0]="swiperHelper?.atCarouselStart() || !swiperHelper.isHoveredOverCarousel">
+                <i class="fa-solid fa-chevron-left "></i>
+            </button>
+            
+            <button type="button" (click)="swiperHelper.goToNextSlide()" class="btn-navigation btn-navigation-next"
+                [class.opacity-0]="swiperHelper?.atCarouselEnd()|| !swiperHelper.isHoveredOverCarousel">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
 
-    </section>
-</main>
+        </section>
+    </main>
+}@placeholder{
+    <app-carousel-series-skeleton [slides]="slides" @fade></app-carousel-series-skeleton>
+}

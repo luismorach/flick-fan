@@ -10,7 +10,6 @@ import { fade } from '../shared/animations/animations';
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
 import { CardMovieSkeletonComponent } from '../shared/components/carousel-movies/card-movie-skeleton/card-movie-skeleton.component';
 import { CardMovieComponent } from '../shared/components/carousel-movies/card-movie/card-movie.component';
-import { CardSerieSkeletonComponent } from '../shared/components/carousel-series/card-serie-skeleton/card-serie-skeleton.component';
 import { Genre } from '../core/interfaces/shared/genre.interface';
 import { MovieList } from '../core/interfaces/movie/movie.interface';
 import { SerieList } from '../core/interfaces/serie/serie.interface';
@@ -21,7 +20,7 @@ import { GridHelperService } from '../core/services/grid-helper/grid-helper.serv
 @Component({
   selector: 'app-search',
   imports: [CardMovieComponent, CommonModule, CardSerieComponent, CarouselSkeletonComponent,
-    CarouselSeriesSkeletonComponent, CardMovieSkeletonComponent, CardSerieSkeletonComponent],
+    CarouselSeriesSkeletonComponent, CardMovieSkeletonComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css',
   animations: [fade]

@@ -1,16 +1,28 @@
-<main class=" w-full  pb-8 relative  overflow-x-hidden" #container>
-    <header class="p-6 pl-12">
-        <div class="h-6 w-64 bg-zinc-700 rounded mb-1 animate-pulse"></div>
-        <div class="h-1 bg-zinc-700 rounded-full w-32 animate-pulse"></div>
-    </header>
+<main class="w-full mb-8 relative overflow-x-hidden" #container>
+    @if(hasHeader()){
+        <header class="mb-2" [style.padding.px]="padding()">
+            <div class="h-6 w-64 bg-zinc-700 rounded mb-1 animate-pulse"></div>
+            <div class="h-1 bg-zinc-700 rounded-full w-32 animate-pulse"></div>
+        </header>
+    }
 
-    <section class="relative">
-        <section class="min-w-screen h-[75vh] flex grow-0  pb-4 gap-10">
-            @for(a of numElements;track a;let first=$first){
-            <app-card-serie-skeleton [class.ml-12]="first"></app-card-serie-skeleton>
-            }
-        </section>
+    <section 
+        role="status"
+        aria-label="Cargando series"
+        aria-live="polite"
+        class=" h-[29rem] flex grow-0 overflow-hidden"
+        [style.padding-left.px]="padding()" 
+        [style.padding-right.px]="padding()" 
+        [style.gap.px]="slides().spaceBetween()">
+       
+        @for(_ of slides().skeletonSlideIndexes(); track $index) { 
+            <section class="w-72 flex-none h-[75vh] bg-zinc-700 animate-pulse rounded-xl relative ">
+                <div
+                    class="absolute top-4 right-4 flex items-center gap-2 bg-black/60 px-3 py-1 rounded-full border border-red-900/30">
+                    <div class="w-5 h-5 bg-zinc-600 rounded-full"></div>
+                    <div class="w-8 h-4 bg-zinc-600 rounded"></div>
+                </div>
+            </section>
+        }
     </section>
 </main>
-
-    

@@ -1,36 +1,37 @@
 import {
-  AfterViewInit, ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA,
-  ElementRef, input, OnDestroy, signal, ViewChild,
+  ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, DestroyRef,ElementRef, inject, input,viewChild, 
 } from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle';
 import { fade } from '../../animations/animations';
-import { CardSerieSkeletonComponent } from './card-serie-skeleton/card-serie-skeleton.component';
 import { CardSerieComponent } from './card-serie/card-serie.component';
 import { SerieList } from '../../../core/interfaces/serie/serie.interface';
 import { SkeletonSlidesHook, useSkeletonSlides } from '../../utils/use-skeleton-slides';
 import { SwiperHelper } from '../../utils/swiper/swiper-helper';
+import { CarouselSeriesSkeletonComponent } from './carousel-series-skeleton/carousel-series-skeleton.component';
 
 register();
 
 @Component({
   selector: 'app-carousel-series',
-  imports: [CardSerieSkeletonComponent, CardSerieComponent],
+  imports: [CardSerieComponent,CarouselSeriesSkeletonComponent],
   templateUrl: './carousel-series.component.html',
   styleUrl: './carousel-series.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   animations: [fade],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class CarouselSeriesComponent implements AfterViewInit, OnDestroy {
+export class CarouselSeriesComponent{
 
   // Inputs
   seriesList = input.required<SerieList | undefined>();
   title = input.required<string>();
 
-  // ViewChild
-  @ViewChild('swiper', { static: false, read: ElementRef }) swiperContainer!: ElementRef<SwiperContainer>
-  swiperHelper: SwiperHelper<SerieList>;
+  // Dependencies
+  private readonly destroyRef = inject(DestroyRef);
+
+  // ViewQuery
+  readonly swiperContainer = viewChild<ElementRef<SwiperContainer>>('swiper');
 
   //Configuration
   private static readonly SLIDE_CONFIG = {
@@ -38,22 +39,19 @@ export class CarouselSeriesComponent implements AfterViewInit, OnDestroy {
     isCarousel: true
   } as const;
 
-  slides: SkeletonSlidesHook = useSkeletonSlides(
+  //state
+  readonly slides: SkeletonSlidesHook = useSkeletonSlides(
     CarouselSeriesComponent.SLIDE_CONFIG.width,
     CarouselSeriesComponent.SLIDE_CONFIG.isCarousel
   );
+  readonly swiperHelper = new SwiperHelper<SerieList>(this.slides);
 
   constructor() {
-    this.swiperHelper = new SwiperHelper(this.slides)
-    this.swiperHelper.setupInfiniteDataLoading(this.seriesList)
-  }
+    this.swiperHelper.initialize(this.swiperContainer, this.seriesList)
 
-  ngAfterViewInit(): void {
-    this.swiperHelper.initSwiper(this.swiperContainer);
-  }
-
-  ngOnDestroy(): void {
-    this.swiperHelper.destroy()
+    this.destroyRef.onDestroy(() => {
+      this.swiperHelper.destroy()
+    });
   }
 
   onSlideExpandHover(index: number): void {

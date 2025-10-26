@@ -139,7 +139,7 @@
             @if(seriesLoading()){
             <section class="flex justify-around gap-[42px]">
                 @for(skeleton of slides.skeletonSlideIndexes();track skeleton){
-                <app-card-serie-skeleton></app-card-serie-skeleton>
+                <app-carousel-series-skeleton [slides]="slides" @fade></app-carousel-series-skeleton>
                 }
             </section>
             }
@@ -153,6 +153,6 @@
     </section>
     }
     }@else if(selectedType==='series' || selectedType==='all'){
-    <app-carousel-series-skeleton @fade></app-carousel-series-skeleton>
+    <app-carousel-series-skeleton [slides]="slides" @fade></app-carousel-series-skeleton>
     }
 </main>

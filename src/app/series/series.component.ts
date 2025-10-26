@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { fade } from '../shared/animations/animations';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { CardSerieComponent } from '../shared/components/carousel-series/card-serie/card-serie.component';
-import { CardSerieSkeletonComponent } from '../shared/components/carousel-series/card-serie-skeleton/card-serie-skeleton.component';
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
 import { BannerSeriesComponent } from '../shared/components/banner-series/banner-series.component';
 import { SkeletonComponent } from '../shared/components/banner-series/skeleton/skeleton.component';
@@ -24,7 +23,6 @@ import { ScrollConfigService } from '../core/services/scroll-config/scroll-confi
     SkeletonComponent,
     InfiniteScrollDirective,
     CardSerieComponent,
-    CardSerieSkeletonComponent,
     CarouselSeriesSkeletonComponent,
     CommonModule,
     BackgroundNavScrollDirective,

@@ -21,7 +21,6 @@ register();
   styleUrl: './carousel-movies.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
   animations: [fade]
 })
 

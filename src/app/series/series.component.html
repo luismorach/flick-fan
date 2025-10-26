@@ -16,18 +16,20 @@
       role="feed"
       aria-label="Series populares"
       [attr.aria-busy]="dataLoaderManager.isFetchingMoreData()"
-      class="flex flex-col gap-4 justify-around mb-16" 
-      [style.padding.px]="slides.spaceBetween()"
+      class="flex flex-col justify-around" 
+      [style.gap.px]="slides.spaceBetween()"
       infiniteScroll
       [infiniteScrollDistance]="scrollConfig.SCROLL_CONFIG.distance" 
       [infiniteScrollThrottle]="scrollConfig.SCROLL_CONFIG.throttle"
       (scrolled)="dataLoaderManager.loadMoreData(popularSeries)">
-      
+
       @for (chunk of gridHelper.getChunks(popularSeries,slides.slidesPerView());
        track gridHelper.trackByChunk(chunk)) {
         <div 
           class="flex justify-around overflow-x-auto hide-scrollbar scroll-smooth" @fade
-          [style.gap.px]="slides.spaceBetween()">
+          [style.gap.px]="slides.spaceBetween()"
+          [style.padding-left.px]="slides.spaceBetween()"
+          [style.padding-right.px]="slides.spaceBetween()">
           
           @for (serie of chunk; track serie.id) {
             <app-card-serie 
@@ -42,14 +44,10 @@
       }
 
       @if(dataLoaderManager.isFetchingMoreData()){
-        <div class="flex" [style.gap.px]="slides.spaceBetween()" @fade>
-          @for(skeleton of slides.skeletonSlideIndexes();track skeleton){
-            <app-card-serie-skeleton @fade></app-card-serie-skeleton>
-          }
-        </div>
+         <app-carousel-series-skeleton [slides]="slides" [hasHeader]="false" @fade></app-carousel-series-skeleton>
       }
     </section>
   }@placeholder{
-    <app-carousel-series-skeleton @fade></app-carousel-series-skeleton>
+    <app-carousel-series-skeleton [slides]="slides" [hasHeader]="false" @fade></app-carousel-series-skeleton>
   }
 </main>

@@ -25,21 +25,13 @@
     }@placeholder{
     <app-skeleton [hasSlides]="true" @fade></app-skeleton>
     }
-    @defer(when onTheAir()){
-    <app-carousel-series [seriesList]="onTheAir()" title="Series al aire" (requestMoreData)="api.getMoreData(onTheAir)"
-        @fade>
+   
+    <app-carousel-series [seriesList]="onTheAir()" title="Series al aire" @fade>
     </app-carousel-series>
-    } @placeholder{
-    <app-carousel-series-skeleton @fade></app-carousel-series-skeleton>
-    }
-
-    @defer(when popularSeries() ){
-    <app-carousel-series [seriesList]="popularSeries()" title="Series populares"
-        (requestMoreData)="api.getMoreData(popularSeries)" @fade>
+   
+    <app-carousel-series [seriesList]="popularSeries()" title="Series populares" @fade>
     </app-carousel-series>
-    }@placeholder{
-    <app-carousel-series-skeleton @fade></app-carousel-series-skeleton>
-    }
+    
 
     @defer(when player.isPlaying){
     <app-play-trailer [videoKey]="player.videoId()"></app-play-trailer>
