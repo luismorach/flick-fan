@@ -9,6 +9,8 @@
             (mouseenter)="swiperHelper.setHoverState(true)" 
             (mouseleave)="swiperHelper.setHoverState(false)">
 
+            <app-carousel-navigation [swiperHelper]="swiperHelper"></app-carousel-navigation>
+
             <swiper-container init="false" class="w-full h-[29rem]" #swiper>
                 @for(serie of swiperHelper?.localData()?.results;track serie.id;let i = $index){
                 <swiper-slide class="relative w-auto h-[29rem]" @fade>
@@ -30,16 +32,6 @@
                     </swiper-slide>
                 }
             </swiper-container>
-
-            <button type="button" (click)="swiperHelper.goToPrevSlide()" class="btn-navigation btn-navigation-prev"
-                [class.opacity-0]="swiperHelper?.atCarouselStart() || !swiperHelper.isHoveredOverCarousel">
-                <i class="fa-solid fa-chevron-left "></i>
-            </button>
-            
-            <button type="button" (click)="swiperHelper.goToNextSlide()" class="btn-navigation btn-navigation-next"
-                [class.opacity-0]="swiperHelper?.atCarouselEnd()|| !swiperHelper.isHoveredOverCarousel">
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
 
         </section>
     </main>

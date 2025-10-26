@@ -1,11 +1,9 @@
 import { Component, ChangeDetectionStrategy, inject, viewChild, signal,  WritableSignal, DestroyRef} from '@angular/core';
-import { CarouselComponent } from '../shared/components/carousel-movies/carousel-movies.component';
 import { ApiService } from '../core/services/API/api.service';
 import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer.component';
-import { CarouselSeriesComponent } from '../shared/components/carousel-series/carousel-series.component';
-import { CarouselSkeletonComponent } from '../shared/components/carousel-movies/carousel-skeleton/carousel-skeleton.component';
+import { CarouselSeriesComponent } from '../shared/components/carousel/carousel-series/carousel-series.component';
 import { fade } from '../shared/animations/animations';
-import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
+import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
 import { BannerSkeletonComponent } from '../shared/components/banner-movie/banner-skeleton/banner-skeleton.component';
 import BannerMovieComponent from '../shared/components/banner-movie/banner-movie.component';
 import { BannerSeriesComponent } from '../shared/components/banner-series/banner-series.component';
@@ -16,6 +14,8 @@ import { PlayerTrailer } from '../core/interfaces/shared/player.interface';
 import { MovieList } from '../core/interfaces/movie/movie.interface';
 import { SerieList } from '../core/interfaces/serie/serie.interface';
 import { Observable } from 'rxjs';
+import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-movies/carousel-skeleton/carousel-skeleton.component';
+import { CarouselComponent } from '../shared/components/carousel/carousel-movies/carousel-movies.component';
 
 interface Loader<T> {
   call: () => Observable<T>;

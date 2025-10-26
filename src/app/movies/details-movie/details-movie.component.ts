@@ -11,7 +11,7 @@ import { ComunicatorService } from '../../core/services/comunicator/comunicator.
 import { Credits } from '../../core/interfaces/people/credits.interface';
 import { Movie } from '../../core/interfaces/movie/movie.interface';
 import { SwiperHelper } from '../../shared/utils/swiper/swiper-helper';
-import { CarouselSeriesComponent } from '../../shared/components/carousel-series/carousel-series.component';
+import { CarouselSeriesComponent } from '../../shared/components/carousel/carousel-series/carousel-series.component';
 import { SkeletonSlidesHook, useSkeletonSlides } from '../../shared/utils/use-skeleton-slides';
 import { AutoImagePipe } from '../../shared/pipes/auto-image.pipe';
 register();

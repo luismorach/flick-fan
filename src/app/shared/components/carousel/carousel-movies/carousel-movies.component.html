@@ -28,23 +28,7 @@
             }
         </swiper-container>
 
-        <button 
-            type="button" 
-            aria-label="Diapositiva anterior" 
-            (click)="swiperHelper.goToPrevSlide()" 
-            class="btn-navigation btn-navigation-prev"
-            [class.opacity-0]="swiperHelper?.atCarouselStart() || !swiperHelper.isHoveredOverCarousel">
-            <i class="fa-solid fa-chevron-left " aria-hidden="true"></i>
-        </button>
-
-        <button 
-            type="button" 
-            aria-label="Diapositiva siguiente" 
-            (click)="swiperHelper.goToNextSlide()" 
-            class="btn-navigation btn-navigation-next"
-            [class.opacity-0]="swiperHelper?.atCarouselEnd()|| !swiperHelper.isHoveredOverCarousel">
-            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-        </button>
+        <app-carousel-navigation [swiperHelper]="swiperHelper"></app-carousel-navigation>
 
     </section>
 </main>

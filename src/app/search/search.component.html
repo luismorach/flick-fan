@@ -96,7 +96,7 @@
             }
             @if(moviesLoading()){
             @for(skeleton of slides.skeletonSlideIndexes();track skeleton){
-            <app-card-movie-skeleton></app-card-movie-skeleton>
+            <app-carousel-skeleton [slides]="slides" @fade></app-carousel-skeleton>
             }
             }
 

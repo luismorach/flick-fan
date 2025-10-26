@@ -1,11 +1,9 @@
 import { Component, computed,input} from '@angular/core';
-import { CardMovieSkeletonComponent } from '../card-movie-skeleton/card-movie-skeleton.component';
-import { SkeletonSlidesHook} from '../../../utils/use-skeleton-slides';
-import { fade } from '../../../animations/animations';
+import { fade } from '../../../../animations/animations';
+import { SkeletonSlidesHook } from '../../../../utils/use-skeleton-slides';
 
 @Component({
   selector: 'app-carousel-skeleton',
-  imports: [CardMovieSkeletonComponent],
   templateUrl: './carousel-skeleton.component.html',
   styleUrl: './carousel-skeleton.component.css',
   animations: [fade]

@@ -1,13 +1,13 @@
 import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, ElementRef, input, Renderer2, ViewChild } from '@angular/core';
-import { MinutesToTimePipe } from '../../../pipes/minutes-to-time.pipe';
 import { RouterLink } from '@angular/router';
-import { getKeyTrailer} from '../../../utils/helpers';
-import { PlayTrailerEmbeedComponent } from '../../play-trailer-embeed/play-trailer-embeed.component';
-import { Movie } from '../../../../core/interfaces/movie/movie.interface';
-import { IconComponent } from '../../../icon/icon.component';
-import { AutoImagePipe } from '../../../pipes/auto-image.pipe';
-import { TimerManager } from '../../../utils/timer-manager';
+import { Movie } from '../../../../../core/interfaces/movie/movie.interface';
+import { IconComponent } from '../../../../icon/icon.component';
+import { AutoImagePipe } from '../../../../pipes/auto-image.pipe';
+import { MinutesToTimePipe } from '../../../../pipes/minutes-to-time.pipe';
+import { getKeyTrailer } from '../../../../utils/helpers';
+import { TimerManager } from '../../../../utils/timer-manager';
+import { PlayTrailerEmbeedComponent } from '../../../play-trailer-embeed/play-trailer-embeed.component';
 
 @Component({
   selector: 'app-card-movie',

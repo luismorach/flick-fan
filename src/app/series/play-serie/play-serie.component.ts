@@ -10,7 +10,7 @@ import { DatePipe, DOCUMENT, NgOptimizedImage, } from '@angular/common';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
 import { fade } from '../../shared/animations/animations';
 import { register, SwiperContainer } from 'swiper/element/bundle';
-import { CarouselSeriesComponent } from '../../shared/components/carousel-series/carousel-series.component';
+import { CarouselSeriesComponent } from '../../shared/components/carousel/carousel-series/carousel-series.component';
 import { Serie, SerieList, Episode, Season } from '../../core/interfaces/serie/serie.interface';
 import { AutoImagePipe } from '../../shared/pipes/auto-image.pipe';
 register()

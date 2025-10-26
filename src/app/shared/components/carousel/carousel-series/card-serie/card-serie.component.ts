@@ -1,12 +1,12 @@
 import { Component, ElementRef, input, output, Renderer2, ViewChild } from '@angular/core';
-import { PlayTrailerEmbeedComponent } from '../../play-trailer-embeed/play-trailer-embeed.component';
-import {getKeyTrailer} from '../../../utils/helpers';
+import { PlayTrailerEmbeedComponent } from '../../../play-trailer-embeed/play-trailer-embeed.component';
+import {getKeyTrailer} from '../../../../utils/helpers';
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Serie } from '../../../../core/interfaces/serie/serie.interface';
-import { runTransition } from '../../../utils/transition-manager';
-import { TimerManager } from '../../../utils/timer-manager';
-import { AutoImagePipe } from '../../../pipes/auto-image.pipe';
+import { Serie } from '../../../../../core/interfaces/serie/serie.interface';
+import { runTransition } from '../../../../utils/transition-manager';
+import { TimerManager } from '../../../../utils/timer-manager';
+import { AutoImagePipe } from '../../../../pipes/auto-image.pipe';
 
 @Component({
   selector: 'app-card-serie',

@@ -1,5 +1,5 @@
 import { Component, computed, input} from '@angular/core';
-import { SkeletonSlidesHook } from '../../../utils/use-skeleton-slides';
+import { SkeletonSlidesHook } from '../../../../utils/use-skeleton-slides';
 
 @Component({
   selector: 'app-carousel-series-skeleton',

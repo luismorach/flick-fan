@@ -3,24 +3,23 @@ import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../core/services/API/api.service';
 import { createChunks} from '../shared/utils/helpers';
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { CardSerieComponent } from '../shared/components/carousel-series/card-serie/card-serie.component';
+import { CardSerieComponent } from '../shared/components/carousel/carousel-series/card-serie/card-serie.component';
 import { ComunicatorService } from '../core/services/comunicator/comunicator.service';
-import { CarouselSkeletonComponent } from '../shared/components/carousel-movies/carousel-skeleton/carousel-skeleton.component';
 import { fade } from '../shared/animations/animations';
-import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
-import { CardMovieSkeletonComponent } from '../shared/components/carousel-movies/card-movie-skeleton/card-movie-skeleton.component';
-import { CardMovieComponent } from '../shared/components/carousel-movies/card-movie/card-movie.component';
+import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
 import { Genre } from '../core/interfaces/shared/genre.interface';
 import { MovieList } from '../core/interfaces/movie/movie.interface';
 import { SerieList } from '../core/interfaces/serie/serie.interface';
 import { SkeletonSlidesHook, useSkeletonSlides } from '../shared/utils/use-skeleton-slides';
 import { DataLoaderManager } from '../shared/utils/data-loader-manager';
 import { GridHelperService } from '../core/services/grid-helper/grid-helper.service';
+import { CardMovieComponent } from '../shared/components/carousel/carousel-movies/card-movie/card-movie.component';
+import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-movies/carousel-skeleton/carousel-skeleton.component';
 
 @Component({
   selector: 'app-search',
   imports: [CardMovieComponent, CommonModule, CardSerieComponent, CarouselSkeletonComponent,
-    CarouselSeriesSkeletonComponent, CardMovieSkeletonComponent],
+    CarouselSeriesSkeletonComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css',
   animations: [fade]

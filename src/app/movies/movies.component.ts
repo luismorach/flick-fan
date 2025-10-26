@@ -3,10 +3,7 @@ import { fade } from '../shared/animations/animations';
 import { CommonModule } from '@angular/common';
 import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer.component';
 import { ApiService } from '../core/services/API/api.service';
-import { CarouselSkeletonComponent } from '../shared/components/carousel-movies/carousel-skeleton/carousel-skeleton.component';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
-import { CardMovieSkeletonComponent } from '../shared/components/carousel-movies/card-movie-skeleton/card-movie-skeleton.component';
-import { CardMovieComponent } from '../shared/components/carousel-movies/card-movie/card-movie.component';
 import BannerMovieComponent from '../shared/components/banner-movie/banner-movie.component';
 import { BannerSkeletonComponent } from '../shared/components/banner-movie/banner-skeleton/banner-skeleton.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -19,6 +16,8 @@ import { DataLoaderManager } from '../shared/utils/data-loader-manager';
 import { EmptyComponent } from '../shared/components/empty/empty.component';
 import { ScrollConfigService } from '../core/services/scroll-config/scroll-config.service';
 import { GridHelperService } from '../core/services/grid-helper/grid-helper.service';
+import { CardMovieComponent } from '../shared/components/carousel/carousel-movies/card-movie/card-movie.component';
+import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-movies/carousel-skeleton/carousel-skeleton.component';
 
 @Component({
   selector: 'app-movies',

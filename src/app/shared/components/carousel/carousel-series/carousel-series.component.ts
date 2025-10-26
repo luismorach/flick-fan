@@ -2,18 +2,19 @@ import {
   ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, DestroyRef,ElementRef, inject, input,viewChild, 
 } from '@angular/core';
 import { register, SwiperContainer } from 'swiper/element/bundle';
-import { fade } from '../../animations/animations';
+import { fade } from '../../../animations/animations';
 import { CardSerieComponent } from './card-serie/card-serie.component';
-import { SerieList } from '../../../core/interfaces/serie/serie.interface';
-import { SkeletonSlidesHook, useSkeletonSlides } from '../../utils/use-skeleton-slides';
-import { SwiperHelper } from '../../utils/swiper/swiper-helper';
+import { SerieList } from '../../../../core/interfaces/serie/serie.interface';
+import { SkeletonSlidesHook, useSkeletonSlides } from '../../../utils/use-skeleton-slides';
+import { SwiperHelper } from '../../../utils/swiper/swiper-helper';
 import { CarouselSeriesSkeletonComponent } from './carousel-series-skeleton/carousel-series-skeleton.component';
+import { CarouselNavigationComponent } from '../carousel-navigation/carousel-navigation.component';
 
 register();
 
 @Component({
   selector: 'app-carousel-series',
-  imports: [CardSerieComponent,CarouselSeriesSkeletonComponent],
+  imports: [CardSerieComponent,CarouselSeriesSkeletonComponent,CarouselNavigationComponent],
   templateUrl: './carousel-series.component.html',
   styleUrl: './carousel-series.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
