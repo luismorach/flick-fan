@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, WritableSignal, inject } from '@angular/core';
-import { catchError, concatMap, distinct, forkJoin, from, map, merge, mergeAll, mergeMap, Observable, of, shareReplay, switchMap, tap, toArray } from 'rxjs';
+import { catchError, concatMap, distinct, forkJoin, from, lastValueFrom, map, merge, mergeAll, mergeMap, Observable, of, shareReplay, switchMap, tap, toArray } from 'rxjs';
 import { Credits } from '../../interfaces/people/credits.interface';
 import { MovieList, Movie } from '../../interfaces/movie/movie.interface';
 import { Serie, SerieList } from '../../interfaces/serie/serie.interface';
@@ -229,7 +229,7 @@ export class ApiService {
     return this.genresCache$
   }
 
-  getMoreData<T extends { page: number; results: any[], type: string }>
+  async getMoreData<T extends { page: number; results: any[], type: string }>
     (
       currentData: WritableSignal<T | undefined>,
       ...extraArgs: any[]
@@ -249,14 +249,14 @@ export class ApiService {
 
     const nextPage = (currentValue.page ?? 0) + 1;
     console.log('Loading page:', nextPage, 'for type:', currentValue.type);
-    apiMethod(nextPage, ...extraArgs).subscribe((newData: T) => {
+    const newData: T = await lastValueFrom(apiMethod(nextPage, ...extraArgs));
+
       console.log(newData)
       currentData.update((data) => ({
         ...data,
         page: newData.page,
         results: [...(data?.results ?? []), ...newData.results]
       } as T));
-    });
   }
 
   private enrichMediaWithDetails(

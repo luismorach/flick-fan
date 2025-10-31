@@ -5,47 +5,8 @@
         [signals]="[upcomingMovies,nowPlaying]">
     </app-empty>
 
-    @defer(when upcomingMovies()){
-        <app-banner-movie 
-            [movieList]="upcomingMovies" 
-            (onPlayTrailer)="playTrailer($event)" @fade>
-        </app-banner-movie >
-    }
-    @placeholder{
-        <app-banner-skeleton @fade></app-banner-skeleton>
-    }
+    <app-banner-movie [movieList]="upcomingMovies"> </app-banner-movie >
+        
+    <app-movies-grid [data]="nowPlaying()"></app-movies-grid>
 
-    @defer(when nowPlaying()){
-        <section 
-            role="feed"
-            aria-label="Películas en cartelera"
-            aria-live="polite"
-            [attr.aria-busy]="dataLoaderManager.isFetchingMoreData()"
-            class="flex flex-wrap justify-center mb-16" 
-            [style.gap.px]="slides.spaceBetween()"
-            infiniteScroll 
-            [infiniteScrollDistance]="scrollConfig.SCROLL_CONFIG.distance" 
-            [infiniteScrollThrottle]="scrollConfig.SCROLL_CONFIG.throttle"
-            (scrolled)="dataLoaderManager.loadMoreData(nowPlaying)">
-
-            @for( movie of nowPlaying()!.results ;track movie.id; let i=$index){
-                <app-card-movie 
-                    [movie]="movie"
-                    class="card-base"
-                    [class]="gridHelper.cardClassesMovies(nowPlaying,slides) ()[i]">
-                </app-card-movie>
-            }
-            
-            @if(dataLoaderManager.isFetchingMoreData()){
-                <app-carousel-skeleton [slides]="slides" [hasHeader]="false"></app-carousel-skeleton>
-            }
-        </section>
-
-    }@placeholder{
-       <app-carousel-skeleton [slides]="slides" [hasHeader]="false" @fade></app-carousel-skeleton> 
-    }
-
-    @if(player.isPlaying){
-        <app-play-trailer [videoKey]="player.videoId()"></app-play-trailer>
-    }
-</main>
+  </main>

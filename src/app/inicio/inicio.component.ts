@@ -1,9 +1,8 @@
-import { Component, ChangeDetectionStrategy, inject, viewChild, signal,  WritableSignal, DestroyRef} from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, viewChild, signal,  WritableSignal} from '@angular/core';
 import { ApiService } from '../core/services/API/api.service';
 import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer.component';
 import { CarouselSeriesComponent } from '../shared/components/carousel/carousel-series/carousel-series.component';
 import { fade } from '../shared/animations/animations';
-import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
 import { BannerSkeletonComponent } from '../shared/components/banner-movie/banner-skeleton/banner-skeleton.component';
 import BannerMovieComponent from '../shared/components/banner-movie/banner-movie.component';
 import { BannerSeriesComponent } from '../shared/components/banner-series/banner-series.component';
@@ -14,8 +13,7 @@ import { PlayerTrailer } from '../core/interfaces/shared/player.interface';
 import { MovieList } from '../core/interfaces/movie/movie.interface';
 import { SerieList } from '../core/interfaces/serie/serie.interface';
 import { Observable } from 'rxjs';
-import { CarouselSkeletonComponent } from '../shared/components/carousel/carousel-movies/carousel-skeleton/carousel-skeleton.component';
-import { CarouselComponent } from '../shared/components/carousel/carousel-movies/carousel-movies.component';
+import { CarouselMoviesComponent } from '../shared/components/carousel/carousel-movies/carousel-movies.component';
 
 interface Loader<T> {
   call: () => Observable<T>;
@@ -23,9 +21,8 @@ interface Loader<T> {
 }
 @Component({
   selector: 'app-inicio',
-  imports: [BannerMovieComponent, CarouselComponent, PlayTrailerComponent, BannerSeriesComponent, SkeletonComponent,
-    CarouselSeriesComponent, CarouselSkeletonComponent, BannerSkeletonComponent, 
-    CarouselSeriesSkeletonComponent,BackgroundNavScrollDirective],
+  imports: [BannerMovieComponent, CarouselMoviesComponent, BannerSeriesComponent, SkeletonComponent,
+    CarouselSeriesComponent,  BannerSkeletonComponent,BackgroundNavScrollDirective],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -71,11 +68,5 @@ export default class InicioComponent {
       call().pipe(takeUntilDestroyed()).subscribe((data:SerieList) => signal.set(data));
     });
 
-  }
-
-  playTrailer(player: PlayerTrailer) {
-    this.player = player
-    if (player.isPlaying)
-      this.playTrailerComponent()?.openTrailer()
   }
 }

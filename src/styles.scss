@@ -1,37 +1,9 @@
-@import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap');
+@import '~plyr/dist/plyr.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  --font-racing: 'racing sans one';
-  --font-roboto: Roboto;
-
-}
-
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
-/* @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
-} */
-
-
-
-@layer base {
-  @font-face {
-    font-family: 'racing sans one';
-    src: url('./assets/fonts/racing-sans-one/RacingSansOne-Regular.ttf');
-  }
-}
 
 body,
 html {
@@ -121,3 +93,55 @@ html {
 .text-overview-card {
   @apply text-gray-300 text-sm line-clamp-3;
 }
+
+/* -------------------- TRAILER -------------------- */
+.cdk-overlay-pane {
+  @apply transition-all duration-300 ease-in-out
+}
+
+.player-frame {
+  @apply relative transition-all duration-300 ease-in-out overflow-hidden rounded-lg shadow-xl;
+  @apply z-50 w-full h-full rounded-md overflow-hidden;
+}
+
+.player-frame--normal {
+  @apply inset-0 m-auto w-[70vw] h-[90vh];
+}
+
+.player-frame--normal app-play-trailer {
+  @apply w-full h-full block
+}
+
+.player-frame--mini {
+  @apply bottom-5 right-5 w-96 h-52 cursor-pointer;
+  /* w-80 = 320px, h-45 = 180px */
+}
+
+.player-frame--mini app-play-trailer {
+  @apply w-full h-full block
+}
+
+.frame-player-buttons{
+  @apply absolute top-2 right-2 flex gap-1 z-10;
+}
+
+.player-button{
+  @apply bg-black/60 text-neutral-300 rounded px-2 py-1 text-sm transition-all;
+  @apply hover:scale-110 hover:cursor-pointer
+}
+
+.player {
+  @apply absolute top-0 right-0 bottom-0 left-0
+}
+
+.backdrop-hidden{
+  @apply  hidden pointer-events-none !important
+}
+app-play-trailer youtube-player-placeholder {
+  @apply w-full h-full !important
+}
+
+app-play-trailer youtube-player>div, app-play-trailer youtube-player>div>iframe {
+  @apply block w-full h-full !important
+}
+

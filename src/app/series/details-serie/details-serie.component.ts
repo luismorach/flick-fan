@@ -7,7 +7,7 @@ import { ApiService } from '../../core/services/API/api.service';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
 import { Credits } from '../../core/interfaces/people/credits.interface';
 import { Serie } from '../../core/interfaces/serie/serie.interface';
-import { AutoImagePipe } from '../../shared/pipes/auto-image.pipe';
+import { AutoImagePipe } from '../../shared/pipes/autoimage/auto-image.pipe';
 
 register()
 @Component({

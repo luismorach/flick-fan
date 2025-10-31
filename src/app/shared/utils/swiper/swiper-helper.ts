@@ -1,6 +1,5 @@
 import {
-    computed, DestroyRef, effect, ElementRef, inject, Injector, InputSignal, Renderer2, Signal, signal,
-    WritableSignal
+    DestroyRef, effect, ElementRef, inject, Injectable, InputSignal, Renderer2, Signal, signal,
 } from "@angular/core"
 import Swiper from "swiper"
 import { SwiperContainer } from "swiper/element"
@@ -10,27 +9,27 @@ import { ListenerManager } from "../listener-manager"
 import { getCurrentTransition } from "../transition-manager"
 import { SkeletonSlidesHook } from "../use-skeleton-slides"
 import { SwiperValidators } from "./swiper-validators/swiper-validators"
-import { MovieList } from "../../../core/interfaces/movie/movie.interface"
-import { SerieList } from "../../../core/interfaces/serie/serie.interface"
 import { DataLoaderManager } from "../data-loader-manager"
+import { PaginatedData } from "../../../core/interfaces/shared/generic.interface"
 
-export class SwiperHelper<T extends MovieList | SerieList = MovieList | SerieList> {
+@Injectable()
+export class SwiperHelper<T> {
+
+    private renderer: Renderer2 = inject(Renderer2)
+    private destroyRef = inject(DestroyRef);
+    private readonly dataLoaderManager: DataLoaderManager<T> = inject(DataLoaderManager<T>)
+    private slidesInfo!: SkeletonSlidesHook
 
     private readonly _atCarouselEnd = signal(false)
     readonly atCarouselEnd = this._atCarouselEnd.asReadonly()
     private readonly _atCarouselStart = signal(true)
     readonly atCarouselStart = this._atCarouselStart.asReadonly()
     readonly isFetchingMoreData!: Signal<boolean>
-    private _localData!: WritableSignal<T | undefined>;
-    readonly localData: Signal<T | undefined>;
+    readonly data: Signal<T []> = this.dataLoaderManager.data;
+    readonly hasData = this.dataLoaderManager.hasData
 
-    private _isHoveredOverCarousel = false
-    get isHoveredOverCarousel() { return this._isHoveredOverCarousel }
-    setHoverState(isHovered: boolean): void { this._isHoveredOverCarousel = isHovered }
-
-    private renderer: Renderer2 = inject(Renderer2)
-    private destroyRef = inject(DestroyRef);
-    private readonly dataLoaderManager: DataLoaderManager = inject(DataLoaderManager)
+    private _isHoveredOverCarousel = signal(false)
+    readonly isHoveredOverCarousel = this._isHoveredOverCarousel.asReadonly()
 
     private swiperContainer!: ElementRef<SwiperContainer>
     private swiper!: Swiper
@@ -41,13 +40,10 @@ export class SwiperHelper<T extends MovieList | SerieList = MovieList | SerieLis
     private ANIMATION_DURATION = 300
     private isInitialized = false
 
-
-    constructor(private readonly slidesInfo: SkeletonSlidesHook) {
+    constructor() {
         this.listenerManager = new ListenerManager(this.renderer)
-        this.baseTranslatePosition = this.slidesInfo.spaceBetween()
 
-        this._localData = signal<T | undefined>(undefined);
-        this.localData = this._localData.asReadonly();
+
         this.isFetchingMoreData = this.dataLoaderManager.isFetchingMoreData.asReadonly()
 
         //this.setupReactiveUpdates()
@@ -59,8 +55,13 @@ export class SwiperHelper<T extends MovieList | SerieList = MovieList | SerieLis
 
     initialize(
         swiperContainer: Signal<ElementRef<SwiperContainer> | undefined>,
-        data: InputSignal<T | undefined>) {
-        this.setupLocalDataEffect(data)
+        data: InputSignal<PaginatedData<T> | undefined>,
+        slidesInfo: SkeletonSlidesHook) {
+            
+        this.slidesInfo = slidesInfo
+        this.baseTranslatePosition = this.slidesInfo.spaceBetween()
+        this.dataLoaderManager.setupLocalData(data)
+        //this.setupLocalDataEffect(data)
         this.setupDataLoadedEffect()
         this.setupSwiperContainerEffect(swiperContainer)
     }
@@ -157,6 +158,19 @@ export class SwiperHelper<T extends MovieList | SerieList = MovieList | SerieLis
             'swiperslidechangetransitionstart', () => {
                 this.swiper.disable()
             })
+
+        const parent = this.swiperContainer.nativeElement.parentElement
+        if (!parent) return
+
+        this.listenerManager.listen(parent,
+            'mouseenter', (event: SwiperEvent) => {
+                this._isHoveredOverCarousel.set(true)
+            })
+
+        this.listenerManager.listen(parent,
+            'mouseleave', (event: SwiperEvent) => {
+                this._isHoveredOverCarousel.set(false)
+            })
     }
 
     private handleSlideChange(detail: Swiper): void {
@@ -175,9 +189,9 @@ export class SwiperHelper<T extends MovieList | SerieList = MovieList | SerieLis
     }
 
     private loadMoreData(isEnd: boolean) {
-        if (!isEnd || !this._localData()) return
+        if (!isEnd || !this.data()) return
 
-        this.dataLoaderManager.loadMoreData(this._localData)
+        this.dataLoaderManager.loadMoreData()
         this._atCarouselEnd.set(false);
         this.scheduleUpdateSwiper();
     }
@@ -279,29 +293,9 @@ export class SwiperHelper<T extends MovieList | SerieList = MovieList | SerieLis
     // INFINITE DATA
     // ==========================================
 
-
-    /**
-     * Configura la carga infinita de datos
-     * @param data Signal con los datos actuales
-     */
-    setupInfiniteDataLoading(data: InputSignal<T | undefined>): void {
-        // runInInjectionContext(this.injector, () => {
-        this.setupDataLoadedEffect();
-        this.setupLocalDataEffect(data)
-        // });
-    }
-
-    private setupLocalDataEffect(data: InputSignal<T | undefined>,): void {
-        const localDataEffect = effect(() => {
-            this._localData?.set(data());
-        });
-        this.destroyRef.onDestroy(() => localDataEffect.destroy());
-    }
-
     private setupDataLoadedEffect(): void {
         const dataLoadedEffect = effect(() => {
-            if (this.localData() && this.isInitialized) {
-                this.dataLoaderManager.completeFetch()
+            if (this.data() && this.isInitialized) {
                 this._atCarouselEnd.set(false);
                 this.scheduleUpdateSwiper()
             }

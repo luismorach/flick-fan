@@ -1,29 +1,31 @@
 import {
   Component, inject, CUSTOM_ELEMENTS_SCHEMA, signal, WritableSignal, Inject, ChangeDetectionStrategy,
-  effect, ViewEncapsulation, ViewChild, ElementRef, output, HostListener, input
+  effect, ViewEncapsulation, ViewChild, ElementRef, output, HostListener, input,
+  viewChild
 } from '@angular/core';
 import { DOCUMENT, DatePipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { register, SwiperContainer } from 'swiper/element/bundle'
 import { SwiperOptions } from 'swiper/types';
-import 'swiper/css'
 import { RouterLink } from '@angular/router';
 import { AnimationConfig, AnimationsService } from '../../../core/services/animations/animations.service';
 import { RatingComponent } from '../rating/rating.component';
 import { ComunicatorService } from '../../../core/services/comunicator/comunicator.service';
 import { fade } from '../../animations/animations';
-import { MinutesToTimePipe } from '../../pipes/minutes-to-time.pipe';
+import { MinutesToTimePipe } from '../../pipes/minutes-to-time/minutes-to-time.pipe';
 import { BannerSkeletonComponent } from './banner-skeleton/banner-skeleton.component';
 import { PlayerTrailer } from '../../../core/interfaces/shared/player.interface';
 import { MovieList, Movie } from '../../../core/interfaces/movie/movie.interface';
 import { MovieSwiperComponent } from './movie-swiper/movie-swiper.component';
 import { getKeyTrailer } from '../../utils/helpers';
 import { DataLoaderManager } from '../../utils/data-loader-manager';
+import { FloatTrailerService } from '../../../core/services/float-trailer/float-trailer.service';
 register()
 
 @Component({
   selector: 'app-banner-movie',
   imports: [DatePipe, NgOptimizedImage, RouterLink, NgClass, RatingComponent,
     MinutesToTimePipe, BannerSkeletonComponent, MovieSwiperComponent],
+  providers: [DataLoaderManager],
   templateUrl: './banner-movie.component.html',
   styleUrl: './banner-movie.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -34,53 +36,70 @@ register()
 
 export default class BannerMovieComponent {
 
-  @ViewChild('swiper') swiperContainer!: ElementRef<SwiperContainer>
-  onPlayTrailer = output<PlayerTrailer>()
+  // View Queries
+  readonly swiperContainer = viewChild<ElementRef<SwiperContainer>>('swiper');
+  //@ViewChild('swiper') swiperContainer!: ElementRef<SwiperContainer>
   animationsService = inject(AnimationsService)
+  floatTrailer = inject(FloatTrailerService)
   indexCurrentElement: number = 0
   movieList = input.required<WritableSignal<MovieList | undefined>>()
   movie: WritableSignal<Movie | undefined> = signal(undefined)
   isBeginning = signal(true)
   isEnd = signal(false)
-  requestMoreData = output<void>()
   isSwiperHover = false
   private paginationObserver?: MutationObserver;
   private shadowChildObserver?: MutationObserver;
-  readonly dataLoaderManager: DataLoaderManager = inject(DataLoaderManager)
+  readonly dataLoaderManager: DataLoaderManager<Movie> = inject(DataLoaderManager)
 
-  constructor(@Inject(DOCUMENT) private document: Document, public comunicatorService: ComunicatorService) {
+  constructor(@Inject(DOCUMENT) private document: Document) {
+    effect(() => {
+      const swiperEl = this.swiperContainer()
+      if (!swiperEl) return
+
+      this.initSwiper()
+      this.addEventSlideChange()
+      this.changeWidthPagination()
+
+      swiperEl.nativeElement.injectStyles = [
+        `
+        :host ::part(pagination) {
+          width: 120px !important;
+        }
+      `
+      ];
+
+    })
+
     effect(() => {
       this.movie.set(this.movieList()()?.results[this.indexCurrentElement])
       this.isEnd.set(false)
-      this.dataLoaderManager.completeFetch()
       queueMicrotask(() => {
-        this.swiperContainer.nativeElement.swiper.update()
+        this.swiperContainer()?.nativeElement.swiper.update()
       })
     })
 
     effect(() => {
-      if (!this.movie())return
+      if (!this.movie()) return
       console.log(this.movie())
       const trailerKey = getKeyTrailer(this.movie())
-      this.onPlayTrailer.emit({
-        videoId: signal(trailerKey),
-        isPlaying: false
-      })
+      this.floatTrailer.setVideoKey(trailerKey)
     })
   }
 
-  ngAfterViewInit() {
-    this.swiperContainer.nativeElement.injectStyles = [
+  /* ngAfterViewInit() {
+    this.initSwiper()
+    this.addEventSlideChange()
+    this.changeWidthPagination()
+
+    const swiperEl = this.swiperContainer()
+    swiperEl.nativeElement.injectStyles = [
       `
         :host ::part(pagination) {
           width: 120px !important;
         }
       `
     ];
-    this.initSwiper()
-    this.addEventSlideChange()
-    this.changeWidthPagination()
-  }
+  } */
 
   initSwiper() {
     const swiperOptions: SwiperOptions = {
@@ -101,42 +120,33 @@ export default class BannerMovieComponent {
       },
     }
 
-    if (this.swiperContainer) {
-      Object.assign(this.swiperContainer.nativeElement, swiperOptions)
-      this.swiperContainer.nativeElement?.initialize()
-
+    const swiperEl = this.swiperContainer()
+    if (swiperEl) {
+      Object.assign(swiperEl.nativeElement, swiperOptions)
+      this.swiperContainer()?.nativeElement?.initialize()
     }
-
-
   }
+
   addEventSlideChange() {
-    this.swiperContainer.nativeElement.addEventListener('swiperslidechange', (event: any) => {
+    this.swiperContainer()?.nativeElement.addEventListener('swiperslidechange', (event: any) => {
 
       this.isBeginning.set(event.detail[0].isBeginning)
       this.isEnd.set(event.detail[0].isEnd)
       this.indexCurrentElement = event.detail[0].activeIndex
       this.movie.set(this.movieList()()?.results[this.indexCurrentElement])
-      if (this.isEnd()){
+      if (this.isEnd()) {
         console.log('cargando mas')
-        this.dataLoaderManager.loadMoreData(this.movieList())
+        this.dataLoaderManager.loadMoreData()
       }
       //this.loadMoreData()
       this.animateElements()
     })
   }
 
-  loadMoreData() {
-    console.log('indeexx', this.indexCurrentElement)
-    let page = this.movieList()()?.page ?? 0;
-    let total_pages = this.movieList()()?.total_pages ?? 0;
-    if (this.isEnd() && (page < total_pages)) {
-      this.requestMoreData.emit()
-    }
-  }
-
   changeWidthPagination() {
     // 3) fallback: si Swiper sigue reescribiendo el style inline, observamos y lo forzamos
-    const swiper = this.swiperContainer.nativeElement
+    const swiper = this.swiperContainer()?.nativeElement
+    if (!swiper) return
     const shadow = swiper.shadowRoot;
     if (!shadow) return;
 
@@ -208,10 +218,7 @@ export default class BannerMovieComponent {
 
   playTrailer() {
     const trailerKey = getKeyTrailer(this.movie())
-    this.onPlayTrailer.emit({
-      videoId: signal(trailerKey),
-      isPlaying: true
-    });
+    this.floatTrailer.showTrailer(trailerKey)
   }
 
 

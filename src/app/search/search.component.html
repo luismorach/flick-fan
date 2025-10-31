@@ -104,7 +104,7 @@
         </section>
         @if((movies()?.total_pages ?? 0) > (movies()?.page ?? 0) && !moviesLoading()){
         <button class="px-4 py-2 rounded-lg font-medium  bg-black/90 backdrop-blur-xl z-50 text-gray-300 mb-16 m-4 opacity-100
-                            hover:bg-zinc-800" (click)="dataLoaderManager.loadMoreData(movies)">
+                            hover:bg-zinc-800" (click)="dataLoaderManager.loadMoreData()">
             Cargar mas peliculas
         </button>
         }
@@ -114,44 +114,44 @@
     <app-carousel-skeleton [slides]="slides" @fade></app-carousel-skeleton>
     }
 
-    @if(series()){
-    @if((selectedType==='series' || selectedType==='all') && resultsSeries.length>0){
-    <section class="mb-16 ">
-        <header class="p-6 mb-2 pl-12 text-white text-2xl">
-            <h2 class="text-3xl font-bold text-white">
-                <span class="inline-block relative bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent
-                        after:h-1 after:w-3/5 after:bg-gradient-to-r after:from-red-500 after:to-red-300 
-                        after:rounded-full after:absolute  after:bottom-0 after:left-0 pb-2">
-                    Series
-                </span>
-            </h2>
-        </header>
-        <section class="flex flex-col gap-4 px-[42px] justify-around ">
-            @for (chunk of chunks(); track chunk[0].id) {
-            <div class="flex justify-around gap-[42px]  overflow-x-auto hide-scrollbar scroll-smooth">
-                @for (serie of chunk; track serie.id;let i=$index;) {
-                <app-card-serie [serie]="serie" (mouseenter)="handleMouseEnterCardSerie($event,i)"
-                    (mouseleave)="handleMouseLeaveCardSerie($event)"></app-card-serie>
+    @if(series(); as series){
+        @if((selectedType==='series' || selectedType==='all') && resultsSeries.length>0){
+        <section class="mb-16 ">
+            <header class="p-6 mb-2 pl-12 text-white text-2xl">
+                <h2 class="text-3xl font-bold text-white">
+                    <span class="inline-block relative bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent
+                            after:h-1 after:w-3/5 after:bg-gradient-to-r after:from-red-500 after:to-red-300 
+                            after:rounded-full after:absolute  after:bottom-0 after:left-0 pb-2">
+                        Series
+                    </span>
+                </h2>
+            </header>
+            <!-- <section class="flex flex-col gap-4 px-[42px] justify-around ">
+                @for (chunk of gridHelper.getChunks(series,slides.slidesPerView()); track chunk[0].id) {
+                <div class="flex justify-around gap-[42px]  overflow-x-auto hide-scrollbar scroll-smooth">
+                    @for (serie of chunk; track serie.id;let i=$index;) {
+                    <app-card-serie [serie]="serie" (mouseenter)="handleMouseEnterCardSerie($event,i)"
+                        (mouseleave)="handleMouseLeaveCardSerie($event)"></app-card-serie>
+                    }
+                    <div class="w-[806px] shrink-0"></div>
+                </div>
                 }
-                <div class="w-[806px] shrink-0"></div>
-            </div>
-            }
-            @if(seriesLoading()){
-            <section class="flex justify-around gap-[42px]">
-                @for(skeleton of slides.skeletonSlideIndexes();track skeleton){
-                <app-carousel-series-skeleton [slides]="slides" @fade></app-carousel-series-skeleton>
+                @if(seriesLoading()){
+                <section class="flex justify-around gap-[42px]">
+                    @for(skeleton of slides.skeletonSlideIndexes();track skeleton){
+                    <app-carousel-series-skeleton [slides]="slides" @fade></app-carousel-series-skeleton>
+                    }
+                </section>
                 }
-            </section>
+            </section> -->
+            @if((series.total_pages  > series.page)  && !seriesLoading()){
+            <button class="px-4 py-2 rounded-lg font-medium  bg-black/90 backdrop-blur-xl z-50 text-gray-300 
+                    mx-[42px] my-4 opacity-100 hover:bg-zinc-800" (click)="dataLoaderManager.loadMoreData()">
+                Cargar mas series
+            </button>
             }
         </section>
-        @if((series()?.total_pages ?? 0) > (series()?.page ?? 0) && !seriesLoading()){
-        <button class="px-4 py-2 rounded-lg font-medium  bg-black/90 backdrop-blur-xl z-50 text-gray-300 
-                mx-[42px] my-4 opacity-100 hover:bg-zinc-800" (click)="dataLoaderManager.loadMoreData(series)">
-            Cargar mas series
-        </button>
         }
-    </section>
-    }
     }@else if(selectedType==='series' || selectedType==='all'){
     <app-carousel-series-skeleton [slides]="slides" @fade></app-carousel-series-skeleton>
     }

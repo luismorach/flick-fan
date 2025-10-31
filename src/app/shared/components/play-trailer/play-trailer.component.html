@@ -1,11 +1,26 @@
+<div class="player-frame" #trailer>
 
+  <div class="frame-player-buttons">
+    @if(svc.minimized()){
+      <i (click)="svc.maximize()" class="fa-solid fa-maximize player-button"></i>
+    }
+    <i (click)="svc.hideTrailer()" class="fa-solid fa-xmark player-button"></i>
+  </div>
 
-<div class="bg-transparent after:bg-black after:w-full after:h-full after:opacity-70
- after:absolute fixed flex justify-center items-center z-50 w-full h-full top-0" #trailer 
-(click)="minimize()">
+  @if(!hasError()){
+    <youtube-player 
+      [videoId]="videoKey()" 
+      [playerVars]="playerVars" 
+      suggestedQuality="hd720" 
+      (error)="onPlayerError($event)"
+      class="player">
+    </youtube-player>
+  }@else {
+    <div class="w-full h-full bg-black flex justify-center items-center text-xl">
+      <i class="fa-solid fa-exclamation-triangle text-yellow-500"></i>
+      <p class="px-2 text-white">Unable to load video</p>
+    </div>
+  }
 
-  <i (click)="closeTrailer()" class="fa-solid fa-xmark z-50 text-neutral-300 text-xl absolute right-0 top-0 
-  py-5 px-2 cursor-pointer"></i>
   
-<iframe [src]="urlSafe() | urlSafe" class="rounded-md z-10 w-[70%] h-[90%]" #video allowfullscreen></iframe> 
 </div>

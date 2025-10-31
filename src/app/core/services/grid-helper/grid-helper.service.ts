@@ -1,7 +1,7 @@
-import { computed, Injectable, WritableSignal } from '@angular/core';
+import { computed, Injectable, signal, Signal, WritableSignal } from '@angular/core';
 import { Serie, SerieList } from '../../interfaces/serie/serie.interface';
 import { SkeletonSlidesHook } from '../../../shared/utils/use-skeleton-slides';
-import { MovieList } from '../../interfaces/movie/movie.interface';
+import { Movie, MovieList } from '../../interfaces/movie/movie.interface';
 
 @Injectable({ providedIn: 'root' })
 export class GridHelperService {
@@ -50,8 +50,8 @@ export class GridHelperService {
         return chunk.map(s => s.id).join('-');
     }
 
-    getChunks(data: WritableSignal<SerieList | undefined>, slidesPerView: number) {
-        const series = data()?.results ?? [];
+    getChunks(data: Signal<SerieList>, slidesPerView: number) {
+        const series = computed(()=>data().results ?? []) 
         return this.createChunks(series, slidesPerView);
     }
 
@@ -64,27 +64,29 @@ export class GridHelperService {
      * @example
      * createChunks([1,2,3,4,5], 2) // [[1,2], [3,4], [5]]
      */
-    private createChunks<T>(data: T[], chunkSize: number): T[][] {
-        if (chunkSize <= 0) {
-            throw new Error('chunkSize must be greater than 0');
-        }
+    createChunks<T>(data: Signal<T[]>, chunkSize: number): Signal<T[][]> {
+        return computed(() => {
+            if (chunkSize <= 0) {
+                throw new Error('chunkSize must be greater than 0');
+            }
 
-        if (!Array.isArray(data) || data.length === 0) {
-            return [];
-        }
+            if (!Array.isArray(data()) || data().length === 0) {
+                return [];
+            }
 
-        const chunks: T[][] = [];
-        for (let i = 0; i < data.length; i += chunkSize) {
-            chunks.push(data.slice(i, i + chunkSize));
-        }
+            const chunks: T[][] = [];
+            for (let i = 0; i < data().length; i += chunkSize) {
+                chunks.push(data().slice(i, i + chunkSize));
+            }
+            return chunks;
+        })
 
-        return chunks;
     }
 
 
-    cardClassesMovies(movies:WritableSignal<MovieList | undefined>,slides: SkeletonSlidesHook) {
+    cardClassesMovies(movies: Signal<Movie[]>, slides: SkeletonSlidesHook) {
         return computed(() =>
-            movies()?.results?.map((_, i) =>
+            movies().map((_, i) =>
                 this.getCardOriginClass(i, slides)
             ) ?? []
         );
@@ -93,10 +95,10 @@ export class GridHelperService {
     getCardOriginClass(index: number, slides: SkeletonSlidesHook): string {
         const position = index % slides.slidesPerView();
         const slidesPerView = slides.slidesPerView();
-        if (slidesPerView === 1) return 'origin-center';
-        if (position === 0) return 'origin-left';
-        if (position === slidesPerView - 1) return 'origin-right';
-        return 'origin-center';
+        if (slidesPerView === 1) return 'card-base origin-center';
+        if (position === 0) return 'card-base origin-left';
+        if (position === slidesPerView - 1) return 'card-base origin-right';
+        return 'card-base origin-center';
     }
 
 }

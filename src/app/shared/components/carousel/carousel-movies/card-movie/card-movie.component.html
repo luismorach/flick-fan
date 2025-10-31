@@ -1,7 +1,7 @@
 <main class="card-base-movie group" (mouseenter)="handleMouseEnterCard()" 
 (mouseleave)="handleMouseLeaveCard()" #movieCard>
     <figure class="relative w-full h-48">
-        <img [ngSrc]="movie().backdrop_path | autoImage : 'wide'" fill class="card-image">
+        <img [ngSrc]="movie().backdrop_path | autoImage : 'wide'" fill class="card-image" loading="lazy">
         @if(movie().vote_average){
             <figcaption class="badge-vote">
                 <app-icon name="star" color="text-red-500" backgroundColor="fill-red-500"> </app-icon>

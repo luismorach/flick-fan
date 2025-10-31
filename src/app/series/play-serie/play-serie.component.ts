@@ -3,7 +3,7 @@ import {
   ViewChild, WritableSignal
 } from '@angular/core';
 import { ActivatedRoute, ParamMap, Params, RouterLink, } from '@angular/router';
-import { UrlSafePipe } from '../../shared/pipes/url-safe.pipe';
+import { UrlSafePipe } from '../../shared/pipes/url-safe/url-safe.pipe';
 import { combineLatest, concatAll, map, Subscription } from 'rxjs';
 import { ApiService } from '../../core/services/API/api.service';
 import { DatePipe, DOCUMENT, NgOptimizedImage, } from '@angular/common';
@@ -12,7 +12,7 @@ import { fade } from '../../shared/animations/animations';
 import { register, SwiperContainer } from 'swiper/element/bundle';
 import { CarouselSeriesComponent } from '../../shared/components/carousel/carousel-series/carousel-series.component';
 import { Serie, SerieList, Episode, Season } from '../../core/interfaces/serie/serie.interface';
-import { AutoImagePipe } from '../../shared/pipes/auto-image.pipe';
+import { AutoImagePipe } from '../../shared/pipes/autoimage/auto-image.pipe';
 register()
 @Component({
   selector: 'app-play-serie',

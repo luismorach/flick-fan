@@ -3,9 +3,8 @@ import { ActivatedRoute, Params, RouterLink } from '@angular/router';
 import { concatAll, map } from 'rxjs/operators';
 import { CurrencyPipe, DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { register, SwiperContainer } from 'swiper/element/bundle'
-import 'swiper/css'
-import { SwiperOptions } from 'swiper/types/swiper-options';
-import { MinutesToTimePipe } from '../../shared/pipes/minutes-to-time.pipe';
+//import { SwiperOptions } from 'swiper';
+import { MinutesToTimePipe } from '../../shared/pipes/minutes-to-time/minutes-to-time.pipe';
 import { ApiService } from '../../core/services/API/api.service';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
 import { Credits } from '../../core/interfaces/people/credits.interface';
@@ -13,7 +12,8 @@ import { Movie } from '../../core/interfaces/movie/movie.interface';
 import { SwiperHelper } from '../../shared/utils/swiper/swiper-helper';
 import { CarouselSeriesComponent } from '../../shared/components/carousel/carousel-series/carousel-series.component';
 import { SkeletonSlidesHook, useSkeletonSlides } from '../../shared/utils/use-skeleton-slides';
-import { AutoImagePipe } from '../../shared/pipes/auto-image.pipe';
+import { AutoImagePipe } from '../../shared/pipes/autoimage/auto-image.pipe';
+import { SwiperOptions } from 'swiper/types';
 register();
 
 @Component({
@@ -37,8 +37,8 @@ export default class DetailsMovieComponent {
   isSwiperHover = [false, false]
   isEnd = [false, false]
   isBeginning = [true, true]
-  private swiperHelperCast: SwiperHelper
-  private swiperHelperCrew: SwiperHelper
+  private swiperHelperCast: SwiperHelper<Movie>
+  private swiperHelperCrew: SwiperHelper<Movie>
   private static readonly SLIDE_CONFIG = {
     width: 144,
     isCarousel: true
@@ -50,8 +50,8 @@ export default class DetailsMovieComponent {
 
   constructor(private rutaActiva: ActivatedRoute,
     private api: ApiService, private comunicatorService: ComunicatorService, private renderer: Renderer2) {
-    this.swiperHelperCast = new SwiperHelper(this.slides)
-    this.swiperHelperCrew = new SwiperHelper(this.slides)
+    this.swiperHelperCast = new SwiperHelper()
+    this.swiperHelperCrew = new SwiperHelper()
     this.comunicatorService.setBackgroundNav(true)
     this.getDetailsMovie()
     this.getCreditsMovie()

@@ -1,6 +1,6 @@
 <main class="w-full  relative my-14 mb-24 z-0">
     <figure class="w-full h-[90vh] absolute gradient-top flex after:w-full 
-    after:absolute after:top-0 after:h-[90vh] after:bg-linear-to-r after:from-[rgba(15,15,15,1)] 
+    after:absolute after:top-0 after:h-[90vh] after:bg-gradient-to-r after:from-[rgba(15,15,15,1)] 
     after:from-15% after:via-[rgba(15,15,15,.9)] after:via-25% after:to-[rgba(83,200,141,0)] after:to-100% ">
         <img ngSrc="{{'http://image.tmdb.org/t/p/original'+serie()?.backdrop_path}}" fill
             class="w-full h-screen object-cover object-center gradient-top" alt="imagen no disponible">
@@ -9,10 +9,10 @@
     <section class="w-full flex pl-36 relative h-[90vh] "(mouseenter)="isSwiperHover=true" 
     (mouseleave)="isSwiperHover=false">
 
-        <swiper-container init="false" class="h-[80vh] w-[50%] z-0 self-center" #swiper>
+        <swiper-container init="false" class="h-[80vh] w-[50%] z-0 self-center scale" #swiper>
             @for(serie of listSeries()()?.results;track serie?.id;let i=$index){
             <swiper-slide class="z-0 w-52 h-80 mx-4 rounded-md transition-all duration-500 ease-in bg-[#18212b]"
-                [class.scale-200]="i===indexCurrentElement()" [class.z-40]="i===indexCurrentElement()"
+                [class.scale-[2]]="i===indexCurrentElement()" [class.z-40]="i===indexCurrentElement()"
                 [class.scale-150]="i===previousIndex() || i===nextIndex()"
                 [class.z-30]="i===previousIndex() || i===nextIndex()" [class.translate-y-[40%]]="i===previousIndex()-1"
                 [class.-translate-y-[40%]]="i===nextIndex()+1">

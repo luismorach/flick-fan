@@ -1,56 +1,51 @@
-import { DestroyRef, effect, inject, Injectable, InputSignal, signal, WritableSignal } from '@angular/core';
-import { MovieList } from '../../core/interfaces/movie/movie.interface';
-import { SerieList } from '../../core/interfaces/serie/serie.interface';
+import { computed, DestroyRef, effect, inject, Injectable, InputSignal, Signal, signal, WritableSignal } from '@angular/core';
+import { Movie, MovieList } from '../../core/interfaces/movie/movie.interface';
+import { Serie, SerieList } from '../../core/interfaces/serie/serie.interface';
 import { ApiService } from '../../core/services/API/api.service';
+import { PaginatedData } from '../../core/interfaces/shared/generic.interface';
 
-type DataList = MovieList | SerieList;
 
 /**
  * Manages paginated data loading with loading state.
  * Call completeFetch() from component effect when data renders.
  */
-@Injectable({ providedIn: 'root' })
-export class DataLoaderManager {
+@Injectable()
+export class DataLoaderManager<T> {
 
     readonly isFetchingMoreData: WritableSignal<boolean> = signal(false)
     private readonly api: ApiService = inject(ApiService)
     private readonly destroyRef = inject(DestroyRef)
+    private readonly localData: WritableSignal<PaginatedData<T> | undefined> = signal(undefined);
+    readonly data = computed(() => (this.localData()?.results ?? []));
+    readonly hasData = computed(() => this.data().length > 0);
 
-    setupSignalMonitoring<T>(dataSignal: WritableSignal<T | undefined>): void {
-        const monitoringEffect = effect(() => {
-            const data = dataSignal();
-            if (data !== undefined && data !== null) {
-                this.isFetchingMoreData.set(false);
-            }
+    setupLocalData(data: Signal< PaginatedData<T> | undefined>) {
+        const localDataEffect = effect(() => {
+            this.localData.set(data());
         });
-        this.destroyRef.onDestroy(() => monitoringEffect.destroy());
+        this.destroyRef.onDestroy(() => localDataEffect.destroy());
     }
 
-    async loadMoreData(data: WritableSignal<DataList | undefined>): Promise<void> {
-        if (!this.canLoadMore(data())) return;
+    async loadMoreData(): Promise<void> {
+
+        if (!this.canLoadMore()) return;
 
         this.isFetchingMoreData.set(true);
         try {
-            await this.api.getMoreData(data);
-        } catch (error) {
+            await this.api.getMoreData(this.localData);
+        } finally {
             this.isFetchingMoreData.set(false);
-            throw error;
         }
     }
 
-    private canLoadMore(data: DataList | undefined): boolean {
-        return this.hasNextPage(data) && !this.isFetchingMoreData();
+    private canLoadMore(): boolean {
+        return this.hasNextPage() && !this.isFetchingMoreData();
     }
 
-    private hasNextPage(data: DataList | undefined): boolean {
+    private hasNextPage(): boolean {
+        const data = this.localData()
         if (!data) return false;
-        const page = data.page ?? 0;
-        const totalPages = data.total_pages ?? 0;
-        return page > 0 && totalPages > 0 && page < totalPages;
-    }
-
-    /** Call from component effect when new data has rendered */
-    completeFetch(): void {
-        this.isFetchingMoreData.set(false);
+        const { page = 0, total_pages = 0 } = data;
+        return page > 0 && total_pages > 0 && page < total_pages;
     }
 }

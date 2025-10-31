@@ -59,12 +59,13 @@ export function useSkeletonSlides(slideBaseWidth: number, isCarousel: boolean = 
   const spaceBetween = computed(() => layout().spaceBetween);
   const paddingX = computed(() => layout().paddingX);
   const expandedSlideWidth = computed(() => layout().expandedSlideWidth)
+  const fullPadding = computed(() => layout().spaceBetween + layout().paddingX)
 
   const skeletonSlideIndexes = computed(() => {
     console.log(isCarousel)
-    const skeletons = isCarousel ? (slidesPerView()+1) : slidesPerView()
+    const skeletons = isCarousel ? (slidesPerView() + 1) : slidesPerView()
     return Array.from({ length: skeletons }, (_, i) => i)
-  } );
+  });
 
   const slidesCount = computed(() => skeletonSlideIndexes().length);
   const hasSlides = computed(() => slidesCount() > 0);
@@ -78,6 +79,7 @@ export function useSkeletonSlides(slideBaseWidth: number, isCarousel: boolean = 
     slideBaseWidth,
     spaceBetween,
     paddingX,
+    fullPadding,
     expandedSlideWidth,
 
     // Hook para reaccionar a cambios

@@ -1,18 +1,16 @@
-@defer(when swiperHelper.localData()){
+@if(swiperHelper.hasData()){
     <main class=" w-full mb-8">
         <header class="mb-2" [style.padding.px]="slides.spaceBetween()+ slides.paddingX()">
             <h2 class="text-title"> {{title()}}</h2>
         </header>
 
         <section 
-            class="relative" 
-            (mouseenter)="swiperHelper.setHoverState(true)" 
-            (mouseleave)="swiperHelper.setHoverState(false)">
+            class="relative">
 
             <app-carousel-navigation [swiperHelper]="swiperHelper"></app-carousel-navigation>
 
             <swiper-container init="false" class="w-full h-[29rem]" #swiper>
-                @for(serie of swiperHelper?.localData()?.results;track serie.id;let i = $index){
+                @for(serie of swiperHelper.data();track serie.id;let i = $index){
                 <swiper-slide class="relative w-auto h-[29rem]" @fade>
                     <app-card-serie 
                         [serie]="serie" 
@@ -22,7 +20,7 @@
                 </swiper-slide>
                 }
 
-                @if(swiperHelper?.isFetchingMoreData()){
+                @if(swiperHelper.isFetchingMoreData()){
                     <swiper-slide class="w-full">
                         <app-carousel-series-skeleton 
                             [slides]="slides" 
@@ -35,6 +33,6 @@
 
         </section>
     </main>
-}@placeholder{
+}@else{
     <app-carousel-series-skeleton [slides]="slides" @fade></app-carousel-series-skeleton>
 }

@@ -1,14 +1,14 @@
 import { Component, computed, effect, inject, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../core/services/API/api.service';
-import { createChunks} from '../shared/utils/helpers';
+import { createChunks } from '../shared/utils/helpers';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { CardSerieComponent } from '../shared/components/carousel/carousel-series/card-serie/card-serie.component';
 import { ComunicatorService } from '../core/services/comunicator/comunicator.service';
 import { fade } from '../shared/animations/animations';
 import { CarouselSeriesSkeletonComponent } from '../shared/components/carousel/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
 import { Genre } from '../core/interfaces/shared/genre.interface';
-import { MovieList } from '../core/interfaces/movie/movie.interface';
+import { Movie, MovieList } from '../core/interfaces/movie/movie.interface';
 import { SerieList } from '../core/interfaces/serie/serie.interface';
 import { SkeletonSlidesHook, useSkeletonSlides } from '../shared/utils/use-skeleton-slides';
 import { DataLoaderManager } from '../shared/utils/data-loader-manager';
@@ -38,14 +38,11 @@ export default class SearchComponent {
   selectedType = 'all'
   searchQuery = ''
   slides: SkeletonSlidesHook = useSkeletonSlides(288);
-  readonly dataLoaderManager: DataLoaderManager = inject(DataLoaderManager)
-  chunks = computed(() => {
-    const data = this.currentSeries()?.results ?? [];
-    return createChunks(data, this.slides.slidesPerView());
-  });
+  readonly dataLoaderManager: DataLoaderManager<Movie> = inject(DataLoaderManager<Movie>)
+  readonly gridHelper = inject(GridHelperService);
 
   constructor(private activatedRoute: ActivatedRoute, private comunicatorService: ComunicatorService,
-    private handleCardSeries:GridHelperService) {
+    private handleCardSeries: GridHelperService) {
     this.comunicatorService.setBackgroundNav(true)
     this.getGenres()
     this.subscribeToRouteChanges()
@@ -141,6 +138,6 @@ export default class SearchComponent {
   }
 
   handleMouseLeaveCardSerie(event: MouseEvent) {
-   //this.handleCardSeries. resetCardHover(event)
+    //this.handleCardSeries. resetCardHover(event)
   }
 }

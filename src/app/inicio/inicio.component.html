@@ -1,23 +1,11 @@
 <main appBackgroundNavScroll>
-    @defer(when nowPlaying()){
-    <app-banner-movie [movieList]="nowPlaying" (onPlayTrailer)="playTrailer($event)"
-        (requestMoreData)="api.getMoreData(nowPlaying)" @fade>
-    </app-banner-movie>
-    }
-    @placeholder{
-    <app-banner-skeleton @fade></app-banner-skeleton>
-    }
-
-
-    <app-carousel-movies @fade [movieList]="popularMovies()" title="Películas populares"  @fade>
+    <app-banner-movie [movieList]="nowPlaying"></app-banner-movie>
+   
+    <app-carousel-movies [movieList]="popularMovies()" title="Películas populares" [zIndex]="3">
     </app-carousel-movies>
 
-
-
-    <app-carousel-movies @fade [movieList]="upcomingMovies()" title="Películas recientes" @fade>
+    <app-carousel-movies [movieList]="upcomingMovies()" title="Películas recientes" [zIndex]="2">
     </app-carousel-movies>
-
-
 
     @defer(when airingToday()){
     <app-banner-series [listSeries]="airingToday" (requestMoreData)="api.getMoreData(airingToday)" @fade>
@@ -32,11 +20,4 @@
     <app-carousel-series [seriesList]="popularSeries()" title="Series populares" @fade>
     </app-carousel-series>
     
-
-    @defer(when player.isPlaying){
-    <app-play-trailer [videoKey]="player.videoId()"></app-play-trailer>
-    }
-    @placeholder{
-    <span></span>
-    }
 </main>

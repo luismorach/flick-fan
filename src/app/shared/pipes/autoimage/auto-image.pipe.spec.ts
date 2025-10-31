@@ -1,4 +1,4 @@
-import { AutoImagePipe } from './auto-image.pipe';
+import { AutoImagePipe } from './autoimage/auto-image.pipe';
 
 describe('AutoImagePipe', () => {
   it('create an instance', () => {

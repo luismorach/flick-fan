@@ -3,8 +3,8 @@ import { Component, ElementRef, input, Renderer2, ViewChild } from '@angular/cor
 import { RouterLink } from '@angular/router';
 import { Movie } from '../../../../../core/interfaces/movie/movie.interface';
 import { IconComponent } from '../../../../icon/icon.component';
-import { AutoImagePipe } from '../../../../pipes/auto-image.pipe';
-import { MinutesToTimePipe } from '../../../../pipes/minutes-to-time.pipe';
+import { AutoImagePipe } from '../../../../pipes/autoimage/auto-image.pipe';
+import { MinutesToTimePipe } from '../../../../pipes/minutes-to-time/minutes-to-time.pipe';
 import { getKeyTrailer } from '../../../../utils/helpers';
 import { TimerManager } from '../../../../utils/timer-manager';
 import { PlayTrailerEmbeedComponent } from '../../../play-trailer-embeed/play-trailer-embeed.component';

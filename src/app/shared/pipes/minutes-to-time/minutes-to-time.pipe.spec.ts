@@ -1,4 +1,4 @@
-import { MinutesToTimePipe } from './minutes-to-time.pipe';
+import { MinutesToTimePipe } from './minutes-to-time/minutes-to-time.pipe';
 
 describe('MinutesToTimePipe', () => {
   it('create an instance', () => {

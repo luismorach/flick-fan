@@ -1,106 +1,40 @@
-import { CUSTOM_ELEMENTS_SCHEMA, Component, ElementRef, Renderer2, computed, inject, input, viewChild } from '@angular/core';
-import { UrlSafePipe } from '../../pipes/url-safe.pipe';
-import { AnimationsService } from '../../../core/services/animations/animations.service';
+import { ChangeDetectionStrategy, Component, effect, inject, signal, } from '@angular/core';
+import { FloatTrailerService } from '../../../core/services/float-trailer/float-trailer.service';
+import { YouTubePlayer } from '@angular/youtube-player';
+
+const YOUTUBE_PLAYER_CONFIG: YT.PlayerVars = {
+  autoplay: 1,
+  iv_load_policy: 3,
+  mute: 1,
+  showinfo: 0,
+  modestbranding: 1,
+  cc_load_policy: 0,
+  rel: 0,
+  fs: 0,
+  disablekb: 1,
+};
 
 @Component({
   selector: 'app-play-trailer',
-  imports: [UrlSafePipe],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [YouTubePlayer],
   templateUrl: './play-trailer.component.html',
-  styleUrl: './play-trailer.component.css'
+  styleUrl: './play-trailer.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-
 export default class PlayTrailerComponent {
-  animationsService = inject(AnimationsService)
-  videoKey = input<string>();
-  trailerElement = viewChild<ElementRef>('trailer')
-  videoElement = viewChild<ElementRef>('video')
-  urlSafe = computed(() => {
-    console.log(this.videoKey())
-    return 'https://www.youtube.com/embed/' + this.videoKey() + '?rel=0'
-  })
+  readonly svc = inject(FloatTrailerService)
+  readonly videoKey = this.svc.videoKey;
+  readonly playerVars: YT.PlayerVars = YOUTUBE_PLAYER_CONFIG
+  readonly hasError = signal(false)
 
-  constructor(private renderer2: Renderer2) { }
+  changeVideoKey = effect(() => {
+    this.videoKey(); // Track videoKey changes
+    this.hasError.set(false);
+  });
 
-  minimize() {
-    let changeSizeTrailer = this.animationsService.changeSize({
-      duration:'200ms',
-      startWidth:'100%',
-      startHeight:'100%',
-      endWidth:'45%',
-      endHeight:'35%'
-    }).create(this.trailerElement()?.nativeElement)
-    changeSizeTrailer.play()
-
-    changeSizeTrailer = this.animationsService.changeSize({
-      duration:'200ms',
-      startWidth:'90%',
-      startHeight:'70%',
-      endWidth:'100%',
-      endHeight:'100%'
-    }) .create(this.videoElement()?.nativeElement)
-    changeSizeTrailer.play()
-
-    changeSizeTrailer = this.animationsService.changeX({
-      duration:'200ms',
-      startPosition:'0',
-      endPosition:'65%'
-    }).create(this.trailerElement()?.nativeElement)
-    changeSizeTrailer.play()
-
-    changeSizeTrailer = this.animationsService.changeY({
-      duration:'200ms',
-      startPosition:'0',
-      endPosition:'55%'
-    }) .create(this.trailerElement()?.nativeElement)
-    changeSizeTrailer.play()
-  }
-
-  maximize() {
-    let changeSizeTrailer = this.animationsService.changeSize({
-      duration:'200ms',
-      startWidth:'45%',
-      startHeight:'35%',
-      endWidth:'100%',
-      endHeight:'100%'
-    }).create(this.trailerElement()?.nativeElement)
-    changeSizeTrailer.play()
-
-    changeSizeTrailer = this.animationsService.changeSize({
-      duration:'200ms',
-      startWidth:'100%',
-      startHeight:'100%',
-      endWidth:'90%',
-      endHeight:'70%'
-    }).create(this.videoElement()?.nativeElement)
-    changeSizeTrailer.play()
-
-    changeSizeTrailer = this.animationsService.changeX({
-      duration:'200ms',
-      startPosition:'65%',
-      endPosition:'0%'
-    }).create(this.trailerElement()?.nativeElement)
-    changeSizeTrailer.play()
-
-    changeSizeTrailer = this.animationsService.changeY({
-      duration:'200ms',
-      startPosition:'55%',
-      endPosition:'0%'
-    }) .create(this.trailerElement()?.nativeElement)
-    changeSizeTrailer.play()
-  }
-
-  openTrailer() {
-    if (!document.contains(this.videoElement()?.nativeElement)) {
-      this.renderer2.removeClass(this.trailerElement()?.nativeElement, 'invisible')
-      this.renderer2.appendChild(this.trailerElement()?.nativeElement, this.videoElement()?.nativeElement)
-    }
-    this.maximize()
-  }
-
-  closeTrailer() {
-    this.renderer2.addClass(this.trailerElement()?.nativeElement, 'invisible')
-    this.renderer2.removeChild(this.trailerElement()?.nativeElement, this.videoElement()?.nativeElement)
+  onPlayerError(event: YT.OnErrorEvent): void {
+    console.error('[PlayTrailerComponent] Player error:', event.data);
+    this.hasError.set(true);
   }
 }

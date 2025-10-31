@@ -10,44 +10,7 @@
   }@placeholder{
     <app-skeleton [hasSlides]="true" @fade></app-skeleton>
   }
+  
+  <app-series-grid [data]="popularSeries()"></app-series-grid>
 
-  @defer(when popularSeries()){
-    <section 
-      role="feed"
-      aria-label="Series populares"
-      [attr.aria-busy]="dataLoaderManager.isFetchingMoreData()"
-      class="flex flex-col justify-around" 
-      [style.gap.px]="slides.spaceBetween()"
-      infiniteScroll
-      [infiniteScrollDistance]="scrollConfig.SCROLL_CONFIG.distance" 
-      [infiniteScrollThrottle]="scrollConfig.SCROLL_CONFIG.throttle"
-      (scrolled)="dataLoaderManager.loadMoreData(popularSeries)">
-
-      @for (chunk of gridHelper.getChunks(popularSeries,slides.slidesPerView());
-       track gridHelper.trackByChunk(chunk)) {
-        <div 
-          class="flex justify-around overflow-x-auto hide-scrollbar scroll-smooth" @fade
-          [style.gap.px]="slides.spaceBetween()"
-          [style.padding-left.px]="slides.spaceBetween()"
-          [style.padding-right.px]="slides.spaceBetween()">
-          
-          @for (serie of chunk; track serie.id) {
-            <app-card-serie 
-              [serie]="serie" 
-              (hoverEnter)="gridHelper.handleCardHover($event, slides)"
-              (hoverLeave)="gridHelper.resetCardHover($event)"
-              @fade>
-            </app-card-serie>
-          }
-          <div class="shrink-0" [style.width.px]="slides.expandedSlideWidth()"></div>
-        </div>
-      }
-
-      @if(dataLoaderManager.isFetchingMoreData()){
-         <app-carousel-series-skeleton [slides]="slides" [hasHeader]="false" @fade></app-carousel-series-skeleton>
-      }
-    </section>
-  }@placeholder{
-    <app-carousel-series-skeleton [slides]="slides" [hasHeader]="false" @fade></app-carousel-series-skeleton>
-  }
-</main>
+ </main>
