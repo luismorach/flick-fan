@@ -1,13 +1,13 @@
 @if(isEmpty()){
-<div class="w-full pt-16 text-center" @emptyState>
-    <h1 class="text-gray-300 text-3xl font-bold p-4">
-        {{title()}}
-    </h1>
+    <div class="w-full py-16 text-center" @emptyState>
+        <h1 class="text-gray-300 text-3xl font-bold p-4">
+            {{title()}}
+        </h1>
 
-    @if(subtitle()){
-    <p class="text-gray-500">
-        {{subtitle()}}
-    </p>
-    }
-</div>
+        @if(subtitle()){
+            <p class="text-gray-500">
+                {{subtitle()}}
+            </p>
+        }
+    </div>
 }

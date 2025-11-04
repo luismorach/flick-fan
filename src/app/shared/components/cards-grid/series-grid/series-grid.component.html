@@ -1,18 +1,8 @@
-@if(dataLoaderManager.hasData()){
-    <section 
-      role="feed"
-      aria-label="Series populares"
-      [attr.aria-busy]="dataLoaderManager.isFetchingMoreData()"
-      class="flex flex-col justify-around" 
-      [style.gap.px]="slides.spaceBetween()"
-      infiniteScroll
-      [infiniteScrollDistance]="scrollConfig.SCROLL_CONFIG.distance" 
-      [infiniteScrollThrottle]="scrollConfig.SCROLL_CONFIG.throttle"
-      (scrolled)="dataLoaderManager.loadMoreData()">
-
-      @for (chunk of chunks(); track gridHelper.trackByChunk(chunk)) {
+<!-- Reusable series grid -->
+<ng-template #seriesGrid>
+    @for (chunk of chunks(); track gridHelper.trackByChunk(chunk)) {
         <div 
-          class="flex justify-around overflow-x-auto hide-scrollbar scroll-smooth" @fade
+          class="flex justify-start overflow-x-auto hide-scrollbar scroll-smooth" @fade
           [style.gap.px]="slides.spaceBetween()"
           [style.padding-left.px]="slides.spaceBetween()"
           [style.padding-right.px]="slides.spaceBetween()">
@@ -26,21 +16,63 @@
             </app-card-serie>
           }
 
-          <!-- Espacio para el card expandido -->
+          <!-- Space for expanded card -->
           <div class="shrink-0" [style.width.px]="slides.expandedSlideWidth()"></div>
         </div>
       }
 
       @if(dataLoaderManager.isFetchingMoreData()){
-        <ng-container *ngTemplateOutlet="skeletonTemplate"></ng-container>
+        <app-carousel-series-skeleton [slides]="slides" [hasHeader]="false" @fade></app-carousel-series-skeleton>
       }
-    </section>
-}@else{
-    <ng-container *ngTemplateOutlet="skeletonTemplate"></ng-container>
+</ng-template>
+
+<!-- Initial loading state -->
+@if(dataLoaderManager.isInitialLoading()){
+   <app-carousel-series-skeleton [slides]="slides" [hasHeader]="false" @fade></app-carousel-series-skeleton>
 }
 
-<ng-template #skeletonTemplate>
-  <div role="status" aria-live="assertive" class="w-full">
-    <app-carousel-series-skeleton [slides]="slides" [hasHeader]="false" @fade></app-carousel-series-skeleton>
-  </div>
-</ng-template>
+<!-- Mode: Infinite Scroll -->
+@if(type()==='scroll' &&  dataLoaderManager.hasData()){
+  <section 
+    role="feed"
+    aria-label="Series populares"
+    [attr.aria-busy]="dataLoaderManager.isFetchingMoreData()"
+    class="flex flex-col mb-16" 
+    [style.gap.px]="slides.spaceBetween()"
+    infiniteScroll
+    [infiniteScrollDistance]="scrollConfig.SCROLL_CONFIG.distance" 
+    [infiniteScrollThrottle]="scrollConfig.SCROLL_CONFIG.throttle"
+    (scrolled)="dataLoaderManager.loadMoreData()">
+
+    <ng-container *ngTemplateOutlet="seriesGrid"></ng-container>
+  
+  </section>
+}
+
+<!-- Mode: manual (with button) -->
+@else if((type() ==='series' || type() ==='all') && dataLoaderManager.hasData() ){
+  <section 
+    role="region"
+    aria-label="Series buscadas"
+    aria-live="polite"
+    aria-labelledby="series-header"
+    @fade>
+
+    <header id="series-header" class="mb-2" [style.padding.px]="slides.fullPadding()">
+        <h2 class="text-title-carousel">  Series  </h2>
+    </header>
+        
+    <div class="flex flex-col mb-16" 
+    [style.gap.px]="slides.spaceBetween()">
+        <ng-container *ngTemplateOutlet="seriesGrid"></ng-container>
+    </div> 
+
+    @if(dataLoaderManager.canLoadMore()){
+        <button aria-label="Cargar más series" class="btn-primary" 
+          [style.margin-left.px]="slides.fullPadding()" [style.margin-bottom.px]="slides.fullPadding()"
+            (click)="dataLoaderManager.loadMoreData({query:searchQuery()})">
+            Cargar mas series
+        </button>
+    }
+  </section>
+}

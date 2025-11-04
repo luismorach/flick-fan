@@ -52,7 +52,11 @@ export default class PlayMovieComponent {
 
   getSimilarMovies() {
     this.subscription.push(this.rutaActiva.params.pipe(
-      map((params: Params) => this.API.getSimilarMovies(1,params['id_movie'])), concatAll())
+      map((params: Params) => this.API.getSimilarMovies( 
+        {
+          page:1,
+          movieId:params['id_movie']
+        })), concatAll())
       .subscribe((movies: any) => {
         if (movies.results.length > 0) {
           this.similarMovies.set(movies)
@@ -62,7 +66,10 @@ export default class PlayMovieComponent {
 
   getRecomendedMovies() {
     this.subscription.push(this.rutaActiva.params.pipe(
-      map((params: Params) => this.API.getRecomendedMovies(1,params['id_movie'])), concatAll())
+      map((params: Params) => this.API.getRecomendedMovies(
+        {
+          page:1,movieId:params['id_movie']
+        })), concatAll())
       .subscribe((movies: any) => {
         if (movies.results.length > 0) {
           this.recomendedMovies.set(movies)

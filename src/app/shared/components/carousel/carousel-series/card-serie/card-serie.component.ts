@@ -77,7 +77,7 @@ export class CardSerieComponent {
   private moveAndPlayTrailer(slide: HTMLElement, id: number) {
     let videoId = getKeyTrailer(this.serie());
 
-    if (videoId === '') return
+    if (!videoId) return
 
     this.renderer2.appendChild(slide, this.trailerEmbeedElement.nativeElement);
     this.trailerEmbeed.setPlayerVideoData(videoId)

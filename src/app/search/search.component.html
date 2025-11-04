@@ -1,158 +1,66 @@
-<main class="pt-16 min-h-screen ">
-    <div class="container mx-auto px-4 py-8">
-        <div class="text-center mb-12">
-            <h1 class="text-5xl font-bold text-white mb-4 tracking-tight">
-                <span class="bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent">
-                    CineSearch
-                </span>
-            </h1>
-            <p class="text-gray-300 text-lg">Descubre tu próxima película o serie favorita</p>
-        </div>
-    </div>
+<main class="pt-16 min-h-screen " appBackgroundNavScroll>
+    <header class="text-center mb-12 mx-auto py-8">
+        <h1 class="text-title"> CineSearch </h1>
+        <p class="text-gray-300 text-lg">Descubre tu próxima película o serie favorita</p>
+    </header>
 
-    <div class="relative m-4 mb-12">
+    <section class="relative m-4 mb-12">
         <div class="absolute inset-0 bg-gradient-to-r from-red-600 to-red-800 rounded-2xl blur-xl opacity-50"></div>
+        
         <div class="relative bg-black/90 backdrop-blur-xl rounded-2xl p-6 shadow-2xl ">
-            @if( (selectedType==='movies' && 1 > resultsMovies.length && !moviesLoading() ) ||
-            (selectedType==='series' && 1 > resultsSeries.length && !seriesLoading()) ||
-            (selectedType==='all' && 1 > resultsSeries.length && 1 > resultsMovies.length && !moviesLoading() &&
-            !seriesLoading()) ){
-            <h1 class="text-gray-300 text-3xl font-bold p-4 text-center mb-6">
-                No se han encontrado resultados</h1>
-            }
+            <app-empty 
+                title="No se han encontrado resultados" 
+                [loaders]="getDataLoaders()">
+            </app-empty>
+           
             <div class="flex gap-4">
-                <button class="px-4 py-2 rounded-lg font-medium transition-all text-white" (click)="selectedType='all'"
+                <button class="btn-base" (click)="selectedType.set('all')"
                     [ngClass]="{
-                    'bg-red-600 text-white shadow-lg shadow-red-600/30':selectedType === 'all',
-                    'bg-zinc-900 text-gray-300 hover:bg-zinc-800':selectedType !== 'all'}">
+                        'btn-active':selectedType() === 'all',
+                        'btn-inactive':selectedType() !== 'all'}">
                     Todos
                 </button>
-                <button class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2"
-                    (click)="selectedType='movies'" [ngClass]="{
-                    'bg-red-600 text-white shadow-lg shadow-red-600/30':selectedType === 'movies',
-                    'bg-zinc-900 text-gray-300 hover:bg-zinc-800':selectedType !== 'movies'}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2">
-                        <rect x="2" y="2" width="20" height="20" rx="2" ry="2" />
-                        <line x1="7" y1="2" x2="7" y2="22" />
-                        <line x1="17" y1="2" x2="17" y2="22" />
-                        <line x1="2" y1="12" x2="22" y2="12" />
-                        <line x1="2" y1="7" x2="7" y2="7" />
-                        <line x1="2" y1="17" x2="7" y2="17" />
-                        <line x1="17" y1="17" x2="22" y2="17" />
-                        <line x1="17" y1="7" x2="22" y2="7" />
-                    </svg>
+                <button class="btn-base" (click)="selectedType.set('movies')" 
+                    [ngClass]="{
+                        'btn-active':selectedType() === 'movies',
+                        'btn-inactive':selectedType() !== 'movies'}">
+                    <app-icon name="film"></app-icon> 
                     Películas
                 </button>
-                <button class="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2"
-                    (click)="selectedType='series'" [ngClass]="{
-                    'bg-red-600 text-white shadow-lg shadow-red-600/30':selectedType === 'series',
-                    'bg-zinc-900 text-gray-300 hover:bg-zinc-800':selectedType !== 'series'}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2">
-                        <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
-                        <polyline points="17 2 12 7 7 2" />
-                    </svg>
-
+                <button class="btn-base" (click)="selectedType.set('series')" 
+                    [ngClass]="{
+                        'btn-active':selectedType() === 'series',
+                        'btn-inactive':selectedType() !== 'series'}">
+                    <app-icon name="tv"></app-icon>
                     Series
                 </button>
                 <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <polygon points="22 3 2 3 10 12 10 19 14 21 14 12 22 3" />
-                    </svg>
+                    <app-icon name="filter" color="text-gray-400"></app-icon>
 
-                    <select class="px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-gray-300 
-                        focus:outline-none focus:border-red-500 transition-all" (change)="filterByGenre($event)">
-                        <option [value]="0">Todos los géneros</option>
-                        @for(genre of genres();track genre.id){
-                        <option [value]="genre.id">{{genre.name}}</option>
+                    <select class="btn-base btn-inactive border border-zinc-800
+                        focus:outline-none focus:border-red-500" (change)="onChangeSelectValue($event)">
+                            <option [value]="0">Todos los géneros</option>
+                                @for(genre of genres();track genre.id){
+                            <option [value]="genre.id">{{genre.name}}</option>
                         }
                     </select>
                 </div>
             </div>
         </div>
-    </div>
-
-    @if(currentMovies()){
-    @if((selectedType==='movies' || selectedType==='all') && resultsMovies.length >0){
-    <section>
-        <header class="p-6 pl-6 text-white text-2xl">
-            <h2 class="text-3xl font-bold text-white mb-2">
-                <span class="inline-block relative bg-gradient-to-r tracking-tight from-red-500 to-red-300 bg-clip-text text-transparent
-                        after:h-1 after:w-3/5 after:bg-gradient-to-r after:from-red-500 after:to-red-300 
-                        after:rounded-full after:absolute  after:bottom-0 after:left-0 pb-2">
-                    Películas
-                </span>
-            </h2>
-        </header>
-        <section class="flex gap-4 flex-wrap p-4 ">
-            @for(movie of resultsMovies;track movie.id;let i=$index){
-            <app-card-movie [movie]="movie"
-                class="relative z-0 w-80 transition-transform duration-300 hover:scale-125 hover:z-20"
-                [ngClass]="{'origin-left':i % slides.slidesPerView()==0,
-                'origin-right':i % slides.slidesPerView()==slides.slidesPerView()-1}">
-            </app-card-movie>
-            }
-            @if(moviesLoading()){
-            @for(skeleton of slides.skeletonSlideIndexes();track skeleton){
-            <app-carousel-skeleton [slides]="slides" @fade></app-carousel-skeleton>
-            }
-            }
-
-
-        </section>
-        @if((movies()?.total_pages ?? 0) > (movies()?.page ?? 0) && !moviesLoading()){
-        <button class="px-4 py-2 rounded-lg font-medium  bg-black/90 backdrop-blur-xl z-50 text-gray-300 mb-16 m-4 opacity-100
-                            hover:bg-zinc-800" (click)="dataLoaderManager.loadMoreData()">
-            Cargar mas peliculas
-        </button>
-        }
     </section>
-    }
-    }@else if(selectedType==='movies' || selectedType==='all'){
-    <app-carousel-skeleton [slides]="slides" @fade></app-carousel-skeleton>
-    }
 
-    @if(series(); as series){
-        @if((selectedType==='series' || selectedType==='all') && resultsSeries.length>0){
-        <section class="mb-16 ">
-            <header class="p-6 mb-2 pl-12 text-white text-2xl">
-                <h2 class="text-3xl font-bold text-white">
-                    <span class="inline-block relative bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent
-                            after:h-1 after:w-3/5 after:bg-gradient-to-r after:from-red-500 after:to-red-300 
-                            after:rounded-full after:absolute  after:bottom-0 after:left-0 pb-2">
-                        Series
-                    </span>
-                </h2>
-            </header>
-            <!-- <section class="flex flex-col gap-4 px-[42px] justify-around ">
-                @for (chunk of gridHelper.getChunks(series,slides.slidesPerView()); track chunk[0].id) {
-                <div class="flex justify-around gap-[42px]  overflow-x-auto hide-scrollbar scroll-smooth">
-                    @for (serie of chunk; track serie.id;let i=$index;) {
-                    <app-card-serie [serie]="serie" (mouseenter)="handleMouseEnterCardSerie($event,i)"
-                        (mouseleave)="handleMouseLeaveCardSerie($event)"></app-card-serie>
-                    }
-                    <div class="w-[806px] shrink-0"></div>
-                </div>
-                }
-                @if(seriesLoading()){
-                <section class="flex justify-around gap-[42px]">
-                    @for(skeleton of slides.skeletonSlideIndexes();track skeleton){
-                    <app-carousel-series-skeleton [slides]="slides" @fade></app-carousel-series-skeleton>
-                    }
-                </section>
-                }
-            </section> -->
-            @if((series.total_pages  > series.page)  && !seriesLoading()){
-            <button class="px-4 py-2 rounded-lg font-medium  bg-black/90 backdrop-blur-xl z-50 text-gray-300 
-                    mx-[42px] my-4 opacity-100 hover:bg-zinc-800" (click)="dataLoaderManager.loadMoreData()">
-                Cargar mas series
-            </button>
-            }
-        </section>
-        }
-    }@else if(selectedType==='series' || selectedType==='all'){
-    <app-carousel-series-skeleton [slides]="slides" @fade></app-carousel-series-skeleton>
-    }
+    <app-movies-grid 
+        [data]="movies()" 
+        [type]="selectedType()" 
+        [genreId]="selectedGenreId()" 
+        [searchQuery]="query()">
+    </app-movies-grid>
+
+    <app-series-grid 
+        [data]="series()" 
+        [type]="selectedType()" 
+        [genreId]="selectedGenreId()" 
+        [searchQuery]="query()">
+    </app-series-grid>
+   
 </main>

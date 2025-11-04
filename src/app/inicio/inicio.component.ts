@@ -9,11 +9,11 @@ import { BannerSeriesComponent } from '../shared/components/banner-series/banner
 import { SkeletonComponent } from '../shared/components/banner-series/skeleton/skeleton.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
-import { PlayerTrailer } from '../core/interfaces/shared/player.interface';
 import { MovieList } from '../core/interfaces/movie/movie.interface';
 import { SerieList } from '../core/interfaces/serie/serie.interface';
 import { Observable } from 'rxjs';
 import { CarouselMoviesComponent } from '../shared/components/carousel/carousel-movies/carousel-movies.component';
+import { ParamsApi } from '../core/interfaces/shared/params-http.interface';
 
 interface Loader<T> {
   call: () => Observable<T>;
@@ -39,17 +39,17 @@ export default class InicioComponent {
   airingToday: WritableSignal<SerieList | undefined> = signal(undefined)
   onTheAir: WritableSignal<SerieList | undefined> = signal(undefined)
   popularSeries: WritableSignal<SerieList | undefined> = signal(undefined)
-  player: PlayerTrailer = { videoId: signal(''), isPlaying: false }
 
   constructor() {
     this.loadMoviesAndSeries()
   }
 
   private loadMoviesAndSeries() {
-       const movieLoaders: Loader<MovieList>[] = [
-      { call: () => this.api.getNowPlaying(1), signal: this.nowPlaying },
-      { call: () => this.api.getPopular(1), signal: this.popularMovies },
-      { call: () => this.api.getUpcoming(1), signal: this.upcomingMovies },
+      const params:ParamsApi={page:1}
+      const movieLoaders: Loader<MovieList>[] = [
+      { call: () => this.api.getNowPlaying(params), signal: this.nowPlaying },
+      { call: () => this.api.getPopular(params), signal: this.popularMovies },
+      { call: () => this.api.getUpcoming(params), signal: this.upcomingMovies },
     ];
 
     const serieLoaders: Loader<SerieList>[] = [

@@ -33,8 +33,8 @@ export class FloatTrailerService {
   readonly videoKey = signal('')
   readonly minimized = signal(false);
 
-  showTrailer(videoKey: string) {
-    if (!videoKey?.trim()) return;
+  showTrailer(videoKey: string |undefined) {
+    if (!videoKey) return;
     if (this.overlayRef) return;
 
     this.videoKey.set(videoKey)
@@ -92,8 +92,8 @@ export class FloatTrailerService {
       .centerHorizontally().centerVertically();
   }
 
-  setVideoKey(videoKey: string): void {
-    if (!videoKey?.trim()) return;
+  setVideoKey(videoKey: string | undefined): void {
+    if (!videoKey) return;
     this.videoKey.set(videoKey)
   }
 

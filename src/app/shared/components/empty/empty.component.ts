@@ -1,7 +1,8 @@
-import { Component, computed, input, Signal, WritableSignal } from '@angular/core';
-import { MovieList } from '../../../core/interfaces/movie/movie.interface';
-import { SerieList } from '../../../core/interfaces/serie/serie.interface';
+import { Component, computed, input} from '@angular/core';
+import { Movie} from '../../../core/interfaces/movie/movie.interface';
+import { Serie} from '../../../core/interfaces/serie/serie.interface';
 import { emptyState } from '../../animations/animations';
+import { DataLoaderManager } from '../../utils/data-loader-manager';
 
 @Component({
   selector: 'app-empty',
@@ -14,22 +15,18 @@ export class EmptyComponent {
 
   title = input.required<string>()
   subtitle = input<string>()
-  signals = input.required<WritableSignal<MovieList | SerieList | undefined>[]>();
+  loaders = input.required<DataLoaderManager<Movie | Serie> []>();
 
   readonly isEmpty = computed(() => {
-    const signalsList = this.signals();
+    const loaders = this.loaders();
+    const isInitialLoading = loaders.some((loader)=>loader.isInitialLoading())
 
-    const allSignalsLoaded = signalsList.every(signal =>
-      signal() !== undefined && signal() !== null
-    );
-
-    if (!allSignalsLoaded) return false
+    if (isInitialLoading) return false
 
     // Verificar que todos existan Y estén vacíos
-    return signalsList.length > 0 &&
-      signalsList.every(signal => {
-        const data = signal();
-        return data && (data.results?.length ?? 0) === 0;
+    return loaders.length > 0 &&
+      loaders.every(loader => {
+        return !loader.hasData()
       });
   });
 }

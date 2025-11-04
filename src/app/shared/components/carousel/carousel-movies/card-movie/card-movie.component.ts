@@ -19,7 +19,7 @@ import { PlayTrailerEmbeedComponent } from '../../../play-trailer-embeed/play-tr
 })
 export class CardMovieComponent {
   movie = input.required<Movie>();
-  private videoId = ''
+  private videoId?:string
   @ViewChild('movieCard') movieCard!: ElementRef<HTMLElement>
   @ViewChild(PlayTrailerEmbeedComponent) trailerEmbed!: PlayTrailerEmbeedComponent
   @ViewChild(PlayTrailerEmbeedComponent, { read: ElementRef }) trailerEmbedElement !: ElementRef
@@ -31,7 +31,7 @@ export class CardMovieComponent {
   }
 
   handleMouseEnterCard() {
-    if (this.videoId === '') return
+    if (!this.videoId) return
 
     this.renderer.appendChild(this.movieCard.nativeElement.firstChild,
       this.trailerEmbedElement.nativeElement)

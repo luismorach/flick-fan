@@ -1,24 +1,45 @@
-swiper-container:part(pagination) {
-  z-index: 20;
-  position: absolute;
-  margin: 0;
-  padding: 0%;
-  top: 0;
-   min-width: 100% !important;
-  width: auto !important;
-  display: flex;
-  justify-content: center;
+swiper-container::part(pagination) {
+  @apply w-[110px] 
 }
 
 swiper-container::part(bullet) {
-  background-color: gray;
-  opacity: .8;
+  @apply bg-white/50 opacity-100;
+  
 }
 
 swiper-container::part(bullet-active) {
-  width: 32px;
-  border-radius: 8px;
-  transition: all 300ms ease;
-  background: linear-gradient(to right, #ef4444, #dd0303);
-  opacity: 1;
+  @apply w-[32px] rounded-lg transition-all duration-300 ease-in-out opacity-100
+  bg-gradient-to-r from-red-700 to-red-500;
 }
+
+.overlay{
+   @apply w-full absolute top-0 h-screen bg-gradient-to-r from-black 
+          from-15% via-[rgba(15,15,15,.9)] via-50% to-[rgba(83,200,141,0)] 
+          to-100% 
+}
+
+.swiper-slide-active .metadata{
+  @apply translate-x-0 !important
+}
+
+.swiper-slide-active .overview,.swiper-slide-active .buttons{
+  @apply translate-y-0 opacity-100 !important
+} 
+
+.title{
+  @apply font-racing uppercase text-3xl text-left sm:text-4xl lg:text-5xl relative 
+          w-full max-h-48 object-contain object-center line-clamp-2;
+}
+.metadata{
+   @apply  -translate-x-[150%] transition-transform duration-300 delay-300
+}
+.overview{
+  @apply pt-2 text-justify max-h-[20vh] line-clamp-5 translate-y-[100%] opacity-0
+                            transition-all duration-500 delay-500;
+}
+
+.buttons{
+  @apply flex justify-start gap-4 font-racing text-lg my-4 h-12 translate-y-[3%] opacity-0
+                            transition-all duration-700 delay-700;
+}
+

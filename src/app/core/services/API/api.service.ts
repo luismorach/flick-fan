@@ -6,6 +6,8 @@ import { MovieList, Movie } from '../../interfaces/movie/movie.interface';
 import { Serie, SerieList } from '../../interfaces/serie/serie.interface';
 import { environment } from '../../environment/environment';
 import { Genre } from '../../interfaces/shared/genre.interface';
+import { PaginatedData } from '../../interfaces/shared/generic.interface';
+import { ParamsApi } from '../../interfaces/shared/params-http.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -36,16 +38,16 @@ export class ApiService {
 
   // ==================== MOVIES ====================
 
-  getNowPlaying(page: number = 1) {
-    return this.getMoviesWithDetails(`movie/now_playing`, page, 'now_playing')
+  getNowPlaying(params: ParamsApi) {
+    return this.getMoviesWithDetails(`movie/now_playing`, params, 'now_playing')
   }
 
-  getPopular(page: number = 1) {
-    return this.getMoviesWithDetails(`movie/popular`, page, 'popular_movies')
+  getPopular(params: ParamsApi) {
+    return this.getMoviesWithDetails(`movie/popular`, params, 'popular_movies')
   }
 
-  getUpcoming(page: number = 1) {
-    return this.getMoviesWithDetails(`movie/upcoming`, page, 'upcoming_movies')
+  getUpcoming(params: ParamsApi) {
+    return this.getMoviesWithDetails(`movie/upcoming`, params, 'upcoming_movies')
   }
 
   getDetailsMovie(movieId: number): Observable<Movie> {
@@ -62,26 +64,33 @@ export class ApiService {
       })
   }
 
-  getSimilarMovies(page: number, movieId: number) {
-    return this.getMoviesWithDetails(`movie/${movieId}/similar`, page, 'similar_movies');
+  getSimilarMovies(params: ParamsApi) {
+    return this.getMoviesWithDetails(`movie/${params.movieId}/similar`, params, 'similar_movies');
   }
 
-  getRecomendedMovies(page: number, movieId: number) {
-    return this.getMoviesWithDetails(`movie/${movieId}/recommendations`, page, 'recomended_movies');
+  getRecomendedMovies(params: ParamsApi) {
+    return this.getMoviesWithDetails(`movie/${params.movieId}/recommendations`, params, 'recomended_movies');
   }
 
-  searchMovie(page: number, query: string) {
+  searchMovie(params: ParamsApi) {
     return this.http
       .get<MovieList>(`${this.API_BASE}/search/movie`, {
-        params: this.buildParams({ page, query }),
+        params: this.buildParams(params),
       })
       .pipe(
         switchMap((response) => this.enrichMoviesWithDetails(response, 'search_movie')),
       );
   }
 
-  getMoviesByGenre(genreId: number, page: number) {
+  getMoviesByGenre(query: string, genreId: number, page: number = 1) {
     return this.http
+      .get<MovieList>(`${this.API_BASE}/search/movie`, {
+        params: this.buildParams({ page, query, with_genres: genreId }),
+      }).pipe(
+        switchMap((response) => this.enrichMoviesWithDetails(response, 'movies_by_genre')),
+      );
+    //https://api.themoviedb.org/3/search/movie?api_key=TU_API_KEY&query=superman&with_genres=28&language=es-MX
+    /* return this.http
       .get<MovieList>(`${this.API_BASE}/discover/movie`, {
         params: this.buildParams({
           page,
@@ -91,12 +100,12 @@ export class ApiService {
       })
       .pipe(
         switchMap((response) => this.enrichMoviesWithDetails(response, 'movies_by_genre'))
-      );
+      ); */
   }
 
-  private getMoviesWithDetails(endpoint: string, page: number, type: string): Observable<MovieList> {
+  private getMoviesWithDetails(endpoint: string, params: ParamsApi, type: string): Observable<MovieList> {
     return this.http.get<MovieList>(`${this.API_BASE}/${endpoint}`, {
-      params: this.buildParams({ page }),
+      params: this.buildParams(params),
     })
       .pipe(
         switchMap((response) => this.enrichMoviesWithDetails(response, type))
@@ -145,10 +154,10 @@ export class ApiService {
     return this.getSeriesWithDetails(`tv/${serieId}/recommendations`, page, 'recomended_series');
   }
 
-  searchSerie(page: number, query: string) {
+  searchSerie(params: ParamsApi) {
     return this.http
       .get<SerieList>(`${this.API_BASE}/search/tv`, {
-        params: this.buildParams({ page, query }),
+        params: this.buildParams(params),
       })
       .pipe(
         switchMap((response) => this.enrichSeriesWithDetails(response, 'search_serie'))
@@ -248,20 +257,36 @@ export class ApiService {
     }
 
     const nextPage = (currentValue.page ?? 0) + 1;
-    console.log('Loading page:', nextPage, 'for type:', currentValue.type);
+    console.log('Loading page:', nextPage, 'for type:', currentValue.type, 'extraargs:', extraArgs);
     const newData: T = await lastValueFrom(apiMethod(nextPage, ...extraArgs));
 
-      console.log(newData)
-      currentData.update((data) => ({
-        ...data,
-        page: newData.page,
-        results: [...(data?.results ?? []), ...newData.results]
-      } as T));
+    console.log(newData)
+    currentData.update((data) => ({
+      ...data,
+      page: newData.page,
+      results: [...(data?.results ?? []), ...newData.results]
+    } as T));
+  }
+
+  async fetchNextPage<T>(params: ParamsApi = {}
+  ): Promise<PaginatedData<T>> {
+
+    const type = params.type ?? ''
+    const apiMethod = this.methodMap[type];
+    const { genreId, movieId, serieId, query } = params;
+    if (!apiMethod) throw new Error(`Unknown data type: ${type}`);
+    console.log(genreId, movieId, serieId, query)
+
+    console.log('Loading page:', params.page, 'for type:', type, 'extraargs:', params);
+    const newData: T = await lastValueFrom(
+      apiMethod(params));
+    console.log(newData)
+    return newData as PaginatedData<T>
   }
 
   private enrichMediaWithDetails(
-    mediaList: MovieList | SerieList, 
-    mediaType: 'movie' | 'tv', 
+    mediaList: MovieList | SerieList,
+    mediaType: 'movie' | 'tv',
     type: string
   ): Observable<MovieList | SerieList> {
 
@@ -283,6 +308,8 @@ export class ApiService {
       } as MovieList | SerieList))
     );
   }
+
+
 
   private buildParams(params: Record<string, any> = {}): HttpParams {
     let httpParams = new HttpParams().set('language', this.DEFAULT_LANGUAGE);

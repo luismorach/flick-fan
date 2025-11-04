@@ -7,11 +7,11 @@ export function waitForAnimationFrame(): Promise<void> {
     return new Promise(resolve => requestAnimationFrame(() => resolve()))
 }
 
-export function getKeyTrailer(data: Movie | Serie | undefined): string {
+export function getKeyTrailer(data: Movie | Serie | undefined): string |undefined {
     if (!data?.videos?.results || !Array.isArray(data.videos.results)) {
         return '';
     }
-    return data.videos.results.find((v: video) => v.type === 'Trailer')?.key ?? '';
+    return data.videos.results.find((v: video) => v.type === 'Trailer')?.key ;
 }
 
 /**

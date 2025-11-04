@@ -1,6 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
-import { fade } from '../shared/animations/animations';
-import { CommonModule } from '@angular/common';
 import { ApiService } from '../core/services/API/api.service';
 import BannerMovieComponent from '../shared/components/banner-movie/banner-movie.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -14,14 +12,12 @@ import { MoviesGridComponent } from "../shared/components/cards-grid/movies-grid
   selector: 'app-movies',
   imports: [
     BannerMovieComponent,
-    CommonModule,
     BackgroundNavScrollDirective,
     EmptyComponent,
     MoviesGridComponent,
 ],
   templateUrl: './movies.component.html',
   styleUrl: './movies.component.css',
-  animations: [fade],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
@@ -37,8 +33,8 @@ export default class MoviesComponent {
 
   private loadInitialData(): void {
     forkJoin({
-      nowPlaying: this.api.getNowPlaying(1),
-      upcoming: this.api.getUpcoming(1)
+      nowPlaying: this.api.getNowPlaying({page:1}),
+      upcoming: this.api.getUpcoming({page:1})
     }).pipe(
       takeUntilDestroyed(),
     ).subscribe(({ nowPlaying, upcoming }) => {

@@ -11,17 +11,19 @@ import { fade } from '../../../animations/animations';
 import { NgTemplateOutlet } from '@angular/common';
 
 /**
- * @component
- * @description
- * Grilla infinita de series con chunking horizontal y hover expand.
+ * Dynamic grid component for series with horizontal chunking and hover expansion.
  *
- * @input data - **Valor actual** de la lista inicial (no signal).
- *               Se pasa como `serieListSignal()` en el template.
- *
- * @internal
- * - `this.data` es un **signal** internamente.
- * - `setupLocalData(this.data)` pasa el **signal completo** al manager.
- * - `gridHelper.createChunks()` devuelve un `computed` reactivo.
+ * @example
+ * ```typescript
+ * // Infinite scroll
+ * <app-series-grid [data]="series()" type="scroll" />
+ * 
+ * // Search with manual loading
+ * <app-series-grid [data]="results()" [searchQuery]="query()" type="series" />
+ * 
+ * // Genre filtered
+ * <app-series-grid [data]="series()" [genreId]="genreId()" type="all" />
+ * ```
  */
 @Component({
   selector: 'app-series-grid',
@@ -33,11 +35,11 @@ import { NgTemplateOutlet } from '@angular/common';
   changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class SeriesGridComponent {
-  /** Ancho fijo para skeletons de series */
+  /** Fixed width for series skeleton loading cards (pixels) */
   private readonly SKELETON_SLIDE_WIDTH = 288;
 
   /**
-   * Datos iniciales de series.
+   * Initial series data source.
    *
    * @input
    * @required
@@ -48,28 +50,59 @@ export class SeriesGridComponent {
    * ```
    */
   readonly data = input.required<SerieList | undefined>()
+  
+  /**
+   * display mode
+   *
+   * @input
+   * @type {'scroll' | 'movies' | 'all'}
+   * @default 'scroll'
+   */
+  readonly type = input<'scroll' | 'movies' | 'all' | 'series'>('scroll');
 
-  /** Gestor de datos con efecto interno para reactividad */
-  readonly dataLoaderManager = inject(DataLoaderManager<Serie>);
+  /**
+   * Search query for filtering results.
+   * passed to loadMoreData() in 'series'/'all' modes.
+   * @input
+   * @type {InputSignal<string>}
+   * @default ''
+   *
+   */
+  readonly searchQuery = input<string>('')
+
+  /**
+   * Genre ID for client-side filtering (0 = no filter).
+   * @input
+   * @type {InputSignal<number>}
+   * @default 0
+   *
+   */
+  readonly genreId = input<number>(0)
+
+  /** Manages data loading, pagination, and filtering */
+  readonly dataLoaderManager:DataLoaderManager<Serie> = inject(DataLoaderManager<Serie>);
+
+  /** Infinite scroll configuration (distance, throttle) */
   readonly scrollConfig = inject(ScrollConfigService);
+
+  /** Helper for grid layout and hover effects */
   readonly gridHelper = inject(GridHelperService);
+
+  /** Skeleton slide configuration for loading states */
   readonly slides = useSkeletonSlides(this.SKELETON_SLIDE_WIDTH);
 
   /**
-   * Chunks horizontales de series.
-   *
-   * @type {Signal<Serie[][]>}
-   * @description
-   * Devuelto por `gridHelper.createChunks()` → `computed` que se actualiza
-   * cuando cambia `dataLoaderManager.data()` o `slides.slidesPerView()`.
+   * Horizontal chunks of series for row-based layout.
+   * Updates when data or slidesPerView changes.
    */
   readonly chunks = this.gridHelper.createChunks<Serie>(this.dataLoaderManager.data, this.slides.slidesPerView())
 
   constructor() {
-    /**
-     * Pasa el signal completo para que DataLoaderManager
-     * use `effect(() => signal())` y reaccione a cambios.
-     */
-    this.dataLoaderManager.setupLocalData(this.data)
+     /**
+ * Pass the full signal (not the value) so that DataLoaderManager
+ * uses `effect(() => signal())` and reacts to changes.
+ */
+this.dataLoaderManager.data()
+    this.dataLoaderManager.setupDataSource(this.data,this.genreId)
   }
 }

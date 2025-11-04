@@ -31,27 +31,8 @@ export class SwiperValidators {
         }
     }
 
-    static validateSlidesInfo(slidesInfo: SkeletonSlidesHook | undefined | null): void {
-        if (!slidesInfo) {
-            throw new Error('SlidesInfo is null or undefined');
-        }
-
-        if (typeof slidesInfo !== 'object' || slidesInfo === null) {
-            throw new Error('Slides configuration must be a valid object');
-        }
-
-        if (typeof slidesInfo.skeletonSlideIndexes !== 'function') {
-            throw new Error('Slides configuration is missing skeletonSlideIndexes function');
-        }
-
-        try {
-            const slides = slidesInfo.skeletonSlideIndexes();
-            if (!Array.isArray(slides)) {
-                throw new Error('skeletonSlideIndexes must return an array');
-            }
-        } catch (error) {
-            throw new Error(`Slides configuration error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        }
+    static validateSlidesInfo(slidesInfo: SkeletonSlidesHook | undefined | null): boolean {
+        return (!slidesInfo || typeof slidesInfo !== 'object' || slidesInfo === null) 
     }
 
     static validateIndex(index: number, maxIndex?: number): void {

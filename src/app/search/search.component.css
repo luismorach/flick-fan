@@ -1,8 +1,10 @@
-.hide-scrollbar {
-  -ms-overflow-style: none;  /* IE y Edge */
-  scrollbar-width: none;     /* Firefox */
+.btn-base{
+  @apply px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2;
+}
+.btn-active{
+  @apply bg-red-600 text-white shadow-lg shadow-red-600/30;
 }
 
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;             /* Chrome, Safari y Opera */
+.btn-inactive{
+  @apply bg-zinc-900 text-gray-300 hover:bg-zinc-800;
 }

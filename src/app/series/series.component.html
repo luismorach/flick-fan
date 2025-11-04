@@ -1,14 +1,14 @@
 <main appBackgroundNavScroll>
-  <app-empty 
+  <!-- <app-empty 
         title="No hay series disponibles" 
         subtitle="Vuelve más tarde para ver nuevas series"
         [signals]="[onTheAir,popularSeries]">
-  </app-empty>
+  </app-empty> -->
 
   @defer(when onTheAir()){
-    <app-banner-series [listSeries]="onTheAir" @fade> </app-banner-series>
+    <app-banner-series [listSeries]="onTheAir"> </app-banner-series>
   }@placeholder{
-    <app-skeleton [hasSlides]="true" @fade></app-skeleton>
+    <app-skeleton [hasSlides]="true"></app-skeleton>
   }
   
   <app-series-grid [data]="popularSeries()"></app-series-grid>

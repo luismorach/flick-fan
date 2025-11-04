@@ -1,19 +1,22 @@
 <!-- banner-skeleton.component.html -->
-<main class="w-full animate-pulse">
+<main class="w-full animate-pulse h-screen mb-24 relative">
 
   <!-- Imagen de fondo simulada -->
-  <section class="z-0 w-full h-[150vh] absolute bg-black">
+  <section class="z-0 w-full h-screen absolute bg-black gradient">
     <div class="h-screen w-full bg-black"></div>
   </section>
 
-  <section class="text-white flex flex-wrap flex-row md:py-12 relative w-full h-screen mb-24 pl-12">
+  <!-- Botón izquierdo  -->
+  <div class="w-12 h-12 bg-zinc-600 rounded-full absolute top-1/2 right-12"></div>
 
-    <!-- Botón izquierdo (oculto en skeleton) -->
-    <div class="w-4 h-4 bg-zinc-600 rounded-full absolute top-1/2 right-12"></div>
+    <!-- Botón derecho -->
+  <div class="w-12 h-12 bg-zinc-600 rounded-full absolute top-1/2 left-12"></div>
 
-    <header class="sm:max-w-[40%] px-4 md:px-12 relative self-center ml-12">
+  <section class="flex justify-around md:py-12 relative w-full h-screen ">
+
+    <header class="sm:max-w-[32%] px-4 relative self-center ">
       <!-- Título -->
-      <div class="h-10 w-3/4 bg-zinc-600 rounded mb-4"></div>
+      <div class="h-10 w-full bg-zinc-600 rounded mb-4"></div>
 
       <!-- Rating + Fecha + Duración -->
       <div class="flex gap-6 mb-4">
@@ -38,18 +41,16 @@
 
       <!-- Botones -->
       <div class="flex gap-4 mt-6">
-        <div class="h-12 w-32 bg-zinc-600 rounded"></div>
-        <div class="h-12 w-40 bg-zinc-600 rounded"></div>
-        <div class="h-12 w-12 bg-zinc-600 rounded-full"></div>
+        <div class="h-12 w-32 bg-zinc-600 rounded-full"></div>
+        <div class="h-12 w-64 bg-zinc-600 rounded-full"></div>
       </div>
     </header>
 
     <!-- Ícono de play -->
-    <div class="grow flex justify-center self-center">
-      <div class="h-16 w-16 bg-zinc-600 rounded-full"></div>
+    <div class="flex justify-center self-center">
+      <div class="h-14 w-14 bg-zinc-600 rounded-full"></div>
     </div>
-
-    <!-- Botón derecho -->
-    <div class="w-4 h-4 bg-zinc-600 rounded-full absolute top-1/2 left-12"></div>
   </section>
+
+ 
 </main>

@@ -1,11 +1,11 @@
 <main appBackgroundNavScroll>
-    <app-empty 
+   <!--  <app-empty 
         title="No hay películas disponibles" 
         subtitle="Vuelve más tarde para ver nuevas películas"
         [signals]="[upcomingMovies,nowPlaying]">
     </app-empty>
-
-    <app-banner-movie [movieList]="upcomingMovies"> </app-banner-movie >
+ -->
+    <app-banner-movie [movieList]="upcomingMovies()"> </app-banner-movie >
         
     <app-movies-grid [data]="nowPlaying()"></app-movies-grid>
 

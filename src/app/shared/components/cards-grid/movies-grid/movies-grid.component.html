@@ -1,17 +1,9 @@
-
-@if(dataLoaderManager.hasData()){
-    <section 
-        role="feed"
-        aria-label="Películas en cartelera"
-        aria-live="polite"
-        [attr.aria-busy]="dataLoaderManager.isFetchingMoreData()"
-        class="flex flex-wrap justify-center mb-16" 
-        [style.gap.px]="slides.spaceBetween()"
-        infiniteScroll 
-        [infiniteScrollDistance]="scrollConfig.SCROLL_CONFIG.distance" 
-        [infiniteScrollThrottle]="scrollConfig.SCROLL_CONFIG.throttle"
-        (scrolled)="dataLoaderManager.loadMoreData()" @fade>
-
+<!-- Reusable movies grid -->
+ <!-- <p class="text-white">{{dataLoaderManager.isInitialLoading()}}</p> -->
+<ng-template #moviesGrid>
+    <div class="flex flex-wrap"
+    [style.gap.px]="slides.spaceBetween()"
+    [style.padding.px]="slides.spaceBetween()">
         @for( movie of dataLoaderManager.data() ;track movie.id; let i=$index){
             <app-card-movie 
                 [movie]="movie"
@@ -19,17 +11,51 @@
                 [class]="cardClasses()[i]" @fade>
             </app-card-movie>
         }
-            
-        @if(dataLoaderManager.isFetchingMoreData()){
-            <ng-container *ngTemplateOutlet="skeletonTemplate"></ng-container>
-        }
-    </section>
-}@else{
-    <ng-container *ngTemplateOutlet="skeletonTemplate"></ng-container>
+    </div>
+    @if(dataLoaderManager.isFetchingMoreData()){
+        <app-carousel-skeleton [slides]="slides" [hasHeader]="false" @fade></app-carousel-skeleton>
+    }
+</ng-template>
+
+@if(dataLoaderManager.isInitialLoading()){
+     <app-carousel-skeleton [slides]="slides" @fade></app-carousel-skeleton>
 }
 
-<ng-template #skeletonTemplate>
-  <div role="status" aria-live="assertive" class="w-full">
-    <app-carousel-skeleton [slides]="slides" [hasHeader]="false" @fade></app-carousel-skeleton>
-  </div>
-</ng-template>
+<!-- Mode: Infinite Scroll -->
+@else if(type()==='scroll' && dataLoaderManager.hasData() ){
+    <section 
+        role="feed"
+        aria-label="Películas en cartelera"
+        aria-live="polite"
+        [attr.aria-busy]="dataLoaderManager.isFetchingMoreData()"
+        infiniteScroll 
+        [infiniteScrollDistance]="scrollConfig.SCROLL_CONFIG.distance" 
+        [infiniteScrollThrottle]="scrollConfig.SCROLL_CONFIG.throttle"
+        (scrolled)="dataLoaderManager.loadMoreData()" @fade>
+
+         <ng-container *ngTemplateOutlet="moviesGrid"></ng-container>
+    </section>
+}
+
+<!-- Mode: Manual (with button) -->
+@else if((type() ==='movies' || type() ==='all') && dataLoaderManager.hasData()){
+    <section 
+        role="region"
+        aria-label="Películas buscadas"
+        aria-live="polite"
+        aria-labelledby="movies-header"
+        @fade>
+        <header id="movies-header" class="mb-2" [style.padding.px]="slides.fullPadding()">
+            <h2 class="text-title-carousel">  Películas  </h2>
+        </header>
+            
+        <ng-container *ngTemplateOutlet="moviesGrid"></ng-container>
+
+        @if(dataLoaderManager.canLoadMore()){
+            <button aria-label="Cargar más películas" class="btn-primary" [style.margin.px]="slides.spaceBetween()"
+                (click)="dataLoaderManager.loadMoreData({query:searchQuery()})">
+                Cargar mas peliculas
+            </button>
+        }
+    </section>
+}

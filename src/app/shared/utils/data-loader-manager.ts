@@ -1,51 +1,131 @@
-import { computed, DestroyRef, effect, inject, Injectable, InputSignal, Signal, signal, WritableSignal } from '@angular/core';
-import { Movie, MovieList } from '../../core/interfaces/movie/movie.interface';
-import { Serie, SerieList } from '../../core/interfaces/serie/serie.interface';
+import { computed, DestroyRef, effect, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import { Movie } from '../../core/interfaces/movie/movie.interface';
+import { Serie } from '../../core/interfaces/serie/serie.interface';
 import { ApiService } from '../../core/services/API/api.service';
 import { PaginatedData } from '../../core/interfaces/shared/generic.interface';
+import { ParamsApi } from '../../core/interfaces/shared/params-http.interface';
 
 
 /**
- * Manages paginated data loading with loading state.
- * Call completeFetch() from component effect when data renders.
+ * Manages paginated data loading with loading state and optional genre filtering.
+ * 
+ * @remarks
+ * This service should be provided at component level to ensure independent instances.
+ * Call setupDataSource() before using other methods.
+ * 
+ * @example
+ * ```typescript
+ * @Component({
+ *   providers: [DataLoaderManager]
+ * })
+ * export class MoviesComponent {
+ *   private loader = inject(DataLoaderManager<Movie>);
+ *   
+ *   ngOnInit() {
+ *     this.loader.setupDataSource(this.movies$, this.selectedGenre$);
+ *   }
+ * }
+ * ```
  */
 @Injectable()
-export class DataLoaderManager<T> {
+export class DataLoaderManager<T extends Movie | Serie> {
 
-    readonly isFetchingMoreData: WritableSignal<boolean> = signal(false)
+    // Public readonly state
+    readonly isFetchingMoreData = signal(false);
+    readonly data: Signal<T[]>;
+    readonly hasData: Signal<boolean>;
+
+
+    // Private state
     private readonly api: ApiService = inject(ApiService)
     private readonly destroyRef = inject(DestroyRef)
-    private readonly localData: WritableSignal<PaginatedData<T> | undefined> = signal(undefined);
-    readonly data = computed(() => (this.localData()?.results ?? []));
-    readonly hasData = computed(() => this.data().length > 0);
+    private readonly mutableData: WritableSignal<PaginatedData<T> | undefined> = signal(undefined);
+    private activeGenreFilter?: Signal<number>;
 
-    setupLocalData(data: Signal< PaginatedData<T> | undefined>) {
-        const localDataEffect = effect(() => {
-            this.localData.set(data());
-        });
-        this.destroyRef.onDestroy(() => localDataEffect.destroy());
+    // Computed data
+    readonly isInitialLoading = computed(() => this.mutableData() === undefined)
+    private readonly filteredData = computed(() => {
+        const data = this.mutableData()?.results ?? [];
+        const genreId = this.activeGenreFilter?.() ?? 0;
+
+        if (!genreId) return data;
+
+        return data.filter(item =>
+            item.genres.some(genre => genre.id === genreId)
+        );
+    });
+
+    constructor() {
+        this.data = this.filteredData;
+        this.hasData = computed(() => this.data().length > 0);
     }
 
-    async loadMoreData(): Promise<void> {
+   /**
+ * Configures the data source and optional genre filter.
+ * 
+ * @param dataSource - Signal containing paginated data
+ * @param genreId - Optional signal for genre filtering
+ * 
+ * @remarks
+ * Creates an internal copy of dataSource because InputSignals are readonly.
+ * This allows loadMoreData() to append results without mutating the input.
+ * Can be called multiple times to change data source (previous effect is cleaned up).
+ */
+    setupDataSource(dataSource: Signal<PaginatedData<T> | undefined>, genreId?: Signal<number>) {
+        this.activeGenreFilter = genreId;
+        const syncEffect = effect(() => {
+            this.mutableData.set(dataSource());
+        });
+        this.destroyRef.onDestroy(() => syncEffect.destroy());
+    }
+
+    async loadMoreData(params: ParamsApi = {}): Promise<void> {
 
         if (!this.canLoadMore()) return;
 
+        const current = this.mutableData();
+        if (!current?.page || !current?.type) return;
+
+        params.page = current.page + 1;
+        params.type = current.type;
         this.isFetchingMoreData.set(true);
+
         try {
-            await this.api.getMoreData(this.localData);
+            const nextPageData = await this.api.fetchNextPage<T>(params);
+
+            this.mutableData.set({
+                ...current,
+                page: nextPageData.page,
+                total_pages: nextPageData.total_pages,
+                total_results: nextPageData.total_results,
+                results: [...current.results, ...nextPageData.results],
+            });
         } finally {
             this.isFetchingMoreData.set(false);
         }
     }
 
-    private canLoadMore(): boolean {
-        return this.hasNextPage() && !this.isFetchingMoreData();
+    canLoadMore(): boolean {
+        const data = this.mutableData();
+        return data !== undefined
+            && data.page > 0
+            && data.total_pages > 0
+            && data.page < data.total_pages
+            && !this.isFetchingMoreData();
     }
 
-    private hasNextPage(): boolean {
-        const data = this.localData()
-        if (!data) return false;
-        const { page = 0, total_pages = 0 } = data;
-        return page > 0 && total_pages > 0 && page < total_pages;
+    /**
+ * Gets current pagination information.
+ */
+    getPaginationInfo(): { current: number; total: number } | null {
+        const data = this.mutableData();
+        if (!data?.page || !data?.total_pages) return null;
+        return { current: data.page, total: data.total_pages };
+    }
+
+    reset(): void {
+        this.mutableData.set(undefined);
+        this.activeGenreFilter = undefined;
+        this.isFetchingMoreData.set(false);
     }
 }
