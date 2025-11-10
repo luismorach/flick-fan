@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, WritableSignal, inject } from '@angular/core';
-import { catchError, concatMap, distinct, forkJoin, from, lastValueFrom, map, merge, mergeAll, mergeMap, Observable, of, shareReplay, switchMap, tap, toArray } from 'rxjs';
+import { forkJoin, from, lastValueFrom, map, mergeMap, Observable, of, shareReplay, switchMap, toArray } from 'rxjs';
 import { Credits } from '../../interfaces/people/credits.interface';
 import { MovieList, Movie } from '../../interfaces/movie/movie.interface';
 import { Serie, SerieList } from '../../interfaces/serie/serie.interface';
@@ -8,6 +8,7 @@ import { environment } from '../../environment/environment';
 import { Genre } from '../../interfaces/shared/genre.interface';
 import { PaginatedData } from '../../interfaces/shared/generic.interface';
 import { ParamsApi } from '../../interfaces/shared/params-http.interface';
+import { Cacheable } from 'ngx-cacheable';
 
 @Injectable({
   providedIn: 'root'
@@ -38,18 +39,22 @@ export class ApiService {
 
   // ==================== MOVIES ====================
 
+  @Cacheable()
   getNowPlaying(params: ParamsApi) {
     return this.getMoviesWithDetails(`movie/now_playing`, params, 'now_playing')
   }
 
+  @Cacheable()
   getPopular(params: ParamsApi) {
     return this.getMoviesWithDetails(`movie/popular`, params, 'popular_movies')
   }
 
+  @Cacheable()
   getUpcoming(params: ParamsApi) {
     return this.getMoviesWithDetails(`movie/upcoming`, params, 'upcoming_movies')
   }
 
+  @Cacheable()
   getDetailsMovie(params: ParamsApi): Observable<Movie> {
     return this.http
       .get<Movie>(`${this.API_BASE}/movie/${params.movieId}`, {
@@ -57,6 +62,7 @@ export class ApiService {
       })
   }
 
+  @Cacheable()
   getCreditsMovie(params: ParamsApi): Observable<Credits> {
     return this.http
       .get<Credits>(`${this.API_BASE}/movie/${params.movieId}/credits`, {
@@ -118,15 +124,17 @@ export class ApiService {
 
   // ==================== SERIES ====================
 
+  @Cacheable()
   getAiringTodaySeries(params: ParamsApi) {
     params.type = 'airing_today'
     return this.getSeriesWithDetails('tv/airing_today', params);
   }
-
+  @Cacheable()
   getOnTheAirSeries(params: ParamsApi) {
     params.type = 'on_the_air_series'
     return this.getSeriesWithDetails('tv/on_the_air', params);
   }
+  @Cacheable()
   getPopularSeries(params: ParamsApi) {
     params.type = 'popular_series'
     return this.getSeriesWithDetails('tv/popular', params);
