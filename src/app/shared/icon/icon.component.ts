@@ -1,5 +1,6 @@
 import { CommonModule, NgSwitch } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { CdkOverlayOrigin } from "@angular/cdk/overlay";
 
 @Component({
   selector: 'app-icon',
@@ -10,6 +11,6 @@ import { Component, Input } from '@angular/core';
 export class IconComponent {
   @Input() name: string = '';         // nombre del icono
   @Input() size: string = 'w-5 h-5';  // clases de Tailwind para tamaño
-  @Input() color: string = 'text-white'; // color del icono
+  @Input() color: string = ''; // color del icono
   @Input() backgroundColor:string = 'bg-transparent'
 }

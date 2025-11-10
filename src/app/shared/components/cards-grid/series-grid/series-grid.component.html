@@ -10,6 +10,7 @@
           @for (serie of chunk; track serie.id) {
             <app-card-serie 
               [serie]="serie" 
+              [slideInfo]="slides"
               (hoverEnter)="gridHelper.handleCardHover($event, slides)"
               (hoverLeave)="gridHelper.resetCardHover($event)"
               @fade>

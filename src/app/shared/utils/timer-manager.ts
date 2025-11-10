@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class TimerManager {
   private timeouts = new Set<number>();
   private animationFrames = new Set<number>();

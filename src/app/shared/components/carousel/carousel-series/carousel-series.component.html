@@ -1,4 +1,4 @@
-@if(swiperHelper.hasData()){
+@if(swiperHelper.dataLoaderManager.hasData()){
     <main class=" w-full mb-8">
         <header class="mb-2" [style.padding.px]="slides.spaceBetween()+ slides.paddingX()">
             <h2 class="text-title-carousel"> {{title()}}</h2>
@@ -10,17 +10,18 @@
             <app-carousel-navigation [swiperHelper]="swiperHelper"></app-carousel-navigation>
 
             <swiper-container init="false" class="w-full h-[29rem]" #swiper>
-                @for(serie of swiperHelper.data();track serie.id;let i = $index){
+                @for(serie of swiperHelper.dataLoaderManager.data();track serie.id;let i = $index){
                 <swiper-slide class="relative w-auto h-[29rem]" @fade>
                     <app-card-serie 
                         [serie]="serie" 
+                        [slideInfo]="slides"
                         (hoverEnter)="onSlideExpandHover(i)"
                         (hoverLeave)="onSlideCollapseHover()">
                     </app-card-serie>
                 </swiper-slide>
                 }
 
-                @if(swiperHelper.isFetchingMoreData()){
+                @if(swiperHelper.dataLoaderManager.isFetchingMoreData()){
                     <swiper-slide class="w-full">
                         <app-carousel-series-skeleton 
                             [slides]="slides" 

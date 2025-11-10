@@ -1,0 +1,6 @@
+.carousel{
+    @apply w-full relative z-0 animate-pulse bg-black h-screen mb-24
+}
+.overlay{
+   @apply absolute top-0 left-0 w-full h-full animate-pulse bg-black
+}

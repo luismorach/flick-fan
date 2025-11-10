@@ -1,58 +1,41 @@
 import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
-import { Component, ElementRef, input, Renderer2, ViewChild } from '@angular/core';
+import { Component, computed, inject, input,viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Movie } from '../../../../../core/interfaces/movie/movie.interface';
 import { IconComponent } from '../../../../icon/icon.component';
 import { AutoImagePipe } from '../../../../pipes/autoimage/auto-image.pipe';
 import { MinutesToTimePipe } from '../../../../pipes/minutes-to-time/minutes-to-time.pipe';
 import { getKeyTrailer } from '../../../../utils/helpers';
-import { TimerManager } from '../../../../utils/timer-manager';
-import { PlayTrailerEmbeedComponent } from '../../../play-trailer-embeed/play-trailer-embeed.component';
+import { FloatTrailerService } from '../../../../../core/services/float-trailer/float-trailer.service';
+import { CdkPortalOutlet } from '@angular/cdk/portal';
 
 @Component({
   selector: 'app-card-movie',
   standalone: true,
   imports: [NgOptimizedImage, CommonModule, DatePipe, MinutesToTimePipe, RouterLink,
-    PlayTrailerEmbeedComponent, IconComponent, AutoImagePipe],
+    IconComponent, AutoImagePipe, CdkPortalOutlet],
   templateUrl: './card-movie.component.html',
   styleUrls: ['./card-movie.component.css']
 })
 export class CardMovieComponent {
-  movie = input.required<Movie>();
-  private videoId?:string
-  @ViewChild('movieCard') movieCard!: ElementRef<HTMLElement>
-  @ViewChild(PlayTrailerEmbeedComponent) trailerEmbed!: PlayTrailerEmbeedComponent
-  @ViewChild(PlayTrailerEmbeedComponent, { read: ElementRef }) trailerEmbedElement !: ElementRef
+  readonly movie = input.required<Movie>();
+  private readonly videoId = computed(() => getKeyTrailer(this.movie()))
+  private readonly floatTrailer = inject(FloatTrailerService);
+  protected readonly hasGenres = computed(() => 
+    (this.movie().genres?.length ?? 0) > 0
+  );
+  protected readonly primaryGenre = computed(() => 
+    this.movie().genres?.[0]?.name ?? ''
+  );
 
-  constructor(private renderer: Renderer2,private timerManager:TimerManager) { }
-
-  ngAfterViewInit() {
-    this.videoId = getKeyTrailer(this.movie());
-  }
+  private readonly portalHost = viewChild.required<CdkPortalOutlet>(CdkPortalOutlet)
 
   handleMouseEnterCard() {
-    if (!this.videoId) return
-
-    this.renderer.appendChild(this.movieCard.nativeElement.firstChild,
-      this.trailerEmbedElement.nativeElement)
-    this.trailerEmbed.setPlayerVideoData(this.videoId)
-    this.renderer.setStyle(this.movieCard.nativeElement, 'z-index', '10')
-
-   this.timerManager.addAnimationFrame(() => {
-      this.renderer.addClass(this.trailerEmbedElement.nativeElement, 'active')
-    })
+    this.floatTrailer.showTrailerEmbed(this.videoId(), this.portalHost())
   }
 
   handleMouseLeaveCard() {
-    if (this.videoId === '') return
-    this.closeTrailerPlayer()
-    this.timerManager.clearAllAnimationFrames()
+    this.floatTrailer.detachTrailerEmbed()
   }
 
-  closeTrailerPlayer() {
-    this.renderer.removeClass(this.trailerEmbedElement.nativeElement, 'active')
-    this.renderer.removeChild(this.movieCard.nativeElement.firstChild,
-      this.trailerEmbedElement.nativeElement)
-    this.trailerEmbed.destroy()
-  }
 }

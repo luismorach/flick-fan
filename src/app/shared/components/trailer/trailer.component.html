@@ -1,0 +1,43 @@
+<div [class]="mode() === 'float' ? 'frame-container' : 'w-full h-full'">
+  
+  <div class="player-frame player-frame-transition" 
+      cdkDrag cdkDragRootElement=".cdk-overlay-container" 
+      [cdkDragDisabled]="mode() === 'embed' || !svc.isMinimized()"
+      [ngClass]="{'player-frame--normal':!svc.isMinimized() && mode() === 'float',
+      'player-frame--mini':svc.isMinimized()&& mode() === 'float',
+      'rounded-lg overflow-hidden':mode() === 'float' }"
+      [@fadeIn]="mode() === 'embed' ? 'in' : null">
+      
+    @if (mode() === 'float'){
+        <div class="frame-player-buttons">
+          @if (svc.isMinimized()){
+           <i (click)="drag()._dragRef.reset(); svc.maximizeFloatTrailer()" 
+                class="fa-solid fa-maximize player-button"></i>
+          }
+          <i (click)="svc.hideFloatTrailer()" class="fa-solid fa-xmark player-button"></i>
+        </div>
+    }
+
+    @if (!hasError()){
+      <youtube-player 
+        [videoId]="videoKey()" 
+        [playerVars]="playerVars()" 
+        suggestedQuality="hd720" 
+        (error)="onPlayerError($event)"
+        class="player pointer-events-none">
+      </youtube-player>
+    } @else {
+      <div class="w-full h-full bg-black flex justify-center items-center text-xl">
+        <i class="fa-solid fa-exclamation-triangle text-yellow-500"></i>
+        <p class="px-2 text-white">Unable to load video</p>
+      </div>
+    }
+  </div>
+
+  @if(mode() === 'embed'){
+    <div class="btn-volume" (click)="changeMuted($event)" @fadeInButton>
+      <app-icon [name]="mutedState() ? 'volume-xmark': 'volume-high'" ></app-icon> 
+   </div>
+  }
+</div>
+

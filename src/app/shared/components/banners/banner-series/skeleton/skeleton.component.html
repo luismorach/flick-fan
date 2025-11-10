@@ -1,14 +1,14 @@
 <!-- banner-series-skeleton.component.html -->
-<main class="w-full relative z-0 animate-pulse bg-black" [class.py-14]="hasSlides()" [class.pb-24]="hasSlides()">
+<main [class]="mode()==='carousel'?'carousel':'overlay'" >
 
   <!-- Imagen de fondo simulada -->
-  <figure class="w-full h-[90vh] absolute bg-black"></figure>
+  <figure class="w-full h-full absolute bg-black"></figure>
 
   <section class="w-full grid grid-cols-3 gap-4 relative h-[90vh]">
-    @if(hasSlides()){
+    @if(mode()==='carousel'){
 
     <!-- Swiper con slides simulados -->
-    <div class="h-[90vh] flex items-center justify-center flex-col ml-16 relative">
+    <div class="h-screen flex items-center justify-center flex-col ml-16 relative">
       <!-- Botones flechas (superior e inferior) -->
       <div class="absolute left-5/12 top-4 w-12 h-12 bg-zinc-700/70 rounded-full"></div>
       <div class="absolute left-5/12 bottom-4 w-12 h-12 bg-zinc-700/70 rounded-full"></div>

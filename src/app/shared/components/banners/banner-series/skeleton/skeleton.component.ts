@@ -8,5 +8,5 @@ import { Component, input } from '@angular/core';
 })
 export class SkeletonComponent {
 
-  hasSlides=input.required<boolean>()
+  mode = input<string>('carousel')
 }

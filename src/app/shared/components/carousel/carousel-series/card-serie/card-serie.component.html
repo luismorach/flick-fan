@@ -1,59 +1,41 @@
-<main (mouseenter)="onMouseEnterToSlide()" (mouseleave)="onMouseLeaveToSlide()"
-    class="relative w-72 h-[29rem]" #main>
+<main appHoverSerieExpand [slideInfo]="slideInfo()" [videoKey]="videoKey()"
+    (expanded)="hoverEnter.emit($event)" (collapse)="hoverLeave.emit($event)"
+    class="relative w-72 h-[29rem]">
 
-    <figure class="h-full absolute w-72">
-        <img [ngSrc]="serie().poster_path | autoImage : 'tall'" fill #img
-            class="object-cover object-center text-white bg-black rounded-xl">
+    <figure class="h-full absolute w-72 rounded-xl overflow-hidden" #posterImage>
+        <img [ngSrc]="serie().poster_path | autoImage : 'poster'" fill 
+            class="card-image" loading="lazy" [alt]="serie().name">
     </figure>
 
-    <figure class="w-full h-full relative opacity-0">
-        <div class="w-full h-full absolute">
-            <img [ngSrc]="serie().backdrop_path | autoImage : 'wide'" fill #img
-                class="object-cover object-center text-white bg-black aspect-auto rounded-xl"
-                alt="imagen no disponible">
-        </div>
-        <figcaption class="pl-4 text-white absolute flex flex-col justify-end z-20 w-full h-[29rem]
-                            bg-linear-to-r from-[rgba(0,0,0,1)] from-0% via-[rgba(20,20,20,0.7)] via-35% 
-                            to-transparent to-100% rounded-xl">
-            <h1 class="font-racing text-3xl">{{serie().name}}</h1>
+    <figure class="w-full h-full relative opacity-0 rounded-xl overflow-hidden" #backdropImage>
+        
+        <img [ngSrc]="serie().backdrop_path | autoImage : 'backdrop-wide'" fill 
+            class="card-image" loading="lazy" [alt]="serie().name">
+        
+        <figcaption class="overlay-serie">
+             <img class="title" [src]="serie().external_ids?.imdb_id | autoImage:'logo'" 
+                        [alt]="serie().name">
 
-            <div class="text-2xl py-4 pb-16 flex gap-6">
-                <a routerLink="/details-serie/{{serie().id}}" class="flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-800 text-white 
-                            px-4 rounded-lg font-semibold transition-all duration-300 h-14 cursor-pointer
-                            hover:from-red-700 hover:to-red-900 hover:shadow-lg hover:shadow-red-500/25" >
-
-                    <svg class="w-5 h-5 " xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20"
-                        height="20" fill="none" stroke="currentColor" stroke-width="64">
-                        <circle cx="256" cy="256" r="216" />
-                        <line x1="256" y1="220" x2="256" y2="352" stroke-linecap="round" />
-                        <circle cx="256" cy="144" r="36" fill="currentColor" stroke="none" />
-                    </svg>
+            <div class="text-lg font-racing py-4 pb-16 flex gap-6">
+                <a [routerLink]="['/details-serie/',serie().id]" class="btn-primary px-6" >
+                    <app-icon name="info"></app-icon>
                     <span>Más información</span>
                 </a>
 
-                <div class="p-3 rounded-full border-2 border-white/30 text-white 
-                                hover:border-[#e50914] hover:text-[#e50914] my-1 transition-all 
-                                transform hover:scale-110 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
+                <div class="btn-primary p-4">
+                    <app-icon name="plus"> </app-icon>
                 </div>
             </div>
         </figcaption>
+        <ng-template #portal cdkPortalOutlet ></ng-template>
     </figure>
 
-    <div
-        class="absolute top-4 right-4 bg-black/80 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1 border border-red-900/30">
-        <svg class="w-5 h-5 text-red-500 fill-red-500" viewBox="0 0 24 24">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
-        <span class="font-semibold text-white text-sm">{{ serie().vote_average | number:'1.1-1'
-            :'en-US'}}</span>
-    </div>
-    <app-play-trailer-embeed #trailer class="trailer w-72 h-[29rem]" [size]="[806,464]" (isEnded)="closeTrailerPlayer()"
-    [isMovie]="false"></app-play-trailer-embeed>
+    @if(serie().vote_average){
+        <div class="badge-vote">
+            <app-icon name="star" color="text-red-500" backgroundColor="fill-red-500"> </app-icon>
+            <span class="badge-text">{{ serie().vote_average | number:'1.1-1' :'en-US'}}</span>
+        </div>
+    }
 </main>
 
 

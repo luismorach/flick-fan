@@ -1,4 +1,0 @@
-swiper-container::part(container){
-     overflow-y: clip;
-    overflow-x: visible; 
-}

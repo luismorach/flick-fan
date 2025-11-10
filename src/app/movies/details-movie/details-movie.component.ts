@@ -58,8 +58,8 @@ export default class DetailsMovieComponent {
   }
   ngAfterViewInit() {
     
-    this.swiperHelperCast.initSwiper(this.swiperCast)
-    this.swiperHelperCrew.initSwiper(this.swiperCrew)
+    //this.swiperHelperCast.initSwiper(this.swiperCast)
+   // this.swiperHelperCrew.initSwiper(this.swiperCrew)
     this.addEventSlideChange()
     this.setEventsNavigation(this.swiperCast, 'cast')
     this.setEventsNavigation(this.swiperCrew, 'crew')

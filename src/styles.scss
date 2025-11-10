@@ -15,13 +15,20 @@ html {
 }
 
 .gradient-top {
-  mask-image: linear-gradient(transparent 0%, black 50%, transparent 100%)
+  mask-image: linear-gradient(transparent 0%, black 20%,black 80%, transparent 100%)
+}
+
+/* -------------------- CONTAINERS -------------------- */
+.overlay{
+   @apply w-full absolute top-0 h-screen bg-gradient-to-r from-black 
+          from-15% via-[rgba(15,15,15,.9)] via-50% to-[rgba(83,200,141,0)] 
+          to-100% 
 }
 
 /* -------------------- CARDS -------------------- */
 
 .card-base {
-  @apply relative z-0 w-80 transition-transform duration-300 hover:scale-125 hover:z-20;
+  @apply relative z-0 w-80 transition-transform duration-300 hover:scale-[1.15] hover:z-20;
 }
 
 .card-base-movie {
@@ -34,12 +41,12 @@ html {
 }
 
 .card-image {
-  @apply w-full object-cover rounded-t-2xl transition-transform duration-500;
+  @apply w-full object-cover object-center;
 }
 
 /* -------------------- BOTONES -------------------- */
 .btn-primary {
-  @apply rounded-full flex justify-center gap-4 transition-all duration-100
+  @apply rounded-full flex justify-center gap-4 transition-all duration-100 font-racing
                         items-center bg-white/5 backdrop-blur-sm;
 }
 
@@ -60,17 +67,6 @@ html {
   @apply flex items-center justify-center w-10 h-10 bg-gray-800 text-white rounded-lg transition-all duration-300 hover:bg-red-700;
 }
 
-.btn-navigation {
-  @apply z-20 w-12 h-12 flex justify-center items-center hover:cursor-pointer absolute hover:scale-110 text-center text-sm bg-black/80 backdrop-blur-sm text-white rounded-full transition-all duration-300 ease-in border border-red-900/50
-}
-
-.btn-navigation-next {
-  @apply right-2 top-1/2
-}
-
-.btn-navigation-prev {
-  @apply left-2 top-1/2
-}
 
 /* -------------------- BADGES / LABELS -------------------- */
 .badge-vote {
@@ -86,6 +82,7 @@ html {
 .text-title{
   @apply text-5xl font-bold inline-block text-white mb-4 tracking-tight bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent
 }
+
 .text-title-carousel {
   @apply text-3xl font-bold inline-block relative bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent after:h-1 after:w-3/5 after:bg-gradient-to-r after:from-red-500 after:to-red-300 after:rounded-full after:absolute after:bottom-0 after:left-0 pb-2
 }
@@ -107,29 +104,34 @@ html {
 }
 
 /* -------------------- TRAILER -------------------- */
-.cdk-overlay-pane {
-  @apply transition-all duration-300 ease-in-out
+.trailer-overlay {
+  @apply transition-all duration-300 ease-in-out w-screen h-screen !pointer-events-none
 }
 
+.frame-container{
+  @apply w-screen min-h-screen relative flex justify-center items-center
+}
 .player-frame {
-  @apply relative transition-all duration-300 ease-in-out overflow-hidden rounded-lg shadow-xl;
-  @apply z-50 w-full h-full rounded-md overflow-hidden;
+  @apply relative shadow-xl z-10 w-full h-full pointer-events-auto ;
+}
+.player-frame-transition{
+  @apply transition-all duration-300 ease-in-out
 }
 
 .player-frame--normal {
   @apply inset-0 m-auto w-[70vw] h-[90vh];
 }
 
-.player-frame--normal app-play-trailer {
+.player-frame--normal app-trailer {
   @apply w-full h-full block
 }
 
 .player-frame--mini {
-  @apply bottom-5 right-5 w-96 h-52 cursor-pointer;
+  @apply absolute bottom-5 right-5 w-96 h-52 cursor-pointer z-50 ;
   /* w-80 = 320px, h-45 = 180px */
 }
 
-.player-frame--mini app-play-trailer {
+.player-frame--mini app-trailer {
   @apply w-full h-full block
 }
 
@@ -149,11 +151,20 @@ html {
 .backdrop-hidden{
   @apply  hidden pointer-events-none !important
 }
-app-play-trailer youtube-player-placeholder {
+app-trailer youtube-player-placeholder {
   @apply w-full h-full !important
 }
 
-app-play-trailer youtube-player>div, app-play-trailer youtube-player>div>iframe {
+app-trailer youtube-player>div, app-trailer youtube-player>div>iframe {
   @apply block w-full h-full !important
 }
+
+.trailer-fade {
+  @apply opacity-0
+}
+
+.trailer-fade.show {
+  @apply opacity-100 transition-opacity duration-500 ease-in delay-[2s]
+}
+
 

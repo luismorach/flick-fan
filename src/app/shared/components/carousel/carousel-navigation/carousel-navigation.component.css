@@ -1,0 +1,23 @@
+.btn-navigation {
+  @apply z-20 w-12 h-12 flex justify-center items-center hover:cursor-pointer absolute hover:scale-110 text-center text-sm bg-black/80 backdrop-blur-sm text-white rounded-full transition-all duration-300 ease-in border border-red-900/50
+}
+
+.btn-navigation:disabled{
+  @apply pointer-events-none opacity-0 cursor-default;
+}
+
+.btn-navigation-horizontal-next {
+  @apply right-2 top-[calc(50%-1.5rem)]
+}
+
+.btn-navigation-horizontal-prev {
+  @apply left-2 top-[calc(50%-1.5rem)]
+}
+
+.btn-navigation-vertical-next {
+  @apply bottom-4 left-[calc(50%-1.5rem)] ;
+}
+
+.btn-navigation-vertical-prev {
+  @apply top-4 left-[calc(50%-1.5rem)]
+}

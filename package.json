@@ -21,6 +21,7 @@
     "@angular/platform-server": "^19.1.4",
     "@angular/router": "^19.1.4",
     "@angular/youtube-player": "^19.2.18",
+    "ngx-cacheable": "^1.4.3",
     "ngx-infinite-scroll": "^19.0.0",
     "rxjs": "~7.8.0",
     "swiper": "^11.1.4",

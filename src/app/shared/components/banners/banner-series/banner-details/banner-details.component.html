@@ -1,0 +1,57 @@
+<main class="w-full relative h-full">
+    <section class="pb-4 text-white flex z-10 w-full h-full md:px-12 justify-start">
+        <header class="flex flex-col justify-end w-full mb-4" >
+
+            <img class="title" [src]="serie().external_ids?.imdb_id| autoImage:'logo'" 
+                [alt]="serie().name" loading="lazy">
+
+            <section class="flex flex-wrap gap-6 pt-4">
+
+                <app-rating class="flex" [rating]="serie().vote_average"></app-rating>
+                
+                <div class="flex items-center gap-2">
+                    <app-icon name="date"  color="text-red-300"></app-icon>
+                    <span>{{serie().first_air_date|date:'yyyy'}} - 
+                        {{serie().last_air_date|date:'yyyy'}}
+                    </span>
+                </div> 
+
+                <div class="flex items-center gap-2">
+                    <app-icon name="film"  color="text-red-300"></app-icon>
+                    <span>{{ serie().number_of_seasons }} temporadas, 
+                        {{ serie().number_of_episodes }} episodios
+                    </span>
+                </div> 
+            </section>
+
+            @if (serie().genres.length  > 0) {
+                <article class="flex gap-2 pt-4">
+                    @for(genre of serie().genres;track genre.id){
+                    <span class="bg-red-600/30 text-red-200 px-3 py-1 rounded-full text-sm">
+                        {{ genre.name }}
+                    </span>
+                    }
+                </article>
+            }
+
+            <p class="overview">{{serie().overview}}</p>
+
+            <section class="buttons">
+                <button 
+                    class="btn-primary px-6" 
+                    [attr.aria-label]="`Reproducir avance de  ${serie.name}`"
+                    tabindex="0"
+                    type="button">
+                    <app-icon name="clapperboard" size="w-6 h-6"></app-icon>
+                    <span>Avance</span>
+                </button>
+
+                <a [routerLink]="['/details-serie', serie().id]" 
+                    class="btn-primary px-6">
+                    <app-icon name="info" size="w-6 h-6"></app-icon>
+                    <span>Más información</span>
+                </a>
+            </section>
+        </header>
+    </section>
+</main>

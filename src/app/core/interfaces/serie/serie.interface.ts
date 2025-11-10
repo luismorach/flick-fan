@@ -11,7 +11,7 @@ export interface SerieList {
     results: Serie[]
     total_pages: number
     total_results: number
-    type:string
+    type: string
 }
 export interface Serie {
     adult: boolean
@@ -46,6 +46,7 @@ export interface Serie {
     vote_count: number
     images: Images
     videos: Videos
+    external_ids: External_ids | undefined
 }
 
 
@@ -72,8 +73,8 @@ export interface Season {
     poster_path: string
     season_number: number
     vote_average: number
-    episode_count:number
-    episodes:Episode[]
+    episode_count: number
+    episodes: Episode[]
 }
 
 export interface Episode {
@@ -88,6 +89,18 @@ export interface Episode {
     overview: string
     season_number: number
     vote_average: number
-    air_date:string
+    air_date: string
     crew: Crew
+}
+
+export interface External_ids {
+    imdb_id: string,
+    freebase_mid: string,
+    freebase_id: string,
+    tvdb_id: number,
+    tvrage_id: string,
+    wikidata_id: string,
+    facebook_id: string,
+    instagram_id: string,
+    twitter_id: string
 }

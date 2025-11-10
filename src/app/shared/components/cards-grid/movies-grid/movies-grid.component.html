@@ -7,7 +7,6 @@
         @for( movie of dataLoaderManager.data() ;track movie.id; let i=$index){
             <app-card-movie 
                 [movie]="movie"
-                class="card-base"
                 [class]="cardClasses()[i]" @fade>
             </app-card-movie>
         }

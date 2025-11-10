@@ -1,0 +1,25 @@
+@if(swiperHelper.dataLoaderManager.isInitialLoading()){
+    <app-banner-skeleton @fade></app-banner-skeleton>
+}
+@else if(swiperHelper.dataLoaderManager.hasData()){
+    <main class="w-full h-screen relative mb-32" @fade>
+
+        <app-carousel-navigation [swiperHelper]="swiperHelper"></app-carousel-navigation>
+
+        <swiper-container init="false" class="h-screen " #swiper>
+            @for(movie of swiperHelper.dataLoaderManager.data();track movie.id){
+                 <swiper-slide class="gradient w-full h-screen relative " @fade>
+                    <app-banner-movie-details [movie]="movie" (onPlayTrailer)="playTrailer()"></app-banner-movie-details>
+                 </swiper-slide>
+            }
+
+            @if(swiperHelper.dataLoaderManager.isFetchingMoreData()){
+                <swiper-slide class="w-full h-full">
+                    <app-banner-skeleton @fade></app-banner-skeleton>
+                </swiper-slide>
+            } 
+        </swiper-container>
+
+    </main>
+}
+

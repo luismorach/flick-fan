@@ -1,0 +1,48 @@
+@if(swiperHelper.dataLoaderManager.isInitialLoading()){
+    <app-skeleton @fade></app-skeleton>
+}
+@else if(swiperHelper.dataLoaderManager.hasData()){
+    <main class="w-full mb-24 grid grid-cols-3 gap-8 relative h-screen">
+
+        <section class="h-screen relative ml-8">
+            <app-carousel-navigation 
+                [swiperHelper]="swiperHelper" 
+                direcction="vertical">
+            </app-carousel-navigation>
+
+            <swiper-container init="false" class="h-full w-full" #swiper>
+                @for(serie of swiperHelper.dataLoaderManager.data();track serie.id;let i=$index){
+                <swiper-slide appSlideStyle [index]="i" [active]="swiperHelper.activeIndex()">
+                    <figure class="img-container">
+                        <img [ngSrc]="serie.backdrop_path | autoImage:'backdrop-wide'" 
+                         [alt]="serie.name" fill #img loading="lazy"
+                            class="w-full h-full object-cover object-center rounded-md">
+                    </figure>
+
+                </swiper-slide>
+                }
+
+                @if(swiperHelper.dataLoaderManager.canLoadMore() || swiperHelper.dataLoaderManager.isFetchingMoreData()){ 
+                    <swiper-slide appSlideStyle 
+                        [index]="swiperHelper.dataLoaderManager.data().length" 
+                        [active]="swiperHelper.activeIndex()"
+                        class="animate-pulse">
+                    </swiper-slide> 
+                }
+            </swiper-container>
+        </section>
+
+        @if(swiperHelper.dataLoaderManager.isFetchingMoreData()){
+            <app-skeleton mode="overlay"></app-skeleton>
+        }@else{
+            <figure class="w-full h-screen absolute gradient-top">
+                <img [ngSrc]="swiperHelper.currentElement().backdrop_path|autoImage:'backdrop-square'" fill
+                priority [alt]="swiperHelper.currentElement().name"
+                class="w-full h-full object-cover object-center gradient-top">
+                <div class="overlay"></div>    
+            </figure>
+
+            <app-banner-details class="col-span-2" [serie]="swiperHelper.currentElement()"></app-banner-details>
+        }
+    </main>
+}

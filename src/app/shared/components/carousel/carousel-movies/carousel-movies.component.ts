@@ -1,5 +1,5 @@
 import {
-  ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, ElementRef, inject, input,
+  ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, ElementRef, inject, input,
   viewChild
 } from '@angular/core';
 import { SwiperContainer } from 'swiper/element/bundle'
@@ -13,6 +13,7 @@ import { CarouselNavigationComponent } from '../carousel-navigation/carousel-nav
 import { DataLoaderManager } from '../../../utils/data-loader-manager';
 import { GridHelperService } from '../../../../core/services/grid-helper/grid-helper.service';
 import { SwiperRegistryService } from '../../../../core/services/swiper-registry/swiper-registry.service';
+import { SwiperOptions } from 'swiper/types';
 
 @Component({
   selector: 'app-carousel-movies',
@@ -39,22 +40,31 @@ export class CarouselMoviesComponent {
   readonly swiperHelper = inject(SwiperHelper<Movie>);
   readonly gridHelper = inject(GridHelperService);
   private readonly swiperRegistry = inject(SwiperRegistryService);
-  
+
   // View Queries
   readonly swiperContainer = viewChild<ElementRef<SwiperContainer>>('swiper');
 
   // State
   readonly slides = useSkeletonSlides(CarouselMoviesComponent.SLIDE_WIDTH, true);
-  readonly cardClasses = this.gridHelper.cardClassesMovies(this.swiperHelper.data, this.slides)
+  readonly cardClasses = this.gridHelper.cardClassesMovies(this.swiperHelper.dataLoaderManager.data, this.slides)
+
+  private readonly SWIPER_CONFIG: SwiperOptions = {
+    slidesPerView: 'auto',
+    allowTouchMove: false,
+    slidesPerGroup: this.slides.slidesPerView(),
+    spaceBetween: this.slides.spaceBetween(),
+    slidesOffsetAfter: this.slides.spaceBetween(),
+    slidesOffsetBefore: this.slides.spaceBetween(),
+    freeMode: {
+      enabled: true,
+      momentum: false
+    },
+  }
 
   constructor() {
     this.swiperRegistry.registerOnce()
-    this.initializeSwiper()
-  }
-
-  private initializeSwiper(): void {
-    this.swiperHelper.initialize(this.swiperContainer, this.movieList, this.slides)
-
+    this.swiperHelper.initialize(this.swiperContainer, this.movieList,this.SWIPER_CONFIG, this.slides)
+    
     this.destroyRef.onDestroy(() => {
       this.swiperHelper.destroy()
     });

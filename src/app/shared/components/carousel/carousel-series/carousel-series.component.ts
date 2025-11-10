@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, ElementRef, inject, input, viewChild,
 } from '@angular/core';
-import { register, SwiperContainer } from 'swiper/element/bundle';
+import { SwiperContainer } from 'swiper/element/bundle';
 import { fade } from '../../../animations/animations';
 import { CardSerieComponent } from './card-serie/card-serie.component';
 import { Serie, SerieList } from '../../../../core/interfaces/serie/serie.interface';
@@ -10,13 +10,13 @@ import { SwiperHelper } from '../../../utils/swiper/swiper-helper';
 import { CarouselSeriesSkeletonComponent } from './carousel-series-skeleton/carousel-series-skeleton.component';
 import { CarouselNavigationComponent } from '../carousel-navigation/carousel-navigation.component';
 import { DataLoaderManager } from '../../../utils/data-loader-manager';
-
-register();
+import { SwiperOptions } from 'swiper/types';
+import { SwiperRegistryService } from '../../../../core/services/swiper-registry/swiper-registry.service';
 
 @Component({
   selector: 'app-carousel-series',
   imports: [CardSerieComponent, CarouselSeriesSkeletonComponent, CarouselNavigationComponent],
-  providers: [DataLoaderManager,SwiperHelper],
+  providers: [DataLoaderManager, SwiperHelper],
   templateUrl: './carousel-series.component.html',
   styleUrl: './carousel-series.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -33,7 +33,8 @@ export class CarouselSeriesComponent {
   // Dependencies
   private readonly destroyRef = inject(DestroyRef);
   readonly swiperHelper = inject(SwiperHelper<Serie>);
-  
+  private readonly swiperRegistry = inject(SwiperRegistryService);
+
   // ViewQuery
   readonly swiperContainer = viewChild<ElementRef<SwiperContainer>>('swiper');
 
@@ -49,10 +50,22 @@ export class CarouselSeriesComponent {
     CarouselSeriesComponent.SLIDE_CONFIG.isCarousel
   );
   
+  private readonly SWIPER_CONFIG: SwiperOptions = {
+    slidesPerView: 'auto',
+    allowTouchMove: false,
+    slidesPerGroup: this.slides.slidesPerView(),
+    spaceBetween: this.slides.spaceBetween(),
+    slidesOffsetAfter: this.slides.spaceBetween(),
+    slidesOffsetBefore: this.slides.spaceBetween(),
+    freeMode: {
+      enabled: true,
+      momentum: false
+    },
+  }
 
   constructor() {
-    this.swiperHelper.initialize(this.swiperContainer, this.seriesList, this.slides)
-
+    this.swiperRegistry.registerOnce()
+    this.swiperHelper.initialize(this.swiperContainer, this.seriesList, this.SWIPER_CONFIG, this.slides)
     this.destroyRef.onDestroy(() => {
       this.swiperHelper.destroy()
     });

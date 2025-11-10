@@ -1,0 +1,8 @@
+.btn-volume{
+    @apply cursor-pointer rounded-full bg-white/5 backdrop-blur-sm transition-all duration-300
+    text-white w-10 h-10 absolute z-50 right-[3%] bottom-2 flex justify-center items-center;
+}
+
+.btn-volume:hover{
+    @apply scale-110 text-black bg-white;
+}

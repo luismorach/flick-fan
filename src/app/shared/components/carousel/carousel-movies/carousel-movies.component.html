@@ -1,4 +1,4 @@
- @if( swiperHelper.hasData()){
+ @if( swiperHelper.dataLoaderManager.hasData()){
     <!-- Contenedor principal del carousel -->
     <main class=" w-full mb-12" >
         <!-- Encabezado del carousel -->
@@ -16,17 +16,15 @@
                  [style.z-index]="zIndex()" #swiper>
 
                   <!-- Renderizado de cada película -->
-                 @for(movie of swiperHelper.data();track movie.id;let i = $index;){
-                    <swiper-slide class="w-80 overflow-visible" @fade>
-                        <app-card-movie 
-                            [movie]="movie" 
-                            [class]="cardClasses()[i]">
+                 @for(movie of swiperHelper.dataLoaderManager.data();track movie.id;let i = $index;){
+                    <swiper-slide [class]="cardClasses()[i]" @fade>
+                        <app-card-movie [movie]="movie">
                         </app-card-movie>
                     </swiper-slide>
                  }
 
                  <!-- Esqueleto de carga mientras se cargan más datos -->
-                 @if(swiperHelper.isFetchingMoreData()){
+                 @if(swiperHelper.dataLoaderManager.isFetchingMoreData()){
                      <swiper-slide @fade>
                          <app-carousel-skeleton 
                              [slides]="slides" 

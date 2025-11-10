@@ -105,4 +105,5 @@ export class SeriesGridComponent {
 this.dataLoaderManager.data()
     this.dataLoaderManager.setupDataSource(this.data,this.genreId)
   }
+
 }

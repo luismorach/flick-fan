@@ -1,11 +1,33 @@
 <button type="button" aria-label="Diapositiva anterior" (click)="swiperHelper().goToPrevSlide()"
-    class="btn-navigation btn-navigation-prev"
-    [class.opacity-0]="swiperHelper().atCarouselStart() || !swiperHelper().isHoveredOverCarousel()">
-    <i class="fa-solid fa-chevron-left " aria-hidden="true"></i>
+    class="btn-navigation "
+    [ngClass]="{
+        'btn-navigation-horizontal-prev':direcction()==='horizontal',
+        'btn-navigation-vertical-prev':direcction()==='vertical'
+    }"
+    [disabled]="swiperHelper().atCarouselStart() || !swiperHelper().isHoveredOverCarousel()">
+    <i 
+        class="fa-solid" 
+        [ngClass]="{
+            'fa-chevron-left':direcction()==='horizontal',
+            'fa-chevron-up ':direcction()==='vertical'
+        }"
+        aria-hidden="true">
+    </i>
 </button>
 
 <button type="button" aria-label="Diapositiva siguiente" (click)="swiperHelper().goToNextSlide()"
-    class="btn-navigation btn-navigation-next"
-    [class.opacity-0]="swiperHelper().atCarouselEnd()|| !swiperHelper().isHoveredOverCarousel()">
-    <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+    class="btn-navigation"
+    [ngClass]="{
+        'btn-navigation-horizontal-next':direcction()==='horizontal',
+        'btn-navigation-vertical-next':direcction()==='vertical'
+    }"
+    [disabled]="swiperHelper().atCarouselEnd() || !swiperHelper().isHoveredOverCarousel()">
+    <i 
+        class="fa-solid" 
+        [ngClass]="{
+            'fa-chevron-right':direcction()==='horizontal',
+            'fa-chevron-down':direcction()==='vertical'
+        }"
+        aria-hidden="true">
+    </i>
 </button>

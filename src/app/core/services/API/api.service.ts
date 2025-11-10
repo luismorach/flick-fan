@@ -50,16 +50,16 @@ export class ApiService {
     return this.getMoviesWithDetails(`movie/upcoming`, params, 'upcoming_movies')
   }
 
-  getDetailsMovie(movieId: number): Observable<Movie> {
+  getDetailsMovie(params: ParamsApi): Observable<Movie> {
     return this.http
-      .get<Movie>(`${this.API_BASE}/movie/${movieId}`, {
+      .get<Movie>(`${this.API_BASE}/movie/${params.movieId}`, {
         params: this.buildParams({ append_to_response: 'videos' })
       })
   }
 
-  getCreditsMovie(movieId: number): Observable<Credits> {
+  getCreditsMovie(params: ParamsApi): Observable<Credits> {
     return this.http
-      .get<Credits>(`${this.API_BASE}/movie/${movieId}/credits`, {
+      .get<Credits>(`${this.API_BASE}/movie/${params.movieId}/credits`, {
         params: this.buildParams(),
       })
   }
@@ -82,10 +82,10 @@ export class ApiService {
       );
   }
 
-  getMoviesByGenre(query: string, genreId: number, page: number = 1) {
+  getMoviesByGenre(params: ParamsApi) {
     return this.http
       .get<MovieList>(`${this.API_BASE}/search/movie`, {
-        params: this.buildParams({ page, query, with_genres: genreId }),
+        params: this.buildParams(params),
       }).pipe(
         switchMap((response) => this.enrichMoviesWithDetails(response, 'movies_by_genre')),
       );
@@ -118,20 +118,25 @@ export class ApiService {
 
   // ==================== SERIES ====================
 
-  getAiringTodaySeries(page: number = 1) {
-    return this.getSeriesWithDetails('tv/airing_today', page, 'airing_today');
+  getAiringTodaySeries(params: ParamsApi) {
+    params.type = 'airing_today'
+    return this.getSeriesWithDetails('tv/airing_today', params);
   }
 
-  getOnTheAirSeries(page: number = 1) {
-    return this.getSeriesWithDetails('tv/on_the_air', page, 'on_the_air_series');
+  getOnTheAirSeries(params: ParamsApi) {
+    params.type = 'on_the_air_series'
+    return this.getSeriesWithDetails('tv/on_the_air', params);
   }
-  getPopularSeries(page: number) {
-    return this.getSeriesWithDetails('tv/popular', page, 'popular_series');
+  getPopularSeries(params: ParamsApi) {
+    params.type = 'popular_series'
+    return this.getSeriesWithDetails('tv/popular', params);
   }
 
-  getDetailsSerie(serieId: number): Observable<Serie> {
+  getDetailsSerie(params: ParamsApi): Observable<Serie> {
+    const serieId = params.serieId
+    if (!serieId) return of()
     return this.http
-      .get<Serie>(`${this.API_BASE}/tv/${serieId}`, {
+      .get<Serie>(`${this.API_BASE}/tv/${params.serieId}`, {
         params: this.buildParams({ append_to_response: 'videos' }),
       })
       .pipe(
@@ -139,19 +144,21 @@ export class ApiService {
       );
   }
 
-  getCreditsSerie(serieId: number): Observable<Credits> {
+  getCreditsSerie(params: ParamsApi): Observable<Credits> {
     return this.http
-      .get<Credits>(`${this.API_BASE}/tv/${serieId}/credits`, {
+      .get<Credits>(`${this.API_BASE}/tv/${params.serieId}/credits`, {
         params: this.buildParams(),
       })
   }
 
-  getSimilarSeries(page: number, serieId: number) {
-    return this.getSeriesWithDetails(`tv/${serieId}/similar`, page, 'similar_series');
+  getSimilarSeries(params: ParamsApi) {
+    params.type = 'similar_series'
+    return this.getSeriesWithDetails(`tv/${params.serieId}/similar`, params);
   }
 
-  getRecomendedSeries(page: number, serieId: number) {
-    return this.getSeriesWithDetails(`tv/${serieId}/recommendations`, page, 'recomended_series');
+  getRecomendedSeries(params: ParamsApi) {
+    params.type = 'recomended_series'
+    return this.getSeriesWithDetails(`tv/${params.serieId}/recommendations`, params);
   }
 
   searchSerie(params: ParamsApi) {
@@ -164,13 +171,13 @@ export class ApiService {
       );
   }
 
-  getSeriesByGenre(genreId: number, page: number) {
+  getSeriesByGenre(params: ParamsApi) {
     return this.http
       .get<SerieList>(`${this.API_BASE}/discover/tv`, {
         params: this.buildParams({
-          page,
+          page: params.page,
           sort_by: 'popularity.desc',
-          with_genres: genreId,
+          with_genres: params.genreId,
         }),
       })
       .pipe(
@@ -178,10 +185,11 @@ export class ApiService {
       );
   }
 
-  private getSeriesWithDetails(endpoint: string, page: number, type: string): Observable<SerieList> {
+  private getSeriesWithDetails(endpoint: string, params: ParamsApi): Observable<SerieList> {
+    const type = params.type ?? ''
     return this.http
       .get<SerieList>(`${this.API_BASE}/${endpoint}`, {
-        params: this.buildParams({ page }),
+        params: this.buildParams(params),
       })
       .pipe(
         switchMap((response) => this.enrichSeriesWithDetails(response, type))
@@ -297,7 +305,7 @@ export class ApiService {
     return from(mediaList.results).pipe(
       mergeMap(
         (media) => this.http.get<Movie | Serie>(`${this.API_BASE}/${mediaType}/${media.id}`, {
-          params: this.buildParams({ append_to_response: 'videos' }),
+          params: this.buildParams({ append_to_response: 'videos,external_ids' }),
         }), this.ENRICHMENT_CONCURRENCY
       ),
       toArray(),

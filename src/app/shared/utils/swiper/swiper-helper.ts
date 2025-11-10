@@ -1,11 +1,9 @@
 import {
     computed,
     DestroyRef, effect, ElementRef, inject, Injectable, InputSignal, Renderer2, Signal, signal,
-    WritableSignal,
 } from "@angular/core"
 import Swiper from "swiper"
 import { SwiperContainer } from "swiper/element"
-import { Mousewheel, FreeMode } from "swiper/modules"
 import { SwiperOptions } from "swiper/types"
 import { ListenerManager } from "../listener-manager"
 import { getCurrentTransition } from "../transition-manager"
@@ -19,23 +17,25 @@ import { Movie } from "../../../core/interfaces/movie/movie.interface"
 @Injectable()
 export class SwiperHelper<T extends Movie | Serie> {
 
-    private renderer: Renderer2 = inject(Renderer2)
-    private destroyRef = inject(DestroyRef);
-    private readonly dataLoaderManager: DataLoaderManager<T> = inject(DataLoaderManager<T>)
+    private readonly renderer: Renderer2 = inject(Renderer2)
+    private readonly destroyRef = inject(DestroyRef);
+    readonly dataLoaderManager: DataLoaderManager<T> = inject(DataLoaderManager<T>)
     private slidesInfo?: SkeletonSlidesHook
 
     private readonly _atCarouselEnd = signal(false)
     readonly atCarouselEnd = this._atCarouselEnd.asReadonly()
     private readonly _atCarouselStart = signal(true)
     readonly atCarouselStart = this._atCarouselStart.asReadonly()
-    readonly isFetchingMoreData!: Signal<boolean>
-    readonly data: Signal<T[]> = this.dataLoaderManager.data;
-    readonly hasData = this.dataLoaderManager.hasData
-    readonly isInitialLoading = this.dataLoaderManager.isInitialLoading
-    readonly currentElement: WritableSignal<T | undefined> = signal(undefined)
+    readonly activeIndex = signal(0)
 
     private _isHoveredOverCarousel = signal(false)
     readonly isHoveredOverCarousel = this._isHoveredOverCarousel.asReadonly()
+    readonly currentElement = computed(() => {
+        const data = this.dataLoaderManager.data(); 
+        const index = this.activeIndex();
+
+        return data[index] ?? null;
+    });
 
     private swiperContainer!: ElementRef<SwiperContainer>
     private swiper!: Swiper
@@ -49,9 +49,6 @@ export class SwiperHelper<T extends Movie | Serie> {
     constructor() {
         this.listenerManager = new ListenerManager(this.renderer)
 
-
-        this.isFetchingMoreData = this.dataLoaderManager.isFetchingMoreData.asReadonly()
-
         //this.setupReactiveUpdates()
     }
 
@@ -62,6 +59,7 @@ export class SwiperHelper<T extends Movie | Serie> {
     initialize(
         swiperContainer: Signal<ElementRef<SwiperContainer> | undefined>,
         data: InputSignal<PaginatedData<T> | undefined>,
+        swiperOptions: SwiperOptions,
         slidesInfo?: SkeletonSlidesHook) {
 
         if (slidesInfo) {
@@ -70,12 +68,12 @@ export class SwiperHelper<T extends Movie | Serie> {
         }
         this.dataLoaderManager.setupDataSource(data)
         this.setupDataLoadedEffect()
-        this.setupSwiperContainerEffect(swiperContainer)
+        this.setupSwiperContainerEffect(swiperContainer, swiperOptions)
     }
 
     private setupDataLoadedEffect(): void {
         const dataLoadedEffect = effect(() => {
-            if (this.data() && this.isInitialized) {
+            if (this.dataLoaderManager.data() && this.isInitialized) {
                 this._atCarouselEnd.set(false);
                 this.scheduleUpdateSwiper()
             }
@@ -83,7 +81,9 @@ export class SwiperHelper<T extends Movie | Serie> {
         this.destroyRef.onDestroy(() => dataLoadedEffect.destroy());
     }
 
-    private setupSwiperContainerEffect(swiperContainer: Signal<ElementRef<SwiperContainer> | undefined>) {
+    private setupSwiperContainerEffect(
+        swiperContainer: Signal<ElementRef<SwiperContainer> | undefined>,
+        swiperOptions: SwiperOptions,) {
         const swiperEffect = effect(() => {
             const swiperEl = swiperContainer()
             if (!swiperEl) return
@@ -93,7 +93,7 @@ export class SwiperHelper<T extends Movie | Serie> {
             * pero los slots (slides) aún no están completamente renderizados en el DOM.
             */
             requestAnimationFrame(() => {
-                this.initSwiper(swiperEl)
+                this.initSwiper(swiperEl, swiperOptions)
             })
         });
         this.destroyRef.onDestroy(() => swiperEffect.destroy());
@@ -103,53 +103,17 @@ export class SwiperHelper<T extends Movie | Serie> {
      * Inicializa la instancia de Swiper
      * @param swiperContainer Referencia al elemento contenedor
     */
-    initSwiper(swiperContainer: ElementRef<SwiperContainer>): void {
+    initSwiper(swiperContainer: ElementRef<SwiperContainer>, swiperOptions: SwiperOptions,): void {
         this.swiperContainer = swiperContainer
-        const swiperOptions = this.createSwiperOptions()
+        //const swiperOptions = this.createSwiperOptions()
 
         Object.assign(this.swiperContainer.nativeElement, swiperOptions)
         this.swiperContainer.nativeElement.initialize()
 
         this.swiper = this.swiperContainer.nativeElement.swiper
         this.isInitialized = true
-        console.log(this.data()[this.swiper.activeIndex])
-                this.currentElement.set(this.data()[this.swiper.activeIndex])
         this.setupEventListeners()
         this.setPaddingToSwiperContainer()
-    }
-
-    private createSwiperOptions(): SwiperOptions {
-        let swiperOptions: SwiperOptions = {}
-        if (this.slidesInfo) {
-            swiperOptions = {
-                modules: [Mousewheel, FreeMode],
-                slidesPerView: 'auto',
-                allowTouchMove: false,
-                slidesPerGroup: this.slidesInfo.slidesPerView(),
-                spaceBetween: this.slidesInfo.spaceBetween(),
-                slidesOffsetAfter: this.slidesInfo.spaceBetween(),
-                slidesOffsetBefore: this.slidesInfo.spaceBetween(),
-                freeMode: {
-                    enabled: true,
-                    momentum: false
-                },
-                observer: false,
-                observeParents: false,
-            }
-        } else {
-            swiperOptions = {
-                speed: 500,
-                slidesPerView: 1,
-                slidesPerGroup: 1,
-                allowTouchMove: true,
-                pagination: {
-                    enabled: true,
-                    dynamicBullets: true,
-                },
-            }
-        }
-
-        return swiperOptions
     }
 
     private setupReactiveUpdates(): void {
@@ -207,7 +171,7 @@ export class SwiperHelper<T extends Movie | Serie> {
     private handleSlideChange(detail: Swiper): void {
         this._atCarouselStart.set(detail.isBeginning)
         this._atCarouselEnd.set(detail.isEnd);
-        this.currentElement.set(this.data()[detail.activeIndex])
+        this.activeIndex.set(detail.activeIndex)
         this.updateContainerPadding(detail.isEnd)
         this.loadMoreData(detail.isEnd)
     }
@@ -221,7 +185,7 @@ export class SwiperHelper<T extends Movie | Serie> {
     }
 
     private loadMoreData(isEnd: boolean) {
-        if (!isEnd || !this.data()) return
+        if (!isEnd || !this.dataLoaderManager.data()) return
 
         this.dataLoaderManager.loadMoreData()
         this._atCarouselEnd.set(false);
@@ -354,7 +318,7 @@ export class SwiperHelper<T extends Movie | Serie> {
             if (enableBefore && !this.swiper.enabled) {
                 this.swiper.enable();
             }
-
+           
             this.swiper.update();
         });
     }

@@ -1,12 +1,9 @@
-import { Component, ChangeDetectionStrategy, inject, viewChild, signal,  WritableSignal} from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal,  WritableSignal} from '@angular/core';
 import { ApiService } from '../core/services/API/api.service';
-import PlayTrailerComponent from '../shared/components/play-trailer/play-trailer.component';
 import { CarouselSeriesComponent } from '../shared/components/carousel/carousel-series/carousel-series.component';
 import { fade } from '../shared/animations/animations';
-import { BannerSkeletonComponent } from '../shared/components/banner-movie/banner-skeleton/banner-skeleton.component';
-import BannerMovieComponent from '../shared/components/banner-movie/banner-movie.component';
-import { BannerSeriesComponent } from '../shared/components/banner-series/banner-series.component';
-import { SkeletonComponent } from '../shared/components/banner-series/skeleton/skeleton.component';
+import BannerMoviesComponent from '../shared/components/banners/banner-movies/banner-movies.component';
+import { BannerSeriesComponent } from '../shared/components/banners/banner-series/banner-series.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
 import { MovieList } from '../core/interfaces/movie/movie.interface';
@@ -21,8 +18,8 @@ interface Loader<T> {
 }
 @Component({
   selector: 'app-inicio',
-  imports: [BannerMovieComponent, CarouselMoviesComponent, BannerSeriesComponent, SkeletonComponent,
-    CarouselSeriesComponent,  BannerSkeletonComponent,BackgroundNavScrollDirective],
+  imports: [BannerMoviesComponent, CarouselMoviesComponent, BannerSeriesComponent,
+    CarouselSeriesComponent, BackgroundNavScrollDirective],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,7 +29,6 @@ export default class InicioComponent {
 
   api = inject(ApiService)
 
-  playTrailerComponent = viewChild(PlayTrailerComponent)
   popularMovies: WritableSignal<MovieList | undefined> = signal(undefined)
   upcomingMovies: WritableSignal<MovieList | undefined> = signal(undefined)
   nowPlaying: WritableSignal<MovieList | undefined> = signal(undefined)
@@ -53,9 +49,9 @@ export default class InicioComponent {
     ];
 
     const serieLoaders: Loader<SerieList>[] = [
-      { call: () => this.api.getOnTheAirSeries(1), signal: this.onTheAir },
-      { call: () => this.api.getAiringTodaySeries(1), signal: this.airingToday },
-      { call: () => this.api.getPopularSeries(1), signal: this.popularSeries },
+      { call: () => this.api.getOnTheAirSeries(params), signal: this.onTheAir },
+      { call: () => this.api.getAiringTodaySeries(params), signal: this.airingToday },
+      { call: () => this.api.getPopularSeries(params), signal: this.popularSeries },
     ];
 
     // Cargar películas

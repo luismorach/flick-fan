@@ -47,7 +47,7 @@
         <polyline points="17 2 12 7 7 2" />
     </svg>
 
-    <svg *ngSwitchCase="'play'" class="{{ size }} {{ color }} {{backgroundColor}}"  xmlns="http://www.w3.org/2000/svg" 
+    <svg *ngSwitchCase="'play'" class="{{ size }} {{ color }} {{backgroundColor}}" xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24" fill="currentColor">
         <path d="M8 5v14l11-7z" />
     </svg>
@@ -65,4 +65,83 @@
         <line x1="8" y1="2" x2="8" y2="6"></line>
         <line x1="3" y1="10" x2="21" y2="10"></line>
     </svg>
+
+    <svg *ngSwitchCase="'volume-high'" class="{{ size }} {{ color }} {{backgroundColor}}"
+        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 450" fill="currentColor">
+
+        <path d="M301.3 34.8c-7.6-3.4-16.5-2.1-22.9 3.3L142.6 160H64
+           c-35.3 0-64 28.7-64 64v64c0 35.3 28.7 64 64 64h78.6
+           l135.8 121.9c6.4 5.4 15.3 6.7 22.9 3.3
+           s12.7-10.9 12.7-19.3V54.1
+           c0-8.4-4.9-15.9-12.7-19.3z" />
+
+        <path d="M400 180
+         A80 80 0 0 1 400 300" fill="none" stroke="currentColor" stroke-width="50" stroke-linecap="round" />
+
+        <path d="M460 105
+         A180 180 0 0 1 460 375" fill="none" stroke="currentColor" stroke-width="50" stroke-linecap="round" />
+
+        <path d="M520 30
+         A270 270 0 0 1 520 450" fill="none" stroke="currentColor" stroke-width="50" stroke-linecap="round" />
+    </svg>
+
+    <svg *ngSwitchCase="'volume-xmark'" class="{{ size }} {{ color }} {{backgroundColor}}"
+        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 450" fill="currentColor" width="48" height="48">
+
+        <path d="M301.3 34.8c-7.6-3.4-16.5-2.1-22.9 3.3L142.6 160H64
+           c-35.3 0-64 28.7-64 64v64c0 35.3 28.7 64 64 64h78.6
+           l135.8 121.9c6.4 5.4 15.3 6.7 22.9 3.3
+           s12.7-10.9 12.7-19.3V54.1
+           c0-8.4-4.9-15.9-12.7-19.3z" />
+
+        <path d="M420 200 L580 350 M580 200 L420 350" stroke="currentColor" stroke-width="50" stroke-linecap="round"
+            fill="none" />
+    </svg>
+
+
+    <svg *ngSwitchCase="'maximize'" class="{{ size }} {{ color }} {{backgroundColor}}"
+    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="150" height="150" fill="none" 
+    stroke="currentColor" stroke-width="40" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Flecha superior izquierda -->
+  <path d="
+    M200 120
+    L140 120
+    A25 25 0 0 0 130 130
+    L130 200 Z" fill="white" />
+
+  <!-- Flecha superior derecha -->
+  <path d="
+    M332 120
+    L392 120
+    A20 20 0 0 1 412 140
+    L412 200 z" fill="white"/>
+
+  <!-- Flecha inferior izquierda -->
+  <path d="
+    M180 392
+    L120 392
+    A20 20 0 0 1 100 372
+    L100 312 Z " fill="white"/>
+
+  <!-- Flecha inferior derecha -->
+  <path d="
+    M332 392
+    L392 392
+    A20 20 0 0 0 412 372
+    L412 312 Z " fill="white"/>
+
+  <!-- Cruz central -->
+  <path d="
+    M160 160
+    L352 352
+    M352 160
+    L160 352" stroke-width="60"/>
+</svg>
+
+
+
+
+
+
+
 </ng-container>

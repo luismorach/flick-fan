@@ -1,0 +1,21 @@
+swiper-container::part(container){
+     overflow-y: clip;
+    overflow-x: visible; 
+}
+
+.slide{
+    @apply self-center w-1/2 aspect-video rounded-md transition-all duration-300 ease-in bg-zinc-700 ;
+}
+
+.img-container{
+    @apply w-full h-full relative cursor-pointer transition-all duration-300 ease-in opacity-40
+}
+
+swiper-slide.scale-150 .img-container   { @apply !opacity-60; }
+
+swiper-slide[class*="scale-[2]"] .img-container {
+  @apply opacity-100 !important;
+}
+
+
+
