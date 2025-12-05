@@ -28,7 +28,7 @@ html {
 /* -------------------- CARDS -------------------- */
 
 .card-base {
-  @apply relative z-0 w-80 transition-transform duration-300 hover:scale-[1.15] hover:z-20;
+  @apply relative z-0 w-[310px] transition-transform duration-300 hover:scale-[1.15] hover:z-20;
 }
 
 .card-base-movie {
@@ -37,7 +37,8 @@ html {
 
 
 .card-hover-overlay {
-  @apply transition-all duration-500 overflow-hidden absolute bg-black w-80 -ml-4 rounded-b-2xl max-h-0 group-hover:max-h-48 group-hover:p-4
+  @apply transition-all duration-500 overflow-hidden absolute bg-black w-full -ml-4 rounded-b-2xl 
+  max-h-0 group-hover:max-h-48 group-hover:p-4  group-hover:pt-2 
 }
 
 .card-image {
@@ -88,19 +89,19 @@ html {
 }
 
 .text-title-card {
-  @apply text-white font-bold pt-2 text-lg line-clamp-1;
+  @apply text-white font-bold text-lg line-clamp-1;
 }
 
 .text-genre-card {
-  @apply text-red-400 text-sm font-medium;
+  @apply text-red-400 text-sm font-medium group-hover:text-[12px];
 }
 
 .text-info-card {
-  @apply text-gray-400 text-sm;
+  @apply text-gray-400 text-sm group-hover:text-[12px];
 }
 
 .text-overview-card {
-  @apply text-gray-300 text-sm line-clamp-3;
+  @apply text-gray-300 text-[12px] line-clamp-3;
 }
 
 /* -------------------- TRAILER -------------------- */

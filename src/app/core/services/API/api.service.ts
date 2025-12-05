@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, WritableSignal, inject } from '@angular/core';
+import { Injectable, WritableSignal, inject, signal } from '@angular/core';
 import { forkJoin, from, lastValueFrom, map, mergeMap, Observable, of, shareReplay, switchMap, toArray } from 'rxjs';
 import { Credits } from '../../interfaces/people/credits.interface';
 import { MovieList, Movie } from '../../interfaces/movie/movie.interface';
@@ -9,6 +9,8 @@ import { Genre } from '../../interfaces/shared/genre.interface';
 import { PaginatedData } from '../../interfaces/shared/generic.interface';
 import { ParamsApi } from '../../interfaces/shared/params-http.interface';
 import { Cacheable } from 'ngx-cacheable';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Videos } from '../../interfaces/media/videos.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -18,83 +20,117 @@ export class ApiService {
   private readonly API_BASE = environment.tmdb.API_URL;
   private readonly DEFAULT_LANGUAGE = 'es-VE';
   private genresCache$?: Observable<Genre[]>;
+  public allGenres: WritableSignal<Genre[]> = signal([]);
   private readonly ENRICHMENT_CONCURRENCY = 4;
 
   private readonly methodMap: { [key: string]: any } = {
-    now_playing: this.getNowPlaying.bind(this),
+    now_playing_movies: this.getNowPlaying.bind(this),
     upcoming_movies: this.getUpcoming.bind(this),
     popular_movies: this.getPopular.bind(this),
     similar_movies: this.getSimilarMovies.bind(this),
     recomended_movies: this.getRecomendedMovies.bind(this),
+    details_movie: this.getDetailsMovie.bind(this),
     movies_by_genre: this.getMoviesByGenre.bind(this),
     search_movie: this.searchMovie.bind(this),
+
     popular_series: this.getPopularSeries.bind(this),
-    airing_today: this.getAiringTodaySeries.bind(this),
+    airing_today_series: this.getAiringTodaySeries.bind(this),
     on_the_air_series: this.getOnTheAirSeries.bind(this),
     similar_series: this.getSimilarSeries.bind(this),
     recomended_series: this.getRecomendedSeries.bind(this),
+    details_serie: this.getDetailsSerie.bind(this),
     series_by_genre: this.getSeriesByGenre.bind(this),
     search_serie: this.searchSerie.bind(this),
+
   };
 
   // ==================== MOVIES ====================
 
-  @Cacheable()
+  /* @Cacheable() */
   getNowPlaying(params: ParamsApi) {
-    return this.getMoviesWithDetails(`movie/now_playing`, params, 'now_playing')
+    const endpoint = `movie/now_playing`
+    const type = 'now_playing_movies'
+    return this.getMediaDetails<MovieList>(endpoint, params, type)
   }
 
-  @Cacheable()
+  /* @Cacheable() */
   getPopular(params: ParamsApi) {
-    return this.getMoviesWithDetails(`movie/popular`, params, 'popular_movies')
+    const endpoint = `movie/popular`
+    const type = 'popular_movies'
+    return this.getMediaDetails<MovieList>(endpoint, params, type)
   }
 
   @Cacheable()
   getUpcoming(params: ParamsApi) {
-    return this.getMoviesWithDetails(`movie/upcoming`, params, 'upcoming_movies')
+    const endpoint = `movie/upcoming`
+    const type = 'upcoming_movies'
+    return this.getMediaDetails<MovieList>(endpoint, params, type)
+  }
+
+  /* @Cacheable() */
+  getDetailsMovie(params: ParamsApi): Observable<Movie> {
+    return this.http
+      .get<Movie>(`${this.API_BASE}/movie/${params.dataId}`, {
+        params: this.buildParams({ append_to_response: 'videos' })
+      })
   }
 
   @Cacheable()
-  getDetailsMovie(params: ParamsApi): Observable<Movie> {
+  getMovieVideos(params: ParamsApi) {
+    console.log('🚀 getMovieVideos llamado para ID:', params.dataId);
     return this.http
-      .get<Movie>(`${this.API_BASE}/movie/${params.movieId}`, {
-        params: this.buildParams({ append_to_response: 'videos' })
+      .get<Videos>(`${this.API_BASE}/movie/${params.dataId}/videos`, {
+        params: this.buildParams()
       })
   }
 
   @Cacheable()
   getCreditsMovie(params: ParamsApi): Observable<Credits> {
     return this.http
-      .get<Credits>(`${this.API_BASE}/movie/${params.movieId}/credits`, {
+      .get<Credits>(`${this.API_BASE}/movie/${params.dataId}/credits`, {
         params: this.buildParams(),
       })
   }
 
+  getMediaDetails<T extends MovieList | SerieList>(endpoint: string, params: ParamsApi, type: string) {
+    return this.http.get<T>(`${this.API_BASE}/${endpoint}`, {
+      params: this.buildParams(params),
+    }).pipe(map((list) => ({
+      ...list,
+      type: type,
+      results: list.results.map(movie => ({
+        ...movie,
+        genres: this.mapGenreIdsToGenres(movie.genre_ids)
+      }))
+    })))
+  }
+
+  private mapGenreIdsToGenres(genreIds: number[] = [], allGenres: Genre[] = this.allGenres() ?? []): Genre[] {
+    const map = new Map(allGenres.map(g => [g.id, g]));
+    return genreIds.map(id => map.get(id)!).filter(Boolean);
+  }
+
   getSimilarMovies(params: ParamsApi) {
-    return this.getMoviesWithDetails(`movie/${params.movieId}/similar`, params, 'similar_movies');
+    const endpoint = `movie/${params.dataId}/similar`
+    const type = 'upcoming_movies'
+    return this.getMediaDetails<MovieList>(endpoint, params, type)
   }
 
   getRecomendedMovies(params: ParamsApi) {
-    return this.getMoviesWithDetails(`movie/${params.movieId}/recommendations`, params, 'recomended_movies');
+    const endpoint = `movie/${params.dataId}/recommendations`
+    const type = 'recomended_movies'
+    return this.getMediaDetails<MovieList>(endpoint, params, type)
   }
 
   searchMovie(params: ParamsApi) {
-    return this.http
-      .get<MovieList>(`${this.API_BASE}/search/movie`, {
-        params: this.buildParams(params),
-      })
-      .pipe(
-        switchMap((response) => this.enrichMoviesWithDetails(response, 'search_movie')),
-      );
+    return this.getMediaDetails<MovieList>(`/search/movie`, params, 'search_movie')
   }
 
   getMoviesByGenre(params: ParamsApi) {
     return this.http
       .get<MovieList>(`${this.API_BASE}/search/movie`, {
         params: this.buildParams(params),
-      }).pipe(
-        switchMap((response) => this.enrichMoviesWithDetails(response, 'movies_by_genre')),
-      );
+      })
     //https://api.themoviedb.org/3/search/movie?api_key=TU_API_KEY&query=superman&with_genres=28&language=es-MX
     /* return this.http
       .get<MovieList>(`${this.API_BASE}/discover/movie`, {
@@ -109,64 +145,53 @@ export class ApiService {
       ); */
   }
 
-  private getMoviesWithDetails(endpoint: string, params: ParamsApi, type: string): Observable<MovieList> {
-    return this.http.get<MovieList>(`${this.API_BASE}/${endpoint}`, {
-      params: this.buildParams(params),
-    })
-      .pipe(
-        switchMap((response) => this.enrichMoviesWithDetails(response, type))
-      );
-  }
-
-  private enrichMoviesWithDetails(movieList: MovieList, type: string): Observable<MovieList> {
-    return this.enrichMediaWithDetails(movieList, 'movie', type) as Observable<MovieList>;
-  }
 
   // ==================== SERIES ====================
 
-  @Cacheable()
+  /* @Cacheable() */
   getAiringTodaySeries(params: ParamsApi) {
-    params.type = 'airing_today'
-    return this.getSeriesWithDetails('tv/airing_today', params);
+    const type = 'airing_today_series'
+    return this.getMediaDetails<SerieList>('tv/airing_today', params, type)
   }
-  @Cacheable()
+
+  /* @Cacheable() */
   getOnTheAirSeries(params: ParamsApi) {
-    params.type = 'on_the_air_series'
-    return this.getSeriesWithDetails('tv/on_the_air', params);
+     const type = 'on_the_air_series'
+    return this.getMediaDetails<SerieList>('tv/on_the_air', params, type) 
+    /* params.type = 'on_the_air_series'
+    return this.getSeriesWithDetails('tv/on_the_air', params); */
   }
-  @Cacheable()
+ /*  @Cacheable() */
   getPopularSeries(params: ParamsApi) {
     params.type = 'popular_series'
     return this.getSeriesWithDetails('tv/popular', params);
   }
 
   getDetailsSerie(params: ParamsApi): Observable<Serie> {
-    const serieId = params.serieId
-    if (!serieId) return of()
+
     return this.http
-      .get<Serie>(`${this.API_BASE}/tv/${params.serieId}`, {
-        params: this.buildParams({ append_to_response: 'videos' }),
+      .get<Serie>(`${this.API_BASE}/tv/${params.dataId}`, {
+        params: this.buildParams({ append_to_response: 'videos,external_ids' }),
       })
-      .pipe(
-        switchMap((serie) => this.enrichSerieWithSeasons(serie, serieId))
-      );
+     
+
   }
 
   getCreditsSerie(params: ParamsApi): Observable<Credits> {
     return this.http
-      .get<Credits>(`${this.API_BASE}/tv/${params.serieId}/credits`, {
+      .get<Credits>(`${this.API_BASE}/tv/${params.dataId}/credits`, {
         params: this.buildParams(),
       })
   }
 
   getSimilarSeries(params: ParamsApi) {
     params.type = 'similar_series'
-    return this.getSeriesWithDetails(`tv/${params.serieId}/similar`, params);
+    return this.getSeriesWithDetails(`tv/${params.dataId}/similar`, params);
   }
 
   getRecomendedSeries(params: ParamsApi) {
     params.type = 'recomended_series'
-    return this.getSeriesWithDetails(`tv/${params.serieId}/recommendations`, params);
+    return this.getSeriesWithDetails(`tv/${params.dataId}/recommendations`, params);
   }
 
   searchSerie(params: ParamsApi) {
@@ -289,15 +314,26 @@ export class ApiService {
 
     const type = params.type ?? ''
     const apiMethod = this.methodMap[type];
-    const { genreId, movieId, serieId, query } = params;
     if (!apiMethod) throw new Error(`Unknown data type: ${type}`);
-    console.log(genreId, movieId, serieId, query)
 
     console.log('Loading page:', params.page, 'for type:', type, 'extraargs:', params);
     const newData: T = await lastValueFrom(
       apiMethod(params));
     console.log(newData)
     return newData as PaginatedData<T>
+  }
+
+  async getDetails<T>(params: ParamsApi) {
+    const type = params.type
+    if (!type) return
+    (type.includes('movies')) ? params.type = 'details_movie' : params.type = 'details_serie'
+    const apiMethod = this.methodMap[params.type];
+    if (!apiMethod) throw new Error(`Unknown data type: ${type}`);
+
+    console.log('Loading details:', params.page, 'for type:', params.type, 'extraargs:', params);
+    const details: T = await lastValueFrom(
+      apiMethod(params));
+    return details as T
   }
 
   private enrichMediaWithDetails(

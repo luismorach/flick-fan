@@ -40,7 +40,12 @@ export class DataLoaderManager<T extends Movie | Serie> {
     private readonly api: ApiService = inject(ApiService)
     private readonly destroyRef = inject(DestroyRef)
     private readonly mutableData: WritableSignal<PaginatedData<T> | undefined> = signal(undefined);
+    readonly changeLength = computed(() => this.data().length)
     private activeGenreFilter?: Signal<number>;
+    private observer !: IntersectionObserver
+    private observed = new Set<Element>();
+    private pendingRequests = new Map<number, Promise<T | undefined>>();
+
 
     // Computed data
     readonly isInitialLoading = computed(() => this.mutableData() === undefined)
@@ -58,19 +63,24 @@ export class DataLoaderManager<T extends Movie | Serie> {
     constructor() {
         this.data = this.filteredData;
         this.hasData = computed(() => this.data().length > 0);
+
+        this.destroyRef.onDestroy(() => {
+            this.observer?.disconnect();
+            this.observed.clear();
+        });
     }
 
-   /**
- * Configures the data source and optional genre filter.
- * 
- * @param dataSource - Signal containing paginated data
- * @param genreId - Optional signal for genre filtering
- * 
- * @remarks
- * Creates an internal copy of dataSource because InputSignals are readonly.
- * This allows loadMoreData() to append results without mutating the input.
- * Can be called multiple times to change data source (previous effect is cleaned up).
- */
+    /**
+  * Configures the data source and optional genre filter.
+  * 
+  * @param dataSource - Signal containing paginated data
+  * @param genreId - Optional signal for genre filtering
+  * 
+  * @remarks
+  * Creates an internal copy of dataSource because InputSignals are readonly.
+  * This allows loadMoreData() to append results without mutating the input.
+  * Can be called multiple times to change data source (previous effect is cleaned up).
+  */
     setupDataSource(dataSource: Signal<PaginatedData<T> | undefined>, genreId?: Signal<number>) {
         this.activeGenreFilter = genreId;
         const syncEffect = effect(() => {
@@ -85,8 +95,9 @@ export class DataLoaderManager<T extends Movie | Serie> {
 
         const current = this.mutableData();
         if (!current?.page || !current?.type) return;
+        console.log('totalpage',current.total_pages)
 
-        params.page = current.page + 1;
+        params.page = current.total_pages;
         params.type = current.type;
         this.isFetchingMoreData.set(true);
 
@@ -103,6 +114,73 @@ export class DataLoaderManager<T extends Movie | Serie> {
         } finally {
             this.isFetchingMoreData.set(false);
         }
+    }
+
+    async setupIntersectionObserver(root: Element, elements: Element[]) {
+        if (this.observer) return
+        console.log('configurando intersecton oberver')
+        this.observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return
+
+                    const target = entry.target
+                    const id = Number(target.getAttribute('data-id'));
+
+                    if (!id) return;
+                    if (target.hasAttribute('data-loaded')) return;
+
+                    target.setAttribute('data-loaded', 'true');
+                    this.getDetails(id)
+                });
+            },
+            {
+                root: root,
+                threshold: 0.1,
+                rootMargin: '100px 0px'
+            }
+        );
+
+        this.observeNewSlides(elements)
+    }
+
+    observeNewSlides(elements: Element[]) {
+        elements.forEach((element) => {
+            if (!this.observed.has(element)) {
+                this.observer.observe(element);
+                this.observed.add(element);
+            }
+        });
+    }
+
+    async getDetails(dataId: number) {
+
+        if (this.pendingRequests.has(dataId)) {
+            return
+        }
+        const current = this.mutableData();
+        if (!current?.type) return;
+
+        const params: ParamsApi = { type: current.type, dataId: dataId }
+
+        const promise = this.api.getDetails<T>(params)
+        .finally(() => this.pendingRequests.delete(dataId));
+        this.pendingRequests.set(dataId, promise);
+
+        const details = await promise
+
+        if (!details) return
+
+        this.mutableData.update((mediaList) => {
+            if (!mediaList) return mediaList;
+
+            const updatedResults = mediaList.results.map(item =>
+                item.id === details.id ? details : item
+            );
+
+            return { ...mediaList, results: updatedResults };
+        });
+        console.log('actualize :', details.id)
     }
 
     canLoadMore(): boolean {
@@ -122,6 +200,8 @@ export class DataLoaderManager<T extends Movie | Serie> {
         if (!data?.page || !data?.total_pages) return null;
         return { current: data.page, total: data.total_pages };
     }
+
+
 
     reset(): void {
         this.mutableData.set(undefined);

@@ -31,9 +31,8 @@ export class SwiperHelper<T extends Movie | Serie> {
     private _isHoveredOverCarousel = signal(false)
     readonly isHoveredOverCarousel = this._isHoveredOverCarousel.asReadonly()
     readonly currentElement = computed(() => {
-        const data = this.dataLoaderManager.data(); 
+        const data = this.dataLoaderManager.data();
         const index = this.activeIndex();
-
         return data[index] ?? null;
     });
 
@@ -45,6 +44,7 @@ export class SwiperHelper<T extends Movie | Serie> {
     private listenerManager: ListenerManager
     private ANIMATION_DURATION = 300
     private isInitialized = false
+    private isIntersectionObserverRequired = false
 
     constructor() {
         this.listenerManager = new ListenerManager(this.renderer)
@@ -60,11 +60,14 @@ export class SwiperHelper<T extends Movie | Serie> {
         swiperContainer: Signal<ElementRef<SwiperContainer> | undefined>,
         data: InputSignal<PaginatedData<T> | undefined>,
         swiperOptions: SwiperOptions,
-        slidesInfo?: SkeletonSlidesHook) {
+        slidesInfo?: SkeletonSlidesHook,
+        isIntersectionObserverRequired = false) {
+
+        this.isIntersectionObserverRequired = isIntersectionObserverRequired
 
         if (slidesInfo) {
             this.slidesInfo = slidesInfo
-            this.baseTranslatePosition = this.slidesInfo.spaceBetween()
+            this.baseTranslatePosition = this.slidesInfo.spaceBetween() + this.slidesInfo.paddingX()
         }
         this.dataLoaderManager.setupDataSource(data)
         this.setupDataLoadedEffect()
@@ -73,20 +76,50 @@ export class SwiperHelper<T extends Movie | Serie> {
 
     private setupDataLoadedEffect(): void {
         const dataLoadedEffect = effect(() => {
-            if (this.dataLoaderManager.data() && this.isInitialized) {
+            if (this.dataLoaderManager.changeLength() && this.isInitialized) {
                 this._atCarouselEnd.set(false);
+                const translateBeforeUpdate = this.swiper.translate;
                 this.scheduleUpdateSwiper()
+                this.fixBugJumpInTheLastSlide(translateBeforeUpdate)
+                if (this.isIntersectionObserverRequired)
+                    this.observeNewSlides()
             }
         });
         this.destroyRef.onDestroy(() => dataLoadedEffect.destroy());
     }
 
+    fixBugJumpInTheLastSlide(translateBeforeUpdate: number) {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                // Solo si se movió más de 50px (evitamos falsos positivos)
+                if (Math.abs(this.swiper.translate - translateBeforeUpdate) > 50) {
+                    console.log('Forzando translate de', this.swiper.translate, '→', translateBeforeUpdate);
+                    this.swiper.setTranslate(translateBeforeUpdate);
+                    // Actualizamos baseTranslatePosition con el valor correcto (el que queremos mantener)
+                    this.baseTranslatePosition = translateBeforeUpdate;
+                    this.scheduleUpdateSwiper()
+                }
+
+
+            });
+        });
+    }
+
+    private observeNewSlides() {
+        requestAnimationFrame(() => {
+            console.log('cambio de tamaño', this.swiper.slides.length)
+            const slides = this.swiper.slides
+            this.dataLoaderManager.observeNewSlides(slides)
+        })
+    }
+
     private setupSwiperContainerEffect(
         swiperContainer: Signal<ElementRef<SwiperContainer> | undefined>,
-        swiperOptions: SwiperOptions,) {
+        swiperOptions: SwiperOptions) {
         const swiperEffect = effect(() => {
             const swiperEl = swiperContainer()
             if (!swiperEl) return
+
             /**
             * IMPORTANTE: Usa requestAnimationFrame porque cuando este método se ejecuta,
             * el template acaba de cambiar de skeleton → swiper debido al @defer,
@@ -103,7 +136,8 @@ export class SwiperHelper<T extends Movie | Serie> {
      * Inicializa la instancia de Swiper
      * @param swiperContainer Referencia al elemento contenedor
     */
-    initSwiper(swiperContainer: ElementRef<SwiperContainer>, swiperOptions: SwiperOptions,): void {
+    initSwiper(swiperContainer: ElementRef<SwiperContainer>,
+        swiperOptions: SwiperOptions): void {
         this.swiperContainer = swiperContainer
         //const swiperOptions = this.createSwiperOptions()
 
@@ -113,7 +147,9 @@ export class SwiperHelper<T extends Movie | Serie> {
         this.swiper = this.swiperContainer.nativeElement.swiper
         this.isInitialized = true
         this.setupEventListeners()
-        this.setPaddingToSwiperContainer()
+        //this.setPaddingToSwiperContainer()
+        if (this.isIntersectionObserverRequired)
+            this.dataLoaderManager.setupIntersectionObserver(swiperContainer.nativeElement, this.swiper.slides)
     }
 
     private setupReactiveUpdates(): void {
@@ -136,44 +172,44 @@ export class SwiperHelper<T extends Movie | Serie> {
 
     private setupEventListeners(): void {
         this.ensureSwiperReady()
-        type SwiperEvent = CustomEvent<[Swiper]>
-        this.listenerManager.listen(this.swiperContainer.nativeElement,
-            'swiperslidechange', (event: SwiperEvent) => {
-                const [detail] = event.detail;
-                this.handleSlideChange(detail)
-            })
 
-        this.listenerManager.listen(this.swiperContainer.nativeElement,
-            'swiperslidechangetransitionend', (event: SwiperEvent) => {
-                this.baseTranslatePosition = event.detail[0].translate;
-                this.swiper.allowSlideNext = true
-            })
+        this.swiper.on('slideChange', (swiper) => {
+            console.log('slide change', swiper.translate, this.baseTranslatePosition)
+            //this.handleSlideChange(swiper)
+        })
 
-        this.listenerManager.listen(this.swiperContainer.nativeElement,
-            'swiperslidechangetransitionstart', () => {
-                this.swiper.allowSlideNext = false
-            })
+        this.swiper.on('slideChangeTransitionStart', (swiper) => {
+            console.log('transistion start', this.swiper.translate)
+            this.baseTranslatePosition = this.swiper.translate;
+            this.activeIndex.set(swiper.activeIndex)
+            this.swiper.allowSlideNext = false
+            this.swiper.allowSlidePrev = false
+        })
+
+        this.swiper.on('slideChangeTransitionEnd', (swiper) => {
+            console.log('transition end', this.swiper.translate, this.swiper)
+            this.handleSlideChange(swiper)
+            this.swiper.allowSlideNext = true
+            this.swiper.allowSlidePrev = true
+        })
 
         const parent = this.swiperContainer.nativeElement.parentElement
         if (!parent) return
 
-        this.listenerManager.listen(parent,
-            'mouseenter', (event: SwiperEvent) => {
-                this._isHoveredOverCarousel.set(true)
-            })
+        this.listenerManager.listen(parent, 'mouseenter', () => {
+            this._isHoveredOverCarousel.set(true)
+        })
 
-        this.listenerManager.listen(parent,
-            'mouseleave', (event: SwiperEvent) => {
-                this._isHoveredOverCarousel.set(false)
-            })
+        this.listenerManager.listen(parent, 'mouseleave', () => {
+            this._isHoveredOverCarousel.set(false)
+        })
     }
 
-    private handleSlideChange(detail: Swiper): void {
-        this._atCarouselStart.set(detail.isBeginning)
-        this._atCarouselEnd.set(detail.isEnd);
-        this.activeIndex.set(detail.activeIndex)
-        this.updateContainerPadding(detail.isEnd)
-        this.loadMoreData(detail.isEnd)
+    private handleSlideChange(swiper: Swiper): void {
+        this._atCarouselStart.set(swiper.isBeginning)
+        this._atCarouselEnd.set(swiper.isEnd);
+        this.loadMoreData(swiper.isEnd)
+        //this.updateContainerPadding(swiper.isEnd)
     }
 
     private updateContainerPadding(isEnd: boolean): void {
@@ -185,11 +221,10 @@ export class SwiperHelper<T extends Movie | Serie> {
     }
 
     private loadMoreData(isEnd: boolean) {
-        if (!isEnd || !this.dataLoaderManager.data()) return
-
+        if (!isEnd || !this.dataLoaderManager.canLoadMore()) return
         this.dataLoaderManager.loadMoreData()
         this._atCarouselEnd.set(false);
-        this.scheduleUpdateSwiper();
+        //this.scheduleUpdateSwiper();
     }
 
     // ==========================================
@@ -203,7 +238,7 @@ export class SwiperHelper<T extends Movie | Serie> {
         this.renderer.setStyle(
             this.swiper.wrapperEl,
             'padding',
-            `0px ${paddingX}px`
+            `0px 0px 0px ${paddingX}px`
         )
     }
 
@@ -218,7 +253,6 @@ export class SwiperHelper<T extends Movie | Serie> {
     // ==========================================
     // TRANSLATE ADJUSTMENTS
     // ==========================================
-
 
     /**
      * Ajusta el translate cuando una slide se expande
@@ -240,6 +274,7 @@ export class SwiperHelper<T extends Movie | Serie> {
     private needsTranslateAdjustment(slide: HTMLElement): boolean {
         if (!this.slidesInfo) return false
         const viewportWidth = this.swiperContainer.nativeElement.offsetWidth;
+
         return this.baseTranslatePosition +
             (slide.offsetLeft + this.slidesInfo.expandedSlideWidth()) > viewportWidth;
     }
@@ -247,7 +282,7 @@ export class SwiperHelper<T extends Movie | Serie> {
     private applyTranslateAdjustment(slide: HTMLElement): void {
         const viewportWidth = this.swiperContainer.nativeElement.offsetWidth;
 
-        this.adjustOffsetForEndSlides()
+        // this.adjustOffsetForEndSlides()
 
         const newTranslate = this.calculateAdjustedTranslate(slide, viewportWidth);
         this.swiper.translateTo(newTranslate, this.ANIMATION_DURATION);
@@ -272,7 +307,7 @@ export class SwiperHelper<T extends Movie | Serie> {
         if (!this.shouldResetTranslate || !this.slidesInfo) return
 
         this.ensureSwiperReady()
-        this.swiperContainer.nativeElement.slidesOffsetAfter = this.slidesInfo.spaceBetween()
+        this.swiperContainer.nativeElement.slidesOffsetAfter = this.slidesInfo.spaceBetween() + this.slidesInfo.paddingX()
         this.swiper.translateTo(this.baseTranslatePosition, this.ANIMATION_DURATION);
         this.shouldResetTranslate = false
     }
@@ -318,8 +353,9 @@ export class SwiperHelper<T extends Movie | Serie> {
             if (enableBefore && !this.swiper.enabled) {
                 this.swiper.enable();
             }
-           
+
             this.swiper.update();
+            console.log('base translate after update', this.baseTranslatePosition, this.swiper.translate)
         });
     }
 
@@ -329,6 +365,7 @@ export class SwiperHelper<T extends Movie | Serie> {
             this.raf = null;
         }
     }
+
 
     private ensureSwiperReady(): void {
         SwiperValidators.validateContainer(this.swiperContainer);
@@ -342,6 +379,9 @@ export class SwiperHelper<T extends Movie | Serie> {
 
     destroy(): void {
         this.cancelUpdateSwiper()
+        this.swiper.off('slideChange');
+        this.swiper.off('slideChangeTransitionStart');
+        this.swiper.off('slideChangeTransitionEnd');
         this.listenerManager.cleanupAll()
     }
 }

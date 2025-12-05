@@ -10,7 +10,7 @@
         <section class="text-white flex justify-around items-center md:py-12 absolute top-0 z-10 w-full h-full">
             <header class="sm:max-w-[32%]">
 
-                <article class="metadata" >
+                <article class="metadata-movie">
                     <img class="title" [src]="movie().imdb_id | autoImage:'logo'" [alt]="movie().title">
                         
                     <div class="font-racing text-lg flex pt-4 gap-6 ">
@@ -34,22 +34,22 @@
                     </div>
                 </article>
 
-                <p class="overview">{{movie().overview}}</p>
+                <p class="overview-movie">{{movie().overview}}</p>
 
-                <section class="buttons">
+                <section class="buttons-movie">
                     <button 
                         class="btn-primary px-6" 
-                        (click)="onPlayTrailer.emit()" 
+                        (click)="playTrailer()" 
                         [disabled]="!currentTrailerKey()"
                         [attr.aria-label]="`Reproducir avance de  ${movie().title}`"
-                        (keyup.enter)="onPlayTrailer.emit()"
+                        (keyup.enter)="playTrailer()"
                         tabindex="0"
                         type="button">
                         <app-icon name="clapperboard" size="w-6 h-6"></app-icon>
                         <span>Avance</span>
                     </button>
 
-                    <a [routerLink]="['/details-movie()', movie().id]" class="btn-primary px-6">
+                    <a [routerLink]="['/details-movie',movie().id]" class="btn-primary px-6">
                         <app-icon name="info" size="w-6 h-6"></app-icon>
                         <span>Más información</span>
                     </a>
@@ -57,7 +57,7 @@
                 </section>
             </header>
             
-            <a [routerLink]="['/watch-movie()', movie().id]"class="btn-primary w-14 h-14">
+            <a [routerLink]="['/watch-movie', movie().id]"class="btn-primary w-14 h-14">
                 <app-icon name="play" size="w-8 h-8"></app-icon>
             </a>
         </section> 

@@ -23,14 +23,14 @@ export const emptyState = trigger('emptyState', [
 
 export const fadeIn = trigger('fadeIn', [
     state('void', style({ opacity: 0 })),
-    state('in', style({ opacity: 1})),
+    state('in', style({ opacity: 1 })),
     transition('void => in', animate('500ms 2s ease-in')),
 ])
-  
+
 export const fadeInButton = trigger('fadeInButton', [
-     transition(':enter', [
-        style({ opacity: 0}),
+    transition(':enter', [
+        style({ opacity: 0 }),
         animate('0.5s 2s ease-in', style({ opacity: 1 }))
     ]),
 ])
-  
+

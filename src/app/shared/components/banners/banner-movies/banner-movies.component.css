@@ -17,12 +17,12 @@ swiper-container::part(bullet-active) {
           from-15% via-[rgba(15,15,15,.9)] via-50% to-[rgba(83,200,141,0)] 
           to-100% 
 }
-
-.swiper-slide-active .metadata{
+ 
+.swiper-slide-active .metadata-movie{
   @apply translate-x-0 !important
-}
+} 
 
-.swiper-slide-active .overview,.swiper-slide-active .buttons{
+.swiper-slide-active .overview-movie,.swiper-slide-active .buttons-movie{
   @apply translate-y-0 opacity-100 !important
 } 
 
@@ -30,15 +30,15 @@ swiper-container::part(bullet-active) {
   @apply font-racing uppercase text-3xl text-left sm:text-4xl lg:text-5xl relative 
           w-full max-h-48 object-contain object-center line-clamp-2;
 }
-.metadata{
+.metadata-movie{
    @apply  -translate-x-[150%] transition-transform duration-300 delay-300
-}
-.overview{
+} 
+.overview-movie{
   @apply pt-2 text-justify max-h-[20vh] line-clamp-5 translate-y-[100%] opacity-0
                             transition-all duration-500 delay-500;
 }
 
-.buttons{
+.buttons-movie{
   @apply flex justify-start gap-4 font-racing text-lg my-4 h-12 translate-y-[3%] opacity-0
                             transition-all duration-700 delay-700;
 }

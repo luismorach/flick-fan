@@ -12,7 +12,7 @@
 
             <swiper-container init="false" class="h-full w-full" #swiper>
                 @for(serie of swiperHelper.dataLoaderManager.data();track serie.id;let i=$index){
-                <swiper-slide appSlideStyle [index]="i" [active]="swiperHelper.activeIndex()">
+                <swiper-slide appSlideStyle [index]="i" [active]="swiperHelper.activeIndex()" [attr.data-id]="serie.id" >
                     <figure class="img-container">
                         <img [ngSrc]="serie.backdrop_path | autoImage:'backdrop-wide'" 
                          [alt]="serie.name" fill #img loading="lazy"

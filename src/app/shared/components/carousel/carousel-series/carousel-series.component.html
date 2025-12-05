@@ -15,21 +15,21 @@
                     <app-card-serie 
                         [serie]="serie" 
                         [slideInfo]="slides"
+                        [cardIndex]="i"
+                        [activeIndex]="swiperHelper.activeIndex()"
                         (hoverEnter)="onSlideExpandHover(i)"
                         (hoverLeave)="onSlideCollapseHover()">
                     </app-card-serie>
                 </swiper-slide>
                 }
 
-                @if(swiperHelper.dataLoaderManager.isFetchingMoreData()){
-                    <swiper-slide class="w-full">
-                        <app-carousel-series-skeleton 
-                            [slides]="slides" 
-                            [hasHeader]="false" 
-                            [insideCarousel]="true" @fade>
-                        </app-carousel-series-skeleton>
-                    </swiper-slide>
-                }
+               <swiper-slide class="w-full" [class.hidden]="!swiperHelper.dataLoaderManager.isFetchingMoreData()">
+                   <app-carousel-series-skeleton 
+                       [slides]="slides" 
+                       [hasHeader]="false" 
+                       [insideCarousel]="true" @fade>
+                   </app-carousel-series-skeleton>
+               </swiper-slide>
             </swiper-container>
 
         </section>

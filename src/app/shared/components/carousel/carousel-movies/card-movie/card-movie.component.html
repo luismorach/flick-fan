@@ -15,7 +15,7 @@
          }
     </figure>
    
-    <section class="p-4">
+    <section class="p-4 pt-2">
 
         <header>
             @if(movie().title){
@@ -24,33 +24,35 @@
             @if (hasGenres()) {
                 <span class="text-genre-card">{{primaryGenre()}}</span>
             }
-        </header>
-        <div class="flex items-center gap-4 text-info-card py-2">
+            
+            <div class="flex flex-wrap items-center gap-4 text-info-card py-1">
             @if(movie().release_date){
                 <span>{{movie().release_date | date:'longDate'}}</span>
             }
-            @if(movie().runtime){
+           <!--  @if(movie().runtime){
                 <div class="flex items-center gap-2">
                     <app-icon name="clock" size="w-4 h-4" color="text-gray-400"></app-icon>
                     <span>{{movie().runtime | minutesToTime}}</span>
                 </div>
-            }
+            } -->
         </div>
+        </header>
+        
         <div class="card-hover-overlay">
             @if(movie().overview){
                 <p class="text-overview-card">
                     {{movie().overview}}
                 </p>
             }
-            <div class="flex gap-2 transition-all duration-500 pt-2 text-white">
+            <div class="flex gap-2 transition-all duration-500 pt-3 text-white">
                 <a [routerLink]="['/watch-movie/',movie().id]" class="btn-primary px-6 flex-1">
                     <app-icon name="play"></app-icon>
                     Ver ahora
                 </a>
-                <a class="btn-primary p-3">
+                <a class="btn-primary p-2">
                     <app-icon name="plus"></app-icon> 
                 </a>
-                <a [routerLink]="['/details-movie/',movie().id]" class="btn-primary p-3">
+                <a [routerLink]="['/details-movie/',movie().id]" class="btn-primary p-2">
                     <app-icon name="info"></app-icon>
                 </a>
             </div>

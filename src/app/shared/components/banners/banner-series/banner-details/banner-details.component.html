@@ -2,6 +2,7 @@
     <section class="pb-4 text-white flex z-10 w-full h-full md:px-12 justify-start">
         <header class="flex flex-col justify-end w-full mb-4" >
 
+            <article class="metadata" #metadata>
             <img class="title" [src]="serie().external_ids?.imdb_id| autoImage:'logo'" 
                 [alt]="serie().name" loading="lazy">
 
@@ -22,7 +23,7 @@
                         {{ serie().number_of_episodes }} episodios
                     </span>
                 </div> 
-            </section>
+            </section> 
 
             @if (serie().genres.length  > 0) {
                 <article class="flex gap-2 pt-4">
@@ -33,17 +34,21 @@
                     }
                 </article>
             }
+            </article>
 
-            <p class="overview">{{serie().overview}}</p>
+            <p class="overview" #overview>{{serie().overview}}</p>
 
-            <section class="buttons">
+            <section class="buttons" #buttons>
                 <button 
-                    class="btn-primary px-6" 
-                    [attr.aria-label]="`Reproducir avance de  ${serie.name}`"
-                    tabindex="0"
-                    type="button">
-                    <app-icon name="clapperboard" size="w-6 h-6"></app-icon>
-                    <span>Avance</span>
+                        class="btn-primary px-6" 
+                        (click)="playTrailer()" 
+                        [disabled]="!currentTrailerKey()"
+                        [attr.aria-label]="`Reproducir avance de  ${serie().name}`"
+                        (keyup.enter)="playTrailer()"
+                        tabindex="0"
+                        type="button">
+                        <app-icon name="clapperboard" size="w-6 h-6"></app-icon>
+                        <span>Avance</span>
                 </button>
 
                 <a [routerLink]="['/details-serie', serie().id]" 

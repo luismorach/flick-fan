@@ -46,7 +46,8 @@ export default class BannerMoviesComponent {
   readonly swiperContainer = viewChild<ElementRef<SwiperContainer>>('swiper');
 
   readonly currentTrailerKey = computed(() =>{
-    return getKeyTrailer(this.swiperHelper.currentElement())}
+    if(!this.swiperHelper.currentElement()) return undefined
+    return getKeyTrailer(this.swiperHelper.currentElement().videos)}
   );
 
   updateVideoKey = effect(() => {
@@ -66,11 +67,7 @@ export default class BannerMoviesComponent {
 
   constructor() {
     this.swiperRegistry.registerOnce()
-    this.swiperHelper.initialize(this.swiperContainer, this.movieList, this.SWIPER_CONFIG)
-  }
-
-  playTrailer(): void {
-    this.floatTrailer.showFloatTrailer(this.currentTrailerKey())
+    this.swiperHelper.initialize(this.swiperContainer, this.movieList, this.SWIPER_CONFIG,undefined,true)
   }
 
 }

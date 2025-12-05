@@ -28,7 +28,7 @@ import { SwiperOptions } from 'swiper/types';
 
 export class CarouselMoviesComponent {
   // Constants
-  private static readonly SLIDE_WIDTH = 320;
+  private static readonly SLIDE_WIDTH = 310;
 
   // Inputs
   readonly movieList = input.required<MovieList | undefined>()
@@ -53,8 +53,8 @@ export class CarouselMoviesComponent {
     allowTouchMove: false,
     slidesPerGroup: this.slides.slidesPerView(),
     spaceBetween: this.slides.spaceBetween(),
-    slidesOffsetAfter: this.slides.spaceBetween(),
-    slidesOffsetBefore: this.slides.spaceBetween(),
+    slidesOffsetAfter: this.slides.spaceBetween() + this.slides.paddingX(),
+    slidesOffsetBefore: this.slides.spaceBetween() + this.slides.paddingX(),
     freeMode: {
       enabled: true,
       momentum: false

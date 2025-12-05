@@ -92,7 +92,7 @@ export default class PlaySerieComponent implements AfterViewInit {
     this.subscription.push(params.pipe(
       map(([params, queryParams]) => {
         this.setUrlSerie(params, queryParams)
-        return this.API.getDetailsSerie({serieId:this.id_serie})
+        return this.API.getDetailsSerie({dataId:this.id_serie})
       }), concatAll())
       .subscribe((detailSerie: Serie) => {
         console.log('detailserie', detailSerie)
@@ -144,7 +144,7 @@ export default class PlaySerieComponent implements AfterViewInit {
 
   getSimilarSeries() {
     this.subscription.push(this.rutaActiva.params.pipe(
-      map((params: Params) => this.API.getSimilarSeries({page:1, serieId:params['id_serie']})), concatAll())
+      map((params: Params) => this.API.getSimilarSeries({page:1, dataId:params['id_serie']})), concatAll())
       .subscribe((series: any) => {
         if (series.results.length > 0) {
           this.similarSeries.set(series)
@@ -154,7 +154,7 @@ export default class PlaySerieComponent implements AfterViewInit {
 
   getRecomendedSeries() {
     this.subscription.push(this.rutaActiva.params.pipe(
-      map((params: Params) => this.API.getRecomendedSeries({page:1, serieId:params['id_serie']})), concatAll())
+      map((params: Params) => this.API.getRecomendedSeries({page:1, dataId:params['id_serie']})), concatAll())
       .subscribe((series: any) => {
         if (series.results.length > 0) {
           this.recomendedSeries.set(series)

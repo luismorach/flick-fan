@@ -49,17 +49,18 @@ export class CarouselSeriesComponent {
     CarouselSeriesComponent.SLIDE_CONFIG.width,
     CarouselSeriesComponent.SLIDE_CONFIG.isCarousel
   );
-  
+
   private readonly SWIPER_CONFIG: SwiperOptions = {
     slidesPerView: 'auto',
     allowTouchMove: false,
     slidesPerGroup: this.slides.slidesPerView(),
     spaceBetween: this.slides.spaceBetween(),
-    slidesOffsetAfter: this.slides.spaceBetween(),
-    slidesOffsetBefore: this.slides.spaceBetween(),
+    slidesOffsetAfter: this.slides.spaceBetween()+ this.slides.paddingX(),
+    slidesOffsetBefore: this.slides.paddingX() + this.slides.spaceBetween(),
     freeMode: {
       enabled: true,
       momentum: false
+      
     },
   }
 

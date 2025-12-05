@@ -12,8 +12,8 @@ export function useSkeletonSlides(slideBaseWidth: number, isCarousel: boolean = 
   */
   const EXPANDED_SLIDE_MULTIPLIER = 2.8;
   const destroyRef = inject(DestroyRef);
-  const MIN_SPACING = 10;
-  const CAROUSEL_PEEK_SPACING_RATIO = 0.04;
+  const MIN_SPACE_BETWEEN = 10;
+  const CAROUSEL_PEEK_SPACING_RATIO = 0.07;
   const MIN_SLIDES_PER_VIEW = 1;
   const windowResize = inject(WindowService);
   const minPeekSpacingRatio = isCarousel ? CAROUSEL_PEEK_SPACING_RATIO : 0;
@@ -23,10 +23,10 @@ export function useSkeletonSlides(slideBaseWidth: number, isCarousel: boolean = 
     const peekWidth = Math.floor(slideBaseWidth * minPeekSpacingRatio);
     const totalPeekWidth = peekWidth * 2;
     const viewportWidth = windowResize.width();
-    const availableWidth = viewportWidth - MIN_SPACING - totalPeekWidth;
+    const availableWidth = viewportWidth - MIN_SPACE_BETWEEN - totalPeekWidth;
 
     // Calcular cuántas slides caben
-    const totalSlideWidth = slideBaseWidth + MIN_SPACING;
+    const totalSlideWidth = slideBaseWidth + MIN_SPACE_BETWEEN;
     const calculatedSlides = Math.floor(availableWidth / totalSlideWidth);
     const slides = Math.max(MIN_SLIDES_PER_VIEW, calculatedSlides);
 
@@ -35,7 +35,7 @@ export function useSkeletonSlides(slideBaseWidth: number, isCarousel: boolean = 
     const remainingSpace = viewportWidth - usedBySlides - totalPeekWidth;
     const totalGaps = slides + 1;
     const spacing = Math.max(
-      MIN_SPACING,
+      MIN_SPACE_BETWEEN,
       Math.floor(remainingSpace / totalGaps)
     );
 
@@ -63,7 +63,7 @@ export function useSkeletonSlides(slideBaseWidth: number, isCarousel: boolean = 
 
   const skeletonSlideIndexes = computed(() => {
     console.log(isCarousel)
-    const skeletons = isCarousel ? (slidesPerView() + 1) : slidesPerView()
+    const skeletons = isCarousel ? (slidesPerView() ) : slidesPerView()
     return Array.from({ length: skeletons }, (_, i) => i)
   });
 

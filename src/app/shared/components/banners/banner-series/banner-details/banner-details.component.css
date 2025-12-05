@@ -1,6 +1,6 @@
 .title{
   @apply font-racing uppercase text-3xl text-left sm:text-4xl lg:text-5xl relative 
-          w-full max-h-24 object-contain object-left line-clamp-2;
+          w-full max-h-24 object-contain object-left line-clamp-2 ;
 }
 
 .buttons{
@@ -10,3 +10,4 @@
 .overview{
   @apply pt-2 text-justify max-h-[15vh] line-clamp-3;
 }
+

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { getKeyTrailer } from '../../../../utils/helpers';
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -14,7 +14,7 @@ import { HoverSerieExpandDirective } from "../../../../../core/directives/hover-
   selector: 'app-card-serie',
   imports: [NgOptimizedImage, DecimalPipe, RouterLink, AutoImagePipe,
     IconComponent, CdkPortalOutlet, HoverSerieExpandDirective],
-  providers:[TimerManager],
+  providers: [TimerManager],
   templateUrl: './card-serie.component.html',
   styleUrls: ['./card-serie.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -23,8 +23,9 @@ export class CardSerieComponent {
 
   readonly serie = input.required<Serie>();
   readonly slideInfo = input.required<SkeletonSlidesHook>()
-  readonly videoKey = computed(() => getKeyTrailer(this.serie()))
- 
+  readonly cardIndex = input<number>()
+  readonly activeIndex = input<number>()
+
   readonly hoverEnter = output<HTMLElement>();
   readonly hoverLeave = output<HTMLElement>();
 

@@ -55,7 +55,7 @@ export default class PlayMovieComponent {
       map((params: Params) => this.API.getSimilarMovies( 
         {
           page:1,
-          movieId:params['id_movie']
+          dataId:params['id_movie']
         })), concatAll())
       .subscribe((movies: any) => {
         if (movies.results.length > 0) {
@@ -68,7 +68,7 @@ export default class PlayMovieComponent {
     this.subscription.push(this.rutaActiva.params.pipe(
       map((params: Params) => this.API.getRecomendedMovies(
         {
-          page:1,movieId:params['id_movie']
+          page:1,dataId:params['id_movie']
         })), concatAll())
       .subscribe((movies: any) => {
         if (movies.results.length > 0) {

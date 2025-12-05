@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, ElementRef, inject, input, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, ElementRef, inject, input, viewChild, ViewEncapsulation } from '@angular/core';
 import { SwiperContainer } from 'swiper/element/bundle';
 import { SwiperOptions } from 'swiper/types';
 import { NgOptimizedImage} from '@angular/common';
@@ -28,7 +28,8 @@ import { BannerDetailsComponent } from "./banner-details/banner-details.componen
   styleUrl: './banner-series.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   animations: [fade],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation:ViewEncapsulation.None
 })
 
 export class BannerSeriesComponent {
@@ -62,7 +63,7 @@ export class BannerSeriesComponent {
    * • WHY?
    * • #swiper may not exist on init → effect waits for it
    */
-    this.swiperHelper.initialize(this.swiperContainer, this.listSeries, this.SWIPER_CONFIG)
+    this.swiperHelper.initialize(this.swiperContainer, this.listSeries, this.SWIPER_CONFIG,undefined,true)
 
     this.destroyRef.onDestroy(()=>this.swiperHelper.destroy())
 

@@ -3,6 +3,5 @@ export interface ParamsApi {
     type?:string;
     genreId?: number;
     query?: string;
-    movieId?: number;
-    serieId?: number;
+    dataId?: number;
 }

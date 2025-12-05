@@ -19,6 +19,7 @@ export interface Serie {
     created_by: CreatedBy[]
     episode_run_time: number[]
     first_air_date: Date
+    genre_ids:number[]
     genres: Genre[]
     homepage: string
     id: number

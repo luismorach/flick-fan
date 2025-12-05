@@ -1,27 +1,39 @@
 import { CdkPortalOutlet } from '@angular/cdk/portal';
-import { computed, contentChild, Directive, ElementRef, HostListener, inject, 
-  input,output, Renderer2} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  computed, contentChild, Directive, ElementRef, HostListener, inject,
+  input, output, Renderer2
+} from '@angular/core';
 import { TimerManager } from '../../../shared/utils/timer-manager';
 import { runTransition } from '../../../shared/utils/transition-manager';
 import { SkeletonSlidesHook } from '../../../shared/utils/use-skeleton-slides';
 import { FloatTrailerService } from '../../services/float-trailer/float-trailer.service';
+import { ApiService } from '../../services/API/api.service';
+import { Subscription } from 'rxjs';
+import { Serie } from '../../interfaces/serie/serie.interface';
+import { getKeyTrailer } from '../../../shared/utils/helpers';
+import Swiper from 'swiper';
 
 @Directive({
   selector: '[appHoverSerieExpand]',
   standalone: true,
   providers: [TimerManager],
 })
-export class HoverSerieExpandDirective{
+export class HoverSerieExpandDirective {
 
   private readonly floatTrailer = inject(FloatTrailerService);
   private readonly renderer: Renderer2 = inject(Renderer2)
   private readonly timerManager: TimerManager = inject(TimerManager)
+  private readonly api = inject(ApiService)
+  private readonly cdr = inject(ChangeDetectorRef);
 
   private readonly cardElement: HTMLElement = inject(ElementRef<HTMLElement>).nativeElement;
 
   readonly slideInfo = input.required<SkeletonSlidesHook>()
-  readonly videoKey = input.required<string | undefined>()
-  
+  readonly serie = input.required<Serie>()
+  readonly cardIndex = input<number>()
+  readonly activeIndex = input<number>()
+
   readonly expanded = output<HTMLElement>();
   readonly collapse = output<HTMLElement>();
 
@@ -34,13 +46,32 @@ export class HoverSerieExpandDirective{
   private readonly parentElement = computed(() => this.cardElement.parentElement);
 
   @HostListener('mouseenter') onMouseEnter() {
+    if (!this.canExpand()) return
     const slideElement = this.parentElement()
+    this.getDetailsSerie()
     this.timerManager.addTimeout(() => {
       this.changeWidthSlide(this.slideInfo().expandedSlideWidth(), '0s')
       this.animateImageChange(0, '0s');
-      if(slideElement)this.expanded.emit(slideElement)
-      this.floatTrailer.showTrailerEmbed(this.videoKey(), this.portalHost());
+      if (slideElement) this.expanded.emit(slideElement)
+      this.attachTrailer()
     }, 300)
+  }
+
+  canExpand(): boolean {
+    const activeIndex = this.activeIndex()
+    const cardIndex = this.cardIndex()
+    if (activeIndex === undefined || cardIndex === undefined) return true
+    const lastSlideCanExpand = activeIndex + (this.slideInfo().slidesPerView() - 1)
+    return cardIndex >= activeIndex && cardIndex <= lastSlideCanExpand
+  }
+
+  private getDetailsSerie() {
+    console.log('consultando detalles')
+    this.api.getDetailsSerie({ dataId: this.serie().id }).subscribe((detailsSerie) => {
+      this.serie().external_ids = detailsSerie.external_ids
+      this.serie().videos = detailsSerie.videos
+      this.cdr.markForCheck()
+    })
   }
 
   private changeWidthSlide(width: number, delay: string) {
@@ -58,6 +89,11 @@ export class HoverSerieExpandDirective{
     this.renderer.setStyle(this.backdropElement(), 'opacity', `${backdropOpacity}`);
   }
 
+  attachTrailer() {
+    const key = getKeyTrailer(this.serie().videos)
+    this.floatTrailer.showTrailerEmbed(key, this.portalHost());
+  }
+
   @HostListener('mouseleave') onMouseLeave() {
     this.timerManager.clearAllTimeouts()
     this.timerManager.clearAllAnimationFrames()
@@ -69,6 +105,6 @@ export class HoverSerieExpandDirective{
     this.floatTrailer.detachTrailerEmbed()
     this.changeWidthSlide(this.slideInfo().slideBaseWidth, '300ms')
     this.animateImageChange(1, '300ms')
-    if(slideElement)this.collapse.emit(slideElement)
+    if (slideElement) this.collapse.emit(slideElement)
   }
 }
