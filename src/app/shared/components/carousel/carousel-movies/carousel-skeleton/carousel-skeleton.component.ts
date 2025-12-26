@@ -15,7 +15,7 @@ export class CarouselSkeletonComponent {
 
   readonly padding = computed(() => {
     if (this.insideCarousel()) return 0;
-    return this.slides().paddingX() + this.slides().spaceBetween();
+    return this.slides().fullSpacing()
   });
 
 }

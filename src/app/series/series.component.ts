@@ -49,7 +49,7 @@ export default class SeriesComponent {
       const loaders: DataLoaderManager<Serie>[] = [];
   
       loaders.push(this.seriesGrid().dataLoaderManager);
-      loaders.push(this.bannerSeries().swiperHelper.dataLoaderManager);
+      //loaders.push(this.bannerSeries().swiperHelper.dataLoaderManager);
       return loaders;
     }
 }

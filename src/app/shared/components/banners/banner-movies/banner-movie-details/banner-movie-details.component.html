@@ -9,8 +9,7 @@
 
         <section class="text-white flex justify-around items-center md:py-12 absolute top-0 z-10 w-full h-full">
             <header class="sm:max-w-[32%]">
-
-                <article class="metadata-movie">
+                <article class="metadata" #metadata>
                     <img class="title" [src]="movie().imdb_id | autoImage:'logo'" [alt]="movie().title">
                         
                     <div class="font-racing text-lg flex pt-4 gap-6 ">
@@ -34,9 +33,9 @@
                     </div>
                 </article>
 
-                <p class="overview-movie">{{movie().overview}}</p>
+                <p class="overview" #overview>{{movie().overview}}</p>
 
-                <section class="buttons-movie">
+                <section class="buttons" #buttons>
                     <button 
                         class="btn-primary px-6" 
                         (click)="playTrailer()" 

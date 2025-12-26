@@ -1,16 +1,3 @@
-swiper-container::part(pagination) {
-  @apply w-[110px] 
-}
-
-swiper-container::part(bullet) {
-  @apply bg-white/50 opacity-100;
-  
-}
-
-swiper-container::part(bullet-active) {
-  @apply w-[32px] rounded-lg transition-all duration-300 ease-in-out opacity-100
-  bg-gradient-to-r from-red-700 to-red-500;
-}
 
 .overlay{
    @apply w-full absolute top-0 h-screen bg-gradient-to-r from-black 
@@ -18,7 +5,7 @@ swiper-container::part(bullet-active) {
           to-100% 
 }
  
-.swiper-slide-active .metadata-movie{
+.embla__slide.is-selected .metadata-movie{
   @apply translate-x-0 !important
 } 
 
@@ -30,9 +17,9 @@ swiper-container::part(bullet-active) {
   @apply font-racing uppercase text-3xl text-left sm:text-4xl lg:text-5xl relative 
           w-full max-h-48 object-contain object-center line-clamp-2;
 }
-.metadata-movie{
+/* .metadata-movie{
    @apply  -translate-x-[150%] transition-transform duration-300 delay-300
-} 
+}  */
 .overview-movie{
   @apply pt-2 text-justify max-h-[20vh] line-clamp-5 translate-y-[100%] opacity-0
                             transition-all duration-500 delay-500;

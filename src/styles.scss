@@ -169,3 +169,36 @@ app-trailer youtube-player>div, app-trailer youtube-player>div>iframe {
 }
 
 
+/* -------------------- CAROUSEL -------------------- */
+
+.embla {
+    @apply overflow-hidden relative;
+}
+
+.embla__viewport {
+  @apply overflow-hidden;   
+}
+
+.embla__container{
+    @apply flex
+}
+
+.embla__slide {
+    @apply flex-none relative
+}
+
+.carousel-container{
+    @apply flex overflow-auto w-full;
+    scrollbar-width: none; 
+
+  /* IE / Edge legacy */
+   -ms-overflow-style: none; 
+}
+
+.carousel-container ::-webkit-scrollbar{
+ /*  display: none; */
+}
+
+.carousel-item {
+    @apply min-w-52 flex-shrink-0;
+}

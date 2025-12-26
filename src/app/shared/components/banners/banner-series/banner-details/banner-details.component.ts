@@ -36,7 +36,7 @@ export class BannerDetailsComponent {
 
   private animateIn() {
     let animation = this.builder.build([
-      style({ opacity: 0, transform: 'translateX(-150px)' }),
+      style({ opacity: 0, transform: 'translateX(-150%)' }),
       animate('300ms 300ms ease', style({ opacity: 1, transform: 'translateX(0)' }))
     ]);
     let player = animation.create(this.metadata().nativeElement);

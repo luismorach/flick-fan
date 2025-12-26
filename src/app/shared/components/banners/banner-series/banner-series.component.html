@@ -1,16 +1,16 @@
-@if(swiperHelper.dataLoaderManager.isInitialLoading()){
+<!-- @if(swiperHelper.dataLoaderManager.isInitialLoading()){
     <app-skeleton @fade></app-skeleton>
 }
-@else if(swiperHelper.dataLoaderManager.hasData()){
+@else if(swiperHelper.dataLoaderManager.hasData()){ -->
     <main class="w-full mb-24 grid grid-cols-3 gap-8 relative h-screen">
 
-        <section class="h-screen relative ml-8">
-            <app-carousel-navigation 
+        <!-- <section class="h-screen relative ml-8"> -->
+            <!-- <app-carousel-navigation 
                 [swiperHelper]="swiperHelper" 
                 direcction="vertical">
-            </app-carousel-navigation>
+            </app-carousel-navigation> -->
 
-            <swiper-container init="false" class="h-full w-full" #swiper>
+      <!--       <swiper-container init="false" class="h-full w-full" #swiper>
                 @for(serie of swiperHelper.dataLoaderManager.data();track serie.id;let i=$index){
                 <swiper-slide appSlideStyle [index]="i" [active]="swiperHelper.activeIndex()" [attr.data-id]="serie.id" >
                     <figure class="img-container">
@@ -43,6 +43,6 @@
             </figure>
 
             <app-banner-details class="col-span-2" [serie]="swiperHelper.currentElement()"></app-banner-details>
-        }
+        } -->
     </main>
-}
+<!-- } -->

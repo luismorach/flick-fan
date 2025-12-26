@@ -9,7 +9,6 @@ import { ApiService } from '../../core/services/API/api.service';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
 import { Credits } from '../../core/interfaces/people/credits.interface';
 import { Movie } from '../../core/interfaces/movie/movie.interface';
-import { SwiperHelper } from '../../shared/utils/swiper/swiper-helper';
 import { CarouselSeriesComponent } from '../../shared/components/carousel/carousel-series/carousel-series.component';
 import { SkeletonSlidesHook, useSkeletonSlides } from '../../shared/utils/use-skeleton-slides';
 import { AutoImagePipe } from '../../shared/pipes/autoimage/auto-image.pipe';
@@ -37,8 +36,8 @@ export default class DetailsMovieComponent {
   isSwiperHover = [false, false]
   isEnd = [false, false]
   isBeginning = [true, true]
-  private swiperHelperCast: SwiperHelper<Movie>
-  private swiperHelperCrew: SwiperHelper<Movie>
+  /* private swiperHelperCast: SwiperHelper<Movie>
+  private swiperHelperCrew: SwiperHelper<Movie> */
   private static readonly SLIDE_CONFIG = {
     width: 144,
     isCarousel: true
@@ -50,8 +49,8 @@ export default class DetailsMovieComponent {
 
   constructor(private rutaActiva: ActivatedRoute,
     private api: ApiService, private comunicatorService: ComunicatorService, private renderer: Renderer2) {
-    this.swiperHelperCast = new SwiperHelper()
-    this.swiperHelperCrew = new SwiperHelper()
+    /* this.swiperHelperCast = new SwiperHelper()
+    this.swiperHelperCrew = new SwiperHelper() */
     this.comunicatorService.setBackgroundNav(true)
     this.getDetailsMovie()
     this.getCreditsMovie()

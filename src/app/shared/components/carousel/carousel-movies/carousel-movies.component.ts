@@ -6,7 +6,6 @@ import { SwiperContainer } from 'swiper/element/bundle'
 import { CardMovieComponent } from './card-movie/card-movie.component';
 import { Movie, MovieList } from '../../../../core/interfaces/movie/movie.interface';
 import { fade } from '../../../animations/animations';
-import { SwiperHelper } from '../../../utils/swiper/swiper-helper';
 import { useSkeletonSlides } from '../../../utils/use-skeleton-slides';
 import { CarouselSkeletonComponent } from './carousel-skeleton/carousel-skeleton.component';
 import { CarouselNavigationComponent } from '../carousel-navigation/carousel-navigation.component';
@@ -18,7 +17,7 @@ import { SwiperOptions } from 'swiper/types';
 @Component({
   selector: 'app-carousel-movies',
   imports: [CardMovieComponent, CarouselSkeletonComponent, CarouselNavigationComponent],
-  providers: [DataLoaderManager, SwiperHelper],
+  providers: [DataLoaderManager],
   templateUrl: './carousel-movies.component.html',
   styleUrl: './carousel-movies.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -37,7 +36,7 @@ export class CarouselMoviesComponent {
 
   // Dependencies
   private readonly destroyRef = inject(DestroyRef);
-  readonly swiperHelper = inject(SwiperHelper<Movie>);
+  //readonly swiperHelper = inject(SwiperHelper<Movie>);
   readonly gridHelper = inject(GridHelperService);
   private readonly swiperRegistry = inject(SwiperRegistryService);
 
@@ -46,27 +45,11 @@ export class CarouselMoviesComponent {
 
   // State
   readonly slides = useSkeletonSlides(CarouselMoviesComponent.SLIDE_WIDTH, true);
-  readonly cardClasses = this.gridHelper.cardClassesMovies(this.swiperHelper.dataLoaderManager.data, this.slides)
+ // readonly cardClasses = this.gridHelper.cardClassesMovies(this.swiperHelper.dataLoaderManager.data, this.slides)
 
-  private readonly SWIPER_CONFIG: SwiperOptions = {
-    slidesPerView: 'auto',
-    allowTouchMove: false,
-    slidesPerGroup: this.slides.slidesPerView(),
-    spaceBetween: this.slides.spaceBetween(),
-    slidesOffsetAfter: this.slides.spaceBetween() + this.slides.paddingX(),
-    slidesOffsetBefore: this.slides.spaceBetween() + this.slides.paddingX(),
-    freeMode: {
-      enabled: true,
-      momentum: false
-    },
-  }
+  
 
   constructor() {
-    this.swiperRegistry.registerOnce()
-    this.swiperHelper.initialize(this.swiperContainer, this.movieList,this.SWIPER_CONFIG, this.slides)
     
-    this.destroyRef.onDestroy(() => {
-      this.swiperHelper.destroy()
-    });
   }
 }

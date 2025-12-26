@@ -1,8 +1,8 @@
- @if( swiperHelper.dataLoaderManager.hasData()){
+ <!-- @if( swiperHelper.dataLoaderManager.hasData()){ -->
     <!-- Contenedor principal del carousel -->
     <main class=" w-full mb-12" >
         <!-- Encabezado del carousel -->
-         <header class="mb-2" [style.padding.px]="slides.fullPadding()">
+         <header class="mb-2" [style.padding.px]="slides.fullSpacing()">
              <h2 class="text-title-carousel">{{title()}}</h2>
          </header>
 
@@ -16,28 +16,27 @@
                  [style.z-index]="zIndex()" #swiper>
 
                   <!-- Renderizado de cada película -->
-                 @for(movie of swiperHelper.dataLoaderManager.data();track movie.id;let i = $index;){
+                <!--  @for(movie of swiperHelper.dataLoaderManager.data();track movie.id;let i = $index;){
                     <swiper-slide [class]="cardClasses()[i]"  @fade>
                         <app-card-movie [movie]="movie">
                         </app-card-movie>
                     </swiper-slide>
-                 }
+                 } -->
 
                  <!-- Esqueleto de carga mientras se cargan más datos -->
-                 <swiper-slide [class.hidden]="!swiperHelper.dataLoaderManager.isFetchingMoreData()" @fade>
+                 <!-- <swiper-slide [class.hidden]="!swiperHelper.dataLoaderManager.isFetchingMoreData()" @fade>
                      <app-carousel-skeleton 
                          [slides]="slides" 
                          [hasHeader]="false" 
                          [insideCarousel]="true">
                      </app-carousel-skeleton>
-                 </swiper-slide>
+                 </swiper-slide> -->
              </swiper-container>
             <!-- Navegación del carousel -->
-             <app-carousel-navigation [swiperHelper]="swiperHelper"></app-carousel-navigation>
+             <!-- <app-carousel-navigation [emblaService]="swiperHelper"></app-carousel-navigation> -->
 
          </section>
     </main>
-}@else{
-    <!-- Esqueleto de carga mientras se cargan los datos iniciales -->
+<!-- }@else{
     <app-carousel-skeleton [slides]="slides" @fade></app-carousel-skeleton>
-}
+} -->

@@ -1,10 +1,10 @@
-<button type="button" aria-label="Diapositiva anterior" (click)="swiperHelper().goToPrevSlide()"
+<button type="button" aria-label="Diapositiva anterior" (click)="carouselService().prev()"
     class="btn-navigation "
     [ngClass]="{
         'btn-navigation-horizontal-prev':direcction()==='horizontal',
         'btn-navigation-vertical-prev':direcction()==='vertical'
     }"
-    [disabled]="swiperHelper().atCarouselStart() || !swiperHelper().isHoveredOverCarousel()">
+    [disabled]="carouselService().isAtStart() || !carouselService().isHoveredOverCarousel()">
     <i 
         class="fa-solid" 
         [ngClass]="{
@@ -15,13 +15,13 @@
     </i>
 </button>
 
-<button type="button" aria-label="Diapositiva siguiente" (click)="swiperHelper().goToNextSlide()"
+<button type="button" aria-label="Diapositiva siguiente" (click)="carouselService().next()"
     class="btn-navigation"
     [ngClass]="{
         'btn-navigation-horizontal-next':direcction()==='horizontal',
         'btn-navigation-vertical-next':direcction()==='vertical'
     }"
-    [disabled]="swiperHelper().atCarouselEnd() || !swiperHelper().isHoveredOverCarousel()">
+    [disabled]="carouselService().isAtEnd() || !carouselService().isHoveredOverCarousel()">
     <i 
         class="fa-solid" 
         [ngClass]="{

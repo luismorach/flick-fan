@@ -5,14 +5,12 @@ import {
   input, output, Renderer2
 } from '@angular/core';
 import { TimerManager } from '../../../shared/utils/timer-manager';
-import { runTransition } from '../../../shared/utils/transition-manager';
 import { SkeletonSlidesHook } from '../../../shared/utils/use-skeleton-slides';
 import { FloatTrailerService } from '../../services/float-trailer/float-trailer.service';
 import { ApiService } from '../../services/API/api.service';
-import { Subscription } from 'rxjs';
 import { Serie } from '../../interfaces/serie/serie.interface';
 import { getKeyTrailer } from '../../../shared/utils/helpers';
-import Swiper from 'swiper';
+import { WindowService } from '../../services/window/window.service';
 
 @Directive({
   selector: '[appHoverSerieExpand]',
@@ -26,6 +24,7 @@ export class HoverSerieExpandDirective {
   private readonly timerManager: TimerManager = inject(TimerManager)
   private readonly api = inject(ApiService)
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly windowService = inject(WindowService)
 
   private readonly cardElement: HTMLElement = inject(ElementRef<HTMLElement>).nativeElement;
 
@@ -58,6 +57,7 @@ export class HoverSerieExpandDirective {
   }
 
   canExpand(): boolean {
+    if(!this.windowService.isDesktop()) return false
     const activeIndex = this.activeIndex()
     const cardIndex = this.cardIndex()
     if (activeIndex === undefined || cardIndex === undefined) return true
@@ -66,7 +66,6 @@ export class HoverSerieExpandDirective {
   }
 
   private getDetailsSerie() {
-    console.log('consultando detalles')
     this.api.getDetailsSerie({ dataId: this.serie().id }).subscribe((detailsSerie) => {
       this.serie().external_ids = detailsSerie.external_ids
       this.serie().videos = detailsSerie.videos
@@ -75,10 +74,9 @@ export class HoverSerieExpandDirective {
   }
 
   private changeWidthSlide(width: number, delay: string) {
-    runTransition(this.cardElement, (() => {
-      this.renderer.setStyle(this.cardElement, 'transition', `width .3s cubic-bezier(.2,.45,0,1) ${delay}`)
-      this.renderer.setStyle(this.cardElement, 'width', `${width}px`)
-    }))
+    this.renderer.setStyle(this.cardElement, 'transition', `width .3s cubic-bezier(.2,.45,0,1) ${delay}`)
+    this.renderer.setStyle(this.cardElement, 'transform-origin', 'left')
+    this.renderer.setStyle(this.cardElement, 'width', `${width}px`)
   }
 
   private animateImageChange(posterOpacity: number, delay: string) {

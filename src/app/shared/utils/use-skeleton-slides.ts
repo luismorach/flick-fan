@@ -15,6 +15,7 @@ export function useSkeletonSlides(slideBaseWidth: number, isCarousel: boolean = 
   const MIN_SPACE_BETWEEN = 10;
   const CAROUSEL_PEEK_SPACING_RATIO = 0.07;
   const MIN_SLIDES_PER_VIEW = 1;
+  const PEEK_SKELETON_OFFSET = isCarousel ? 1 : 0;
   const windowResize = inject(WindowService);
   const minPeekSpacingRatio = isCarousel ? CAROUSEL_PEEK_SPACING_RATIO : 0;
   const expandedWidth = Math.floor(slideBaseWidth * EXPANDED_SLIDE_MULTIPLIER)
@@ -43,13 +44,13 @@ export function useSkeletonSlides(slideBaseWidth: number, isCarousel: boolean = 
     const totalUsed = (slides * slideBaseWidth) + (spacing * totalGaps) + totalPeekWidth;
     const unallocated = Math.max(0, viewportWidth - totalUsed);
 
-    // Padding final = peek + mitad de píxeles no asignados
-    const padding = peekWidth + Math.floor(unallocated / 2);
+    // Peek final = peek + mitad de píxeles no asignados
+    const peek = peekWidth + Math.floor(unallocated / 2);
 
     return {
       slidesPerView: slides,
       spaceBetween: spacing,
-      paddingX: padding,
+      peek,
       unallocatedPixels: unallocated,
       expandedSlideWidth: expandedWidth
     };
@@ -57,34 +58,39 @@ export function useSkeletonSlides(slideBaseWidth: number, isCarousel: boolean = 
 
   const slidesPerView = computed(() => layout().slidesPerView);
   const spaceBetween = computed(() => layout().spaceBetween);
-  const paddingX = computed(() => layout().paddingX);
+  const slidefullWidth = computed(()=>layout().spaceBetween + slideBaseWidth)
+  const peek = computed(() => layout().peek);
   const expandedSlideWidth = computed(() => layout().expandedSlideWidth)
-  const fullPadding = computed(() => layout().spaceBetween + layout().paddingX)
+  const fullSpacing = computed(() => layout().spaceBetween + layout().peek)
 
   const skeletonSlideIndexes = computed(() => {
-    console.log(isCarousel)
-    const skeletons = isCarousel ? (slidesPerView() ) : slidesPerView()
+    const skeletons = isCarousel ? (slidesPerView() + PEEK_SKELETON_OFFSET) : slidesPerView()
     return Array.from({ length: skeletons }, (_, i) => i)
   });
 
-  const slidesCount = computed(() => skeletonSlideIndexes().length);
-  const hasSlides = computed(() => slidesCount() > 0);
+  const navigableSkeletonsCount = slidesPerView
+  const hasSlides = computed(() => navigableSkeletonsCount() > 0);
 
   // API simple - retornando los computed directamente
   return {
     slidesPerView,
     skeletonSlideIndexes,
-    slidesCount,
+    navigableSkeletonsCount,
     hasSlides,
     slideBaseWidth,
+    slidefullWidth,
     spaceBetween,
-    paddingX,
-    fullPadding,
+    peek,
+    fullSpacing,
     expandedSlideWidth,
+    PEEK_SKELETON_OFFSET,
 
     // Hook para reaccionar a cambios
-    onSlidesChange: (callback: (indexes: readonly number[]) => void) => {
-      const effectRef = effect(() => callback(skeletonSlideIndexes()));
+    onSlidesChange: (callback: () => void) => {
+      const effectRef = effect(() => {
+        layout()
+        callback()
+      });
       destroyRef.onDestroy(() => effectRef.destroy());
     },
   };

@@ -1,22 +1,21 @@
 import {
-  ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, ElementRef, inject, input, viewChild,
+  ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA,ElementRef, inject, input, viewChild,
 } from '@angular/core';
-import { SwiperContainer } from 'swiper/element/bundle';
 import { fade } from '../../../animations/animations';
 import { CardSerieComponent } from './card-serie/card-serie.component';
 import { Serie, SerieList } from '../../../../core/interfaces/serie/serie.interface';
 import { SkeletonSlidesHook, useSkeletonSlides } from '../../../utils/use-skeleton-slides';
-import { SwiperHelper } from '../../../utils/swiper/swiper-helper';
 import { CarouselSeriesSkeletonComponent } from './carousel-series-skeleton/carousel-series-skeleton.component';
 import { CarouselNavigationComponent } from '../carousel-navigation/carousel-navigation.component';
 import { DataLoaderManager } from '../../../utils/data-loader-manager';
-import { SwiperOptions } from 'swiper/types';
-import { SwiperRegistryService } from '../../../../core/services/swiper-registry/swiper-registry.service';
+import { CarouselService } from '../../../../core/services/carousel/carousel.service';
+import { SlideExpansionService } from '../../../../core/services/slide-expansion/slide-expansion.service';
+import { IntersectionObserverManager } from '../../../utils/intersectionObserver';
 
 @Component({
   selector: 'app-carousel-series',
   imports: [CardSerieComponent, CarouselSeriesSkeletonComponent, CarouselNavigationComponent],
-  providers: [DataLoaderManager, SwiperHelper],
+  providers: [DataLoaderManager, CarouselService, SlideExpansionService,IntersectionObserverManager],
   templateUrl: './carousel-series.component.html',
   styleUrl: './carousel-series.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -27,57 +26,36 @@ import { SwiperRegistryService } from '../../../../core/services/swiper-registry
 export class CarouselSeriesComponent {
 
   // Inputs
-  seriesList = input.required<SerieList | undefined>();
-  title = input.required<string>();
+  readonly seriesList = input.required<SerieList | undefined>();
+  readonly title = input.required<string>();
+  readonly slideExpansionService = inject(SlideExpansionService)
 
   // Dependencies
-  private readonly destroyRef = inject(DestroyRef);
-  readonly swiperHelper = inject(SwiperHelper<Serie>);
-  private readonly swiperRegistry = inject(SwiperRegistryService);
+  readonly carouselService = inject(CarouselService<Serie>)
 
-  // ViewQuery
-  readonly swiperContainer = viewChild<ElementRef<SwiperContainer>>('swiper');
+  // Configuration
+  private static readonly SLIDE_WIDTH = 288;
 
-  //Configuration
-  private static readonly SLIDE_CONFIG = {
-    width: 288,
-    isCarousel: true
-  } as const;
-
-  //state
-  readonly slides: SkeletonSlidesHook = useSkeletonSlides(
-    CarouselSeriesComponent.SLIDE_CONFIG.width,
-    CarouselSeriesComponent.SLIDE_CONFIG.isCarousel
+  readonly slidesInfo: SkeletonSlidesHook = useSkeletonSlides(
+    CarouselSeriesComponent.SLIDE_WIDTH,
+    true
   );
 
-  private readonly SWIPER_CONFIG: SwiperOptions = {
-    slidesPerView: 'auto',
-    allowTouchMove: false,
-    slidesPerGroup: this.slides.slidesPerView(),
-    spaceBetween: this.slides.spaceBetween(),
-    slidesOffsetAfter: this.slides.spaceBetween()+ this.slides.paddingX(),
-    slidesOffsetBefore: this.slides.paddingX() + this.slides.spaceBetween(),
-    freeMode: {
-      enabled: true,
-      momentum: false
-      
-    },
-  }
+  private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carousel')
 
   constructor() {
-    this.swiperRegistry.registerOnce()
-    this.swiperHelper.initialize(this.swiperContainer, this.seriesList, this.SWIPER_CONFIG, this.slides)
-    this.destroyRef.onDestroy(() => {
-      this.swiperHelper.destroy()
-    });
+    this.carouselService.initialize(this.carouselContainer, this.seriesList, {slidesInfo:this.slidesInfo})
   }
 
-  onSlideExpandHover(index: number): void {
-    this.swiperHelper.adjustTranslateForExpandedSlide(index)
+  onSlideExpandHover(index: number) {
+    const slide = this.carouselContainer()?.nativeElement.children[index] as HTMLElement 
+    if(!slide)return
+
+    this.slideExpansionService.adjustTranslateForExpandedSlide(slide, this.slidesInfo, this.carouselService.currentPosition())
   }
 
-  async onSlideCollapseHover(): Promise<void> {
-    this.swiperHelper.restoreBaseTranslate()
-    await this.swiperHelper.updateSwiperAfterHoverTransition()
+  onSlideCollapseHover() {
+    this.slideExpansionService.restoreBaseTranslate()
   }
+
 }

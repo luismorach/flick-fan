@@ -1,24 +1,28 @@
-@if(swiperHelper.dataLoaderManager.isInitialLoading()){
-<app-banner-skeleton @fade></app-banner-skeleton>
-}
-@else if(swiperHelper.dataLoaderManager.hasData()){
+@if(carouselService.dataLoaderManager.hasData()){
 <main class="w-full h-screen relative mb-32" @fade>
+    <div class="relative">
+        <app-carousel-navigation [carouselService]="carouselService"></app-carousel-navigation>
+        <div cdkScrollable #carousel class="carousel-container gradient">
+            @for(movie of carouselService.dataLoaderManager.data();track $index;let i=$index){
 
-    <app-carousel-navigation [swiperHelper]="swiperHelper"></app-carousel-navigation>
+            <div class="carousel-item w-screen h-screen relative" [attr.data-id]="movie.id">
+                <app-banner-movie-details 
+                    [movie]="movie" 
+                    [cardIndex]="i"
+                    [activeIndex]="carouselService.activeIndex()">
+                </app-banner-movie-details>
+            </div>
+            }
 
-    <swiper-container init="false" class="h-screen " #swiper>
-        @for(movie of swiperHelper.dataLoaderManager.data();track movie.id){
-        <swiper-slide class="gradient w-full h-screen relative" [attr.data-id]="movie.id" @fade>
-            <app-banner-movie-details [movie]="movie"></app-banner-movie-details>
-        </swiper-slide>
-        }
-
-        @if(swiperHelper.dataLoaderManager.isFetchingMoreData()){
-        <swiper-slide class="w-full h-full">
-            <app-banner-skeleton @fade></app-banner-skeleton>
-        </swiper-slide>
-        }
-    </swiper-container>
-
+            @if(carouselService.dataLoaderManager.canLoadMore()){
+                <div class="carousel-item w-screen h-screen " @fade>
+                  <app-banner-skeleton></app-banner-skeleton>
+                </div>
+            }
+        </div>
+    </div>
 </main>
+}
+@else if(carouselService.dataLoaderManager.isInitialLoading()){
+    <app-banner-skeleton @fade></app-banner-skeleton>
 }

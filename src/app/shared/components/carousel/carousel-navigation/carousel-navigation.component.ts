@@ -1,8 +1,8 @@
 import { Component, input } from '@angular/core';
-import { SwiperHelper } from '../../../utils/swiper/swiper-helper';
-import { Movie, MovieList } from '../../../../core/interfaces/movie/movie.interface';
-import { Serie, SerieList } from '../../../../core/interfaces/serie/serie.interface';
+import { Movie} from '../../../../core/interfaces/movie/movie.interface';
+import { Serie} from '../../../../core/interfaces/serie/serie.interface';
 import { NgClass } from '@angular/common';
+import { CarouselService } from '../../../../core/services/carousel/carousel.service';
 
 @Component({
   selector: 'app-carousel-navigation',
@@ -11,6 +11,6 @@ import { NgClass } from '@angular/common';
   styleUrl: './carousel-navigation.component.css'
 })
 export class CarouselNavigationComponent {
-  readonly swiperHelper = input.required<SwiperHelper<Movie> | SwiperHelper<Serie>>();
+  readonly carouselService = input.required<CarouselService<Movie> | CarouselService<Serie>>();
   readonly direcction = input<String>('horizontal')
 }

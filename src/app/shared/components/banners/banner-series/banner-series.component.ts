@@ -5,7 +5,6 @@ import { NgOptimizedImage} from '@angular/common';
 import { SkeletonComponent } from './skeleton/skeleton.component';
 import { SerieList, Serie } from '../../../../core/interfaces/serie/serie.interface';
 import { SwiperRegistryService } from '../../../../core/services/swiper-registry/swiper-registry.service';
-import { SwiperHelper } from '../../../utils/swiper/swiper-helper';
 import { DataLoaderManager } from '../../../utils/data-loader-manager';
 import { AutoImagePipe } from '../../../pipes/autoimage/auto-image.pipe';
 import { CarouselNavigationComponent } from "../../carousel/carousel-navigation/carousel-navigation.component";
@@ -23,7 +22,7 @@ import { BannerDetailsComponent } from "./banner-details/banner-details.componen
     SlideStyleDirective,
     BannerDetailsComponent
 ],
-  providers: [SwiperHelper, DataLoaderManager],
+  providers: [DataLoaderManager],
   templateUrl: './banner-series.component.html',
   styleUrl: './banner-series.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -39,7 +38,7 @@ export class BannerSeriesComponent {
 
   // Dependencies
   private readonly swiperRegistry = inject(SwiperRegistryService);
-  readonly swiperHelper = inject(SwiperHelper<Serie>);
+  //readonly swiperHelper = inject(SwiperHelper<Serie>);
   private readonly destroyRef = inject(DestroyRef)
 
   // View Queries
@@ -63,9 +62,9 @@ export class BannerSeriesComponent {
    * • WHY?
    * • #swiper may not exist on init → effect waits for it
    */
-    this.swiperHelper.initialize(this.swiperContainer, this.listSeries, this.SWIPER_CONFIG,undefined,true)
+   /*  this.swiperHelper.initialize(this.swiperContainer, this.listSeries, this.SWIPER_CONFIG,undefined,true)
 
-    this.destroyRef.onDestroy(()=>this.swiperHelper.destroy())
+    this.destroyRef.onDestroy(()=>this.swiperHelper.destroy()) */
 
   }
 }

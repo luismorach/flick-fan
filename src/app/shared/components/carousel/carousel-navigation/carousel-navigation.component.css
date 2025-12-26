@@ -3,7 +3,7 @@
 }
 
 .btn-navigation:disabled{
-  @apply pointer-events-none opacity-0 cursor-default;
+  @apply  cursor-default invisible;
 }
 
 .btn-navigation-horizontal-next {

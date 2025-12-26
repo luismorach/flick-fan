@@ -9,10 +9,14 @@ import { SkeletonSlidesHook } from '../../../../utils/use-skeleton-slides';
 export class CarouselSeriesSkeletonComponent {
   hasHeader = input<boolean>(true)
   insideCarousel = input<boolean>(false)
-  slides = input.required<SkeletonSlidesHook>()
+  slidesInfo = input.required<SkeletonSlidesHook>()
 
-  readonly padding = computed(() => {
+  readonly skeletons= computed(()=>{
+    return this.insideCarousel() ? [1]: this.slidesInfo().skeletonSlideIndexes()
+  })
+
+  readonly spaceBetween = computed(() => {
     if (this.insideCarousel()) return 0;
-    return this.slides().paddingX() + this.slides().spaceBetween();
+    return this.slidesInfo().spaceBetween();
   });
 }

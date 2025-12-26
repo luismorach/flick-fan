@@ -1,6 +1,6 @@
 <main role="status" aria-live="assertive" class="w-full mb-8 relative overflow-x-hidden" #container>
     @if(hasHeader()){
-        <header class="mb-2" [style.padding.px]="padding()">
+        <header class="mb-2" [style.padding.px]="spaceBetween()">
             <div class="h-6 w-64 bg-zinc-700 rounded mb-1 animate-pulse"></div>
             <div class="h-1 bg-zinc-700 rounded-full w-32 animate-pulse"></div>
         </header>
@@ -11,12 +11,12 @@
         aria-label="Cargando series"
         aria-live="polite"
         class=" h-[29rem] flex grow-0 overflow-hidden"
-        [style.padding-left.px]="padding()" 
-        [style.padding-right.px]="padding()" 
-        [style.gap.px]="slides().spaceBetween()">
+        [style.padding-left.px]="spaceBetween()" 
+        [style.padding-right.px]="spaceBetween()" 
+        [style.gap.px]="slidesInfo().spaceBetween()">
        
-        @for(_ of slides().skeletonSlideIndexes(); track $index) { 
-            <section class="w-72 flex-none h-[75vh] bg-zinc-700 animate-pulse rounded-xl relative ">
+        @for(_ of skeletons(); track $index) { 
+            <section class="w-72 flex-none bg-zinc-700 animate-pulse rounded-xl relative ">
                 <div
                     class="absolute top-4 right-4 flex items-center gap-2 bg-black/60 px-3 py-1 rounded-full border border-red-900/30">
                     <div class="w-5 h-5 bg-zinc-600 rounded-full"></div>

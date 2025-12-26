@@ -64,7 +64,7 @@ export default class MoviesComponent {
     const loaders: DataLoaderManager<Movie>[] = [];
 
     loaders.push(this.moviesGrid().dataLoaderManager);
-    loaders.push(this.bannerMovie().swiperHelper.dataLoaderManager);
+    loaders.push(this.bannerMovie().carouselService.dataLoaderManager);
     return loaders;
   }
 }

@@ -1,4 +1,4 @@
-import { ElementRef, Renderer2 } from "@angular/core";
+import { ElementRef, ListenerOptions, Renderer2 } from "@angular/core";
 
 type EventCallback<T = Event> = (event: T) => void
 
@@ -11,7 +11,8 @@ export class ListenerManager {
   listen<T extends Event = Event>(
     element: HTMLElement | Element | ElementRef<HTMLElement>,
     eventName: string,
-    callback: EventCallback<T>
+    callback: EventCallback<T>,
+    options?: undefined | ListenerOptions
   ): () => void {
 
     const targetElement = element instanceof ElementRef ? element.nativeElement : element;
@@ -23,7 +24,8 @@ export class ListenerManager {
     if (!eventName) {
       throw new Error('[ListenerManager] Event name is required');
     }
-    const cleanup = this.renderer.listen(targetElement, eventName, callback);
+    
+    const cleanup = this.renderer.listen(targetElement, eventName, callback,options);
     this.cleanups.push(cleanup);
     return cleanup
   }

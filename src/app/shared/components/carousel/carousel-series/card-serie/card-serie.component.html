@@ -1,6 +1,6 @@
 <main appHoverSerieExpand [slideInfo]="slideInfo()" [serie]="serie()" [activeIndex]="activeIndex()"
     [cardIndex]="cardIndex()" (expanded)="hoverEnter.emit($event)" (collapse)="hoverLeave.emit($event)"
-    class="relative w-72 h-[29rem] rounded-xl overflow-hidden bg-black">
+    class="relative w-72 h-[29rem] rounded-xl overflow-hidden bg-black ">
 
     <figure class="h-full absolute w-72" #posterImage>
         <img [ngSrc]="serie().poster_path | autoImage : 'poster'" fill 

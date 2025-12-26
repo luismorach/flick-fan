@@ -1,39 +1,45 @@
-@if(swiperHelper.dataLoaderManager.hasData()){
+@if (carouselService.dataLoaderManager.hasData()) {
     <main class=" w-full mb-8">
-        <header class="mb-2" [style.padding.px]="slides.spaceBetween()+ slides.paddingX()">
+        <header class="mb-2" [style.padding.px]="slidesInfo.spaceBetween()">
             <h2 class="text-title-carousel"> {{title()}}</h2>
         </header>
 
-        <section 
-            class="relative">
+        <section class="relative">
+            <app-carousel-navigation [carouselService]="carouselService"></app-carousel-navigation>
+            
+            <div cdkScrollable #carousel class="carousel-container"
+                [style.gap.px]="slidesInfo.spaceBetween()"
+                [style.padding-left.px]="slidesInfo.spaceBetween()" 
+                [style.padding-right.px]="slidesInfo.spaceBetween() + slidesInfo.expandedSlideWidth()" >
+                @for(serie of carouselService.dataLoaderManager.data(); track serie.id; let i = $index){
 
-            <app-carousel-navigation [swiperHelper]="swiperHelper"></app-carousel-navigation>
-
-            <swiper-container init="false" class="w-full h-[29rem]" #swiper>
-                @for(serie of swiperHelper.dataLoaderManager.data();track serie.id;let i = $index){
-                <swiper-slide class="relative w-auto h-[29rem]" @fade>
-                    <app-card-serie 
-                        [serie]="serie" 
-                        [slideInfo]="slides"
+                <div class="carousel-item">
+                    <app-card-serie @fade
+                        [slideInfo]="slidesInfo" 
+                        [serie]="serie"
+                        [activeIndex]="carouselService.activeIndex()"
                         [cardIndex]="i"
-                        [activeIndex]="swiperHelper.activeIndex()"
                         (hoverEnter)="onSlideExpandHover(i)"
                         (hoverLeave)="onSlideCollapseHover()">
                     </app-card-serie>
-                </swiper-slide>
+                </div>
                 }
-
-               <swiper-slide class="w-full" [class.hidden]="!swiperHelper.dataLoaderManager.isFetchingMoreData()">
-                   <app-carousel-series-skeleton 
-                       [slides]="slides" 
-                       [hasHeader]="false" 
-                       [insideCarousel]="true" @fade>
-                   </app-carousel-series-skeleton>
-               </swiper-slide>
-            </swiper-container>
-
+                
+                @if(carouselService.dataLoaderManager.canLoadMore()){
+                    @for(_ of slidesInfo.skeletonSlideIndexes(); track $index) {
+                        <div class="carousel-item"  @fade>
+                            <app-carousel-series-skeleton 
+                                [slidesInfo]="slidesInfo" 
+                                [hasHeader]="false" 
+                                [insideCarousel]="true">
+                            </app-carousel-series-skeleton>
+                        </div>
+                    }
+                }
+            </div>
         </section>
     </main>
-}@else{
-    <app-carousel-series-skeleton [slides]="slides" @fade></app-carousel-series-skeleton>
+}
+@else if(carouselService.dataLoaderManager.isInitialLoading()){
+ <app-carousel-series-skeleton [slidesInfo]="slidesInfo" @fade></app-carousel-series-skeleton>
 }

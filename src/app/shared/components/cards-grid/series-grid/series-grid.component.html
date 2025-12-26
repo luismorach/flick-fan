@@ -23,13 +23,13 @@
       }
 
       @if(dataLoaderManager.isFetchingMoreData()){
-        <app-carousel-series-skeleton [slides]="slides" [hasHeader]="false" @fade></app-carousel-series-skeleton>
+        <app-carousel-series-skeleton [slidesInfo]="slides" [hasHeader]="false" @fade></app-carousel-series-skeleton>
       }
 </ng-template>
 
 <!-- Initial loading state -->
 @if(dataLoaderManager.isInitialLoading()){
-   <app-carousel-series-skeleton [slides]="slides" [hasHeader]="false" @fade></app-carousel-series-skeleton>
+   <app-carousel-series-skeleton [slidesInfo]="slides" [hasHeader]="false" @fade></app-carousel-series-skeleton>
 }
 
 <!-- Mode: Infinite Scroll -->
@@ -59,7 +59,7 @@
     aria-labelledby="series-header"
     @fade>
 
-    <header id="series-header" class="mb-2" [style.padding.px]="slides.fullPadding()">
+    <header id="series-header" class="mb-2" [style.padding.px]="slides.fullSpacing()">
         <h2 class="text-title-carousel">  Series  </h2>
     </header>
         
@@ -70,7 +70,7 @@
 
     @if(dataLoaderManager.canLoadMore()){
         <button aria-label="Cargar más series" class="btn-primary" 
-          [style.margin-left.px]="slides.fullPadding()" [style.margin-bottom.px]="slides.fullPadding()"
+          [style.margin-left.px]="slides.fullSpacing()" [style.margin-bottom.px]="slides.fullSpacing()"
             (click)="dataLoaderManager.loadMoreData({query:searchQuery()})">
             Cargar mas series
         </button>
