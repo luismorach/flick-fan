@@ -7,7 +7,7 @@
             </div>
       }
 
-      <div class="viewport my-scroll " #viewport>
+      <div class="viewport" #viewport>
           @for(movie of data();track movie.id;let index = $index){
             <div class="card group" (click)="selectMovie(movie,index)"
             [ngClass]="{'card-active':selectedIndex()===index}">

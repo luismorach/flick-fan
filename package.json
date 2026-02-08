@@ -22,11 +22,8 @@
     "@angular/router": "^19.1.4",
     "@angular/youtube-player": "^19.2.18",
     "@ngx-pwa/local-storage": "^19.0.0",
-    "embla-carousel": "^8.6.0",
     "ngx-cacheable": "^1.4.3",
-    "ngx-infinite-scroll": "^19.0.0",
     "rxjs": "~7.8.0",
-    "swiper": "^11.1.4",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },

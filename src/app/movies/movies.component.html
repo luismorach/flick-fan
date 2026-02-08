@@ -3,11 +3,7 @@
         title="No hay películas disponibles" 
         subtitle="Vuelve más tarde para ver nuevas películas"
         [loaders]="getDataLoaders()">
-    </app-empty>
-
-    <app-banner-movies [movieList]="upcomingMovies()"> </app-banner-movies>
-        
-    <app-movies-grid [data]="nowPlaying()"></app-movies-grid> -->
+    </app-empty> -->
 
   <div class="flex h-screen pt-24 overflow-hidden ">
     <div class="flex-1 flex flex-col h-full lg:pr-6">
@@ -18,7 +14,7 @@
 
         <app-custom-select class="grow-0 shrink basis-60 hidden sm:block" [options]="optionsGenre" 
          [(selectedOption)]="selectedGenre"></app-custom-select>
-         
+
         <app-icon class="rounded-lg bg-white/5 px-3 py-3 cursor-pointer block sm:hidden" name="filter" color="text-white/90"></app-icon>
       </nav>
 
@@ -26,69 +22,8 @@
       [(selectedMovie)]="selectedMovie"></app-movies-grid> 
     </div>
 
-    <div class="w-[26rem] hidden lg:block h-full bg-black/50 rounded-tl-xl overflow-hidden relative">
-       <section class="px-10 py-7 relative z-10 flex flex-col h-full">
-          <header class="w-full flex flex-col flex-1 overflow-y-auto  my-scroll">
-              <figure class="h-24">
-                <img  [src]="selectedMovie()?.imdb_id | autoImage:'logo'" [alt]="selectedMovie()?.title"
-                class="h-24 w-full object-contain">
-              </figure>
-
-              <div class="flex justify-between text-white/90 text-lg font-semibold mt-4">
-                <p class="my-4 mx-2">{{selectedMovie()?.runtime | minutesToTime}}</p>
-                <p class="my-4 mx-2"> {{selectedMovie()?.release_date | date:'yyyy'}}</p>
-
-                <div class="flex gap-1 items-center my-4 mx-2">
-                  <app-icon name="star" color="text-red-600" backgroundColor="fill-red-600" size="w-5 h-5"> </app-icon>
-                  <p> {{selectedMovie()?.vote_average| number:'1.1-1' :'en-US'}}</p> 
-                </div>
-              </div>
-
-              <p class="text-white/90 mt-4 leading-7 font-light ">{{selectedMovie()?.overview}}</p>
-
-              <div class="text-white/90 text-base  mt-4">
-                <h1 class="text-white/30">GENEROS</h1>
-                <div class="flex gap-2 mt-2 flex-wrap">
-                  @for(genre of selectedMovie()?.genres;track genre.id){
-                    <span class="backdrop-blur-sm bg-white/5 rounded-full px-5 py-1 cursor-pointer hover:bg-white/15"
-                      (click)="selectGenre(genre)"> 
-                      {{genre.name}} 
-                    </span>
-                  }
-                </div>
-              </div>
-          </header>
-
-          <section class="flex text-white/90 gap-6 mt-4 h-14">
-            
-            <button appTooltip="Tráiler"
-                (click)="playTrailer()"
-                [disabled]="!currentTrailerKey()"
-                class="btn-primary h-full aspect-square" 
-                [attr.aria-label]="`Reproducir avance de  ${selectedMovie()?.title}`"
-                tabindex="0"
-                type="button">
-                <app-icon name="clapperboard" size="w-6 h-6"></app-icon>
-            </button>
-
-            <a [routerLink]="['/details-movie',selectedMovie()?.id]" appTooltip="Más información" 
-              class="btn-primary h-full aspect-square">
-                <app-icon name="info" size="w-6 h-6"></app-icon>
-            </a>
-
-            <a class="btn-primary px-6 flex-1 !font-sans">
-              <app-icon name="play" size="w-6 h-6"></app-icon>
-              Ver ahora
-            </a>
-          </section>
-        </section>
-
-        <figure class="absolute top-0 w-full aspect-[2/3] blur-[10px] opacity-30 z-0">
-              <img [ngSrc]="selectedMovie()?.backdrop_path | autoImage : 'tall'" alt=""
-                 class="aspect-[2/3] bg-cover bg-center" fill>
-        </figure>
-
-    </div> 
+    <app-details-card class="w-[26rem]" [selectedMovie]="selectedMovie()" [(selectedGenre)]="selectedGenre"></app-details-card>
+  
   </div>
 
 </main>

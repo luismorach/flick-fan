@@ -1,34 +1,22 @@
-import { ChangeDetectionStrategy, Component, computed, effect,  inject, signal, untracked,  viewChild,  WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect,  inject, signal, untracked,  viewChild,  WritableSignal } from '@angular/core';
 import { ApiService } from '../core/services/API/api.service';
 import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
 import { Movie, MovieList, OptionMovie } from '../core/interfaces/movie/movie.interface';
 import { MoviesGridComponent } from "../shared/components/cards-grid/movies-grid/movies-grid.component";
 import { CustomSelectComponent } from "../shared/components/elements/custom-select/custom-select.component";
-import { DatePipe, NgOptimizedImage, DecimalPipe } from '@angular/common';
-import { AutoImagePipe } from "../shared/pipes/autoimage/auto-image.pipe";
 import { IconComponent } from '../shared/icon/icon.component';
 import { Genre } from '../core/interfaces/shared/genre.interface';
-import { MinutesToTimePipe } from "../shared/pipes/minutes-to-time/minutes-to-time.pipe";
-import { TooltipDirective } from "../core/directives/tooltip/tooltip.directive";
-import { RouterLink } from '@angular/router';
-import { FloatTrailerService } from '../core/services/float-trailer/float-trailer.service';
-import { getKeyTrailer } from '../shared/utils/helpers';
+import { DetailsCardComponent } from "../shared/components/cards-grid/details-card/details-card.component";
 
 @Component({
   selector: 'app-movies',
   imports: [
-    NgOptimizedImage,
     BackgroundNavScrollDirective,
     CustomSelectComponent,
-    AutoImagePipe,
-    DatePipe,
-    MinutesToTimePipe,
     IconComponent,
-    DecimalPipe,
-    TooltipDirective,
-    RouterLink,
-    MoviesGridComponent
-  ],
+    MoviesGridComponent,
+    DetailsCardComponent
+],
   templateUrl: './movies.component.html',
   styleUrl: './movies.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -37,8 +25,6 @@ import { getKeyTrailer } from '../shared/utils/helpers';
 export default class MoviesComponent {
 
   readonly api = inject(ApiService);
-  private readonly floatTrailer = inject(FloatTrailerService);
-
   readonly movies = signal<MovieList | undefined>(undefined);
   selectedMovie = signal<Movie | undefined>(undefined)
 
@@ -59,12 +45,6 @@ export default class MoviesComponent {
   optionMovieSelected: WritableSignal<OptionMovie> = signal(this.optionsMovies[0])
   selectedGenre: WritableSignal<Genre> = signal({ name: 'Todos los géneros', id: 0 })
 
-  readonly currentTrailerKey = computed(() => {
-    const currentMovie = this.selectedMovie()
-    if (!currentMovie) return undefined
-    return getKeyTrailer(currentMovie.videos)
-  });
-
   changeOptionMovieSelected = effect(() => {
     const option = this.optionMovieSelected()
     untracked(() => this.filterByList(option))
@@ -83,11 +63,6 @@ export default class MoviesComponent {
     this.movies.set(x as MovieList)
   }
 
-  selectGenre(genre: Genre) {
-    if (genre.id === this.selectedGenre().id) return
-    this.selectedGenre.set(genre)
-  }
-
   filterByList(option: OptionMovie) {
 
     const apiMethod = this.api.methodMap[option.value]
@@ -97,9 +72,5 @@ export default class MoviesComponent {
       this.movies.set(movies)
       requestAnimationFrame(()=>this.moviesGrid().selectMovie(this.moviesGrid().data()[0], 0))
     })
-  }
-
-  playTrailer(): void {
-    this.floatTrailer.showFloatTrailer(this.currentTrailerKey())
   }
 }

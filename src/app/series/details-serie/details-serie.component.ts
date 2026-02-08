@@ -2,14 +2,12 @@ import { NgOptimizedImage, DatePipe, DecimalPipe } from '@angular/common';
 import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, Renderer2, signal, ViewChild, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Params, RouterLink } from '@angular/router';
 import { map, concatAll } from 'rxjs';
-import { register, SwiperContainer } from 'swiper/element/bundle';
 import { ApiService } from '../../core/services/API/api.service';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
 import { Credits } from '../../core/interfaces/people/credits.interface';
 import { Serie } from '../../core/interfaces/serie/serie.interface';
 import { AutoImagePipe } from '../../shared/pipes/autoimage/auto-image.pipe';
 
-register()
 @Component({
   selector: 'app-details-serie',
   imports: [RouterLink, NgOptimizedImage, DatePipe, DecimalPipe,AutoImagePipe],
@@ -22,7 +20,6 @@ export default class DetailsSerieComponent {
   credits: WritableSignal<Credits | undefined> = signal(undefined)
   isLiked = false;
   isBookmarked = false;
-  @ViewChild('swiper', { static: false }) swiperContainer!: ElementRef<SwiperContainer>
 
   constructor(private rutaActiva: ActivatedRoute, private API: ApiService,
     private comunicatorService: ComunicatorService, private renderer: Renderer2) {
@@ -33,11 +30,6 @@ export default class DetailsSerieComponent {
 
   ngAfterViewInit() {
     const swiperEl = document.querySelector('swiper-container');
-    console.log(swiperEl?.swiper.navigation.nextEl)
-    const button_next = swiperEl?.swiper.navigation.nextEl
-    const button_prev = swiperEl?.swiper.navigation.prevEl
-    this.renderer.setStyle(button_next, 'opacity', '0')
-    this.renderer.setStyle(button_prev, 'opacity', '0')
   }
 
   swiperInit(event: any) {

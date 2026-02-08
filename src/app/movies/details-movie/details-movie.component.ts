@@ -2,7 +2,6 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, Renderer2, signa
 import { ActivatedRoute, Params, RouterLink } from '@angular/router';
 import { concatAll, map } from 'rxjs/operators';
 import { CurrencyPipe, DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
-import { register, SwiperContainer } from 'swiper/element/bundle'
 //import { SwiperOptions } from 'swiper';
 import { MinutesToTimePipe } from '../../shared/pipes/minutes-to-time/minutes-to-time.pipe';
 import { ApiService } from '../../core/services/API/api.service';
@@ -12,7 +11,6 @@ import { Movie } from '../../core/interfaces/movie/movie.interface';
 import { CarouselSeriesComponent } from '../../shared/components/carousel/carousel-series/carousel-series.component';
 import { SlidesInfoHook, useSlidesInfo } from '../../shared/utils/use-slides-info';
 import { AutoImagePipe } from '../../shared/pipes/autoimage/auto-image.pipe';
-import { SwiperOptions } from 'swiper/types';
 import { IconComponent } from "../../shared/icon/icon.component";
 import { CdkScrollable } from "@angular/cdk/scrolling";
 import { CarouselOptions } from '../../core/interfaces/shared/carousel-interface';
@@ -31,9 +29,7 @@ import { CarouselNavigationComponent } from "../../shared/components/carousel/ca
 export default class DetailsMovieComponent {
   movie: WritableSignal<Movie | undefined> = signal(undefined)
   credits: WritableSignal<Credits | undefined> = signal(undefined)
-  @ViewChild('swiperCast', { static: false }) swiperCast!: ElementRef<SwiperContainer>
   @ViewChild('containerCast') containerCast!: ElementRef<HTMLElement>
-  @ViewChild('swiperCrew', { static: false }) swiperCrew!: ElementRef<SwiperContainer>
   @ViewChild('containerCrew') containerCrew!: ElementRef<HTMLElement>
 
   private readonly slides = viewChildren<ElementRef<HTMLElement>>('slide')
@@ -80,60 +76,6 @@ export default class DetailsMovieComponent {
     this.getDetailsMovie()
     this.getCreditsMovie()
   }
-  ngAfterViewInit() {
-
-    //this.swiperHelperCast.initSwiper(this.swiperCast)
-    // this.swiperHelperCrew.initSwiper(this.swiperCrew)
-    this.addEventSlideChange()
-    this.setEventsNavigation(this.swiperCast, 'cast')
-    this.setEventsNavigation(this.swiperCrew, 'crew')
-  }
-  setOptionsSwiper(type: string, swiper: ElementRef<SwiperContainer>) {
-    const swiperOptions: SwiperOptions = {
-      slidesPerView: 'auto',
-      slidesPerGroup: 4,
-      spaceBetween: 18,
-      navigation: {
-        enabled: true,
-        nextEl: `.swiper-next-${type}`,
-        prevEl: `.swiper-prev-${type}`
-      }
-    }
-    //initSwiper(swiper, swiperOptions)
-  }
-
-  addEventSlideChange() {
-    this.swiperCast.nativeElement.addEventListener('swiperslidechange', (event: any) => {
-      console.log('es el final', event.detail[0].isEnd)
-      this.isBeginning[0] = event.detail[0].isBeginning;
-      this.isEnd[0] = event.detail[0].isEnd;
-    })
-    this.swiperCrew.nativeElement.addEventListener('swiperslidechange', (event: any) => {
-      this.isBeginning[1] = event.detail[0].isBeginning;
-      this.isEnd[1] = event.detail[0].isEnd;
-    })
-
-  }
-  setEventsNavigation(swiperContainer: ElementRef<SwiperContainer>, type: string) {
-    let swiper = swiperContainer.nativeElement.swiper;
-    const prevProxy = document.querySelector(`.swiper-prev-${type}`) as HTMLElement;
-    const nextProxy = document.querySelector(`.swiper-next-${type}`) as HTMLElement;
-
-    nextProxy.addEventListener('click', () => {
-      if (!swiper.animating) {
-        swiper.update()
-        swiper.slideNext();
-      }
-    });
-
-    prevProxy.addEventListener('click', () => {
-      if (!swiper.animating) {
-        swiper.update()
-        swiper.slidePrev();
-      }
-    });
-  }
-
 
   getDetailsMovie() {
     let detailsMovie$ = this.activeRoute.params.pipe(

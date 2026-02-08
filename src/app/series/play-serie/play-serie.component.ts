@@ -9,11 +9,10 @@ import { ApiService } from '../../core/services/API/api.service';
 import { DatePipe, DOCUMENT, NgOptimizedImage, } from '@angular/common';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
 import { fade } from '../../shared/animations/animations';
-import { register, SwiperContainer } from 'swiper/element/bundle';
 import { CarouselSeriesComponent } from '../../shared/components/carousel/carousel-series/carousel-series.component';
 import { Serie, SerieList, Episode, Season } from '../../core/interfaces/serie/serie.interface';
 import { AutoImagePipe } from '../../shared/pipes/autoimage/auto-image.pipe';
-register()
+
 @Component({
   selector: 'app-play-serie',
   imports: [UrlSafePipe, NgOptimizedImage, CarouselSeriesComponent, DatePipe,
@@ -29,8 +28,6 @@ export default class PlaySerieComponent implements AfterViewInit {
   url_serie = signal('https://vidsrc.to/embed/tv/')
   similarSeries: WritableSignal<SerieList | undefined> = signal(undefined)
   recomendedSeries: WritableSignal<SerieList | undefined> = signal(undefined)
-  @ViewChild('swiperSeason') swiperSeasons!: ElementRef<SwiperContainer>
-  @ViewChild('swiperEpisodes') swiperEpisodes!: ElementRef<SwiperContainer>
   subscription: Subscription[] = []
   doc = inject(DOCUMENT)
   season_number = -1
@@ -50,12 +47,6 @@ export default class PlaySerieComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     const swiperEl = document.querySelector('swiper-container');
-    console.log(swiperEl?.swiper.navigation.nextEl)
-    const button_next = swiperEl?.swiper.navigation.nextEl
-    const button_prev = swiperEl?.swiper.navigation.prevEl
-    this.renderer.setStyle(button_next, 'opacity', '0')
-    this.renderer.setStyle(button_prev, 'opacity', '0')
-
   }
 
   swiperInit(event: any) {

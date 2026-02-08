@@ -40,10 +40,7 @@
     [attr.aria-busy]="isFetchingMoreData()"
     class="flex flex-col mb-16" 
     [style.gap.px]="slidesInfo.layout().spaceBetween"
-    infiniteScroll
-    [infiniteScrollDistance]="scrollConfig.SCROLL_CONFIG.distance" 
-    [infiniteScrollThrottle]="scrollConfig.SCROLL_CONFIG.throttle"
-    (scrolled)="loadMoreData()">
+    >
 
     <ng-container *ngTemplateOutlet="seriesGrid"></ng-container>
   

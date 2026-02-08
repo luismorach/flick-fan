@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, input, signal, viewChild, viewChildren } from '@angular/core';
-import { ScrollConfigService } from '../../../../core/services/scroll-config/scroll-config.service';
 import { useSlidesInfo } from '../../../utils/use-slides-info';
 import { Serie, SerieList } from '../../../../core/interfaces/serie/serie.interface';
-import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { CardSerieComponent } from '../../carousel/carousel-series/card-serie/card-serie.component';
 import { CarouselSeriesSkeletonComponent } from '../../carousel/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
 import { fade } from '../../../animations/animations';
@@ -31,7 +29,7 @@ import { LoaderWithPagination } from '../../../utils/data-loaders/types';
  */
 @Component({
   selector: 'app-series-grid',
-  imports: [InfiniteScrollDirective, CardSerieComponent, CarouselSeriesSkeletonComponent, NgTemplateOutlet],
+  imports: [CardSerieComponent, CarouselSeriesSkeletonComponent, NgTemplateOutlet],
   providers: [],
   templateUrl: './series-grid.component.html',
   styleUrl: './series-grid.component.css',
@@ -88,8 +86,6 @@ export class SeriesGridComponent {
     withPagination
   )
 
-  /** Infinite scroll configuration (distance, throttle) */
-  readonly scrollConfig = inject(ScrollConfigService);
 
   /** Helper for grid layout and hover effects */
   readonly slideExpansion = useSlideExpansion()
