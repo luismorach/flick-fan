@@ -10,6 +10,16 @@ export const fade = trigger('fade', [
     ])
 ])
 
+export const fadeTooltip = trigger('fadeTooltip', [
+    transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms ease', style({ opacity: 1 }))
+    ]),
+    transition(':leave', [
+        animate('300ms ease-out', style({ opacity: 0 }))
+    ])
+])
+
 export const emptyState = trigger('emptyState', [
     transition(':enter', [
         style({ opacity: 0, transform: 'translateY(-20px)' }),

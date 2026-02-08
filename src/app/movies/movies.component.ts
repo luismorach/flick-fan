@@ -1,22 +1,33 @@
-import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect,  inject, signal, untracked,  viewChild,  WritableSignal } from '@angular/core';
 import { ApiService } from '../core/services/API/api.service';
-import BannerMoviesComponent from '../shared/components/banners/banner-movies/banner-movies.component';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
-import { Movie, MovieList } from '../core/interfaces/movie/movie.interface';
-import { forkJoin, of } from 'rxjs';
-import { EmptyComponent } from '../shared/components/empty/empty.component';
+import { Movie, MovieList, OptionMovie } from '../core/interfaces/movie/movie.interface';
 import { MoviesGridComponent } from "../shared/components/cards-grid/movies-grid/movies-grid.component";
-import { DataLoaderManager } from '../shared/utils/data-loader-manager';
-import { PaginatedData } from '../core/interfaces/shared/generic.interface';
+import { CustomSelectComponent } from "../shared/components/elements/custom-select/custom-select.component";
+import { DatePipe, NgOptimizedImage, DecimalPipe } from '@angular/common';
+import { AutoImagePipe } from "../shared/pipes/autoimage/auto-image.pipe";
+import { IconComponent } from '../shared/icon/icon.component';
+import { Genre } from '../core/interfaces/shared/genre.interface';
+import { MinutesToTimePipe } from "../shared/pipes/minutes-to-time/minutes-to-time.pipe";
+import { TooltipDirective } from "../core/directives/tooltip/tooltip.directive";
+import { RouterLink } from '@angular/router';
+import { FloatTrailerService } from '../core/services/float-trailer/float-trailer.service';
+import { getKeyTrailer } from '../shared/utils/helpers';
 
 @Component({
   selector: 'app-movies',
   imports: [
-    BannerMoviesComponent,
+    NgOptimizedImage,
     BackgroundNavScrollDirective,
-    EmptyComponent,
-    MoviesGridComponent,
+    CustomSelectComponent,
+    AutoImagePipe,
+    DatePipe,
+    MinutesToTimePipe,
+    IconComponent,
+    DecimalPipe,
+    TooltipDirective,
+    RouterLink,
+    MoviesGridComponent
   ],
   templateUrl: './movies.component.html',
   styleUrl: './movies.component.css',
@@ -25,46 +36,70 @@ import { PaginatedData } from '../core/interfaces/shared/generic.interface';
 
 export default class MoviesComponent {
 
-  private readonly api = inject(ApiService);
-  readonly upcomingMovies = signal<MovieList | undefined>(undefined);
-  readonly nowPlaying = signal<MovieList | undefined>(undefined);
+  readonly api = inject(ApiService);
+  private readonly floatTrailer = inject(FloatTrailerService);
+
+  readonly movies = signal<MovieList | undefined>(undefined);
+  selectedMovie = signal<Movie | undefined>(undefined)
 
   private readonly moviesGrid = viewChild.required<MoviesGridComponent>(MoviesGridComponent)
-  private readonly bannerMovie = viewChild.required<BannerMoviesComponent>(BannerMoviesComponent)
 
-  constructor() {
-    //this.test()
-    this.loadInitialData();
-  }
-  test(){
-    const x={
-      page:1,
-      results:[],
-      total_pages:0,
-      total_results:0,
-      type:''
+  optionsMovies: OptionMovie[] = [
+    { name: 'En cartelera', id: 0, value: 'now_playing_movies' },
+    { name: 'Populares', id: 1, value: 'popular_movies' },
+    { name: 'Mejores valorados', id: 2, value: 'top_rated_movies' },
+    { name: 'Estrenos', id: 3, value: 'upcoming_movies' }
+  ]
+
+  optionsGenre: Genre[] = [
+    { name: 'Todos los géneros', id: 0 },
+    ...this.api.moviesGenres()
+  ]
+
+  optionMovieSelected: WritableSignal<OptionMovie> = signal(this.optionsMovies[0])
+  selectedGenre: WritableSignal<Genre> = signal({ name: 'Todos los géneros', id: 0 })
+
+  readonly currentTrailerKey = computed(() => {
+    const currentMovie = this.selectedMovie()
+    if (!currentMovie) return undefined
+    return getKeyTrailer(currentMovie.videos)
+  });
+
+  changeOptionMovieSelected = effect(() => {
+    const option = this.optionMovieSelected()
+    untracked(() => this.filterByList(option))
+  })
+
+  constructor() {}
+
+  test() {
+    const x = {
+      page: 1,
+      results: [],
+      total_pages: 0,
+      total_results: 0,
+      type: ''
     }
-    this.nowPlaying.set(x as MovieList)
-    this.upcomingMovies.set(x as MovieList)
+    this.movies.set(x as MovieList)
   }
 
-  private loadInitialData(): void {
-    forkJoin({
-      nowPlaying: this.api.getNowPlaying({ page: 1 }),
-      upcoming: this.api.getUpcoming({ page: 1 })
-    }).pipe(
-      takeUntilDestroyed(),
-    ).subscribe(({ nowPlaying, upcoming }) => {
-      this.nowPlaying.set(nowPlaying);
-      this.upcomingMovies.set(upcoming);
-    });
+  selectGenre(genre: Genre) {
+    if (genre.id === this.selectedGenre().id) return
+    this.selectedGenre.set(genre)
   }
 
-  getDataLoaders() {
-    const loaders: DataLoaderManager<Movie>[] = [];
+  filterByList(option: OptionMovie) {
 
-    loaders.push(this.moviesGrid().dataLoaderManager);
-    loaders.push(this.bannerMovie().carouselService.dataLoaderManager);
-    return loaders;
+    const apiMethod = this.api.methodMap[option.value]
+    if (!apiMethod) throw new Error(`Unknown data type: ${option.value}`);
+
+    apiMethod().subscribe((movies: MovieList) => {
+      this.movies.set(movies)
+      requestAnimationFrame(()=>this.moviesGrid().selectMovie(this.moviesGrid().data()[0], 0))
+    })
+  }
+
+  playTrailer(): void {
+    this.floatTrailer.showFloatTrailer(this.currentTrailerKey())
   }
 }

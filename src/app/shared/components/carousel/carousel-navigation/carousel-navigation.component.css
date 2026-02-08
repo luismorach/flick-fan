@@ -1,5 +1,5 @@
 .btn-navigation {
-  @apply z-20 w-12 h-12 flex justify-center items-center hover:cursor-pointer absolute hover:scale-110 text-center text-sm bg-black/80 backdrop-blur-sm text-white rounded-full transition-all duration-300 ease-in border border-red-900/50
+  @apply z-30 w-12 h-12 flex justify-center items-center hover:cursor-pointer absolute hover:scale-110 text-center text-sm bg-black/80 backdrop-blur-sm text-white rounded-full transition-all duration-300 ease-in border border-red-900/50
 }
 
 .btn-navigation:disabled{

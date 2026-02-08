@@ -1,8 +1,10 @@
 <main appHoverSerieExpand [slideInfo]="slideInfo()" [serie]="serie()" [activeIndex]="activeIndex()"
     [cardIndex]="cardIndex()" (expanded)="hoverEnter.emit($event)" (collapse)="hoverLeave.emit($event)"
-    class="relative w-72 h-[29rem] rounded-xl overflow-hidden bg-black ">
+    class="relative rounded-xl overflow-hidden bg-black " 
+    [style.width.px]="slideInfo().layout().slideMainAxisSize"
+    [style.height.px]=" slideInfo().layout().slideMainAxisSize * 1.5" >
 
-    <figure class="h-full absolute w-72" #posterImage>
+    <figure class="h-full absolute w-full" #posterImage>
         <img [ngSrc]="serie().poster_path | autoImage : 'poster'" fill 
             class="card-image" loading="lazy" [alt]="serie().name">
     </figure>

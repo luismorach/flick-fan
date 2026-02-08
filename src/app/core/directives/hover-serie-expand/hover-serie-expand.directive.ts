@@ -5,12 +5,13 @@ import {
   input, output, Renderer2
 } from '@angular/core';
 import { TimerManager } from '../../../shared/utils/timer-manager';
-import { SkeletonSlidesHook } from '../../../shared/utils/use-skeleton-slides';
+import { SlidesInfoHook } from '../../../shared/utils/use-slides-info';
 import { FloatTrailerService } from '../../services/float-trailer/float-trailer.service';
 import { ApiService } from '../../services/API/api.service';
 import { Serie } from '../../interfaces/serie/serie.interface';
 import { getKeyTrailer } from '../../../shared/utils/helpers';
 import { WindowService } from '../../services/window/window.service';
+import { useSlideExpansion } from '../../../shared/utils/use-slide-expansion';
 
 @Directive({
   selector: '[appHoverSerieExpand]',
@@ -28,7 +29,7 @@ export class HoverSerieExpandDirective {
 
   private readonly cardElement: HTMLElement = inject(ElementRef<HTMLElement>).nativeElement;
 
-  readonly slideInfo = input.required<SkeletonSlidesHook>()
+  readonly slideInfo = input.required<SlidesInfoHook>()
   readonly serie = input.required<Serie>()
   readonly cardIndex = input<number>()
   readonly activeIndex = input<number>()
@@ -44,25 +45,24 @@ export class HoverSerieExpandDirective {
   private readonly backdropElement = computed(() => this.backdrop().nativeElement);
   private readonly parentElement = computed(() => this.cardElement.parentElement);
 
+  private readonly slideExpansion = useSlideExpansion()
+
   @HostListener('mouseenter') onMouseEnter() {
-    if (!this.canExpand()) return
+
+    const activeIndex = this.activeIndex() ?? 0
+    const cardIndex = this.cardIndex() ?? 0
+    const canExpand = this.slideExpansion.canExpand(activeIndex, cardIndex,
+      this.slideInfo().layout().slidesPerView)
+
+    if (!canExpand) return
     const slideElement = this.parentElement()
     this.getDetailsSerie()
     this.timerManager.addTimeout(() => {
-      this.changeWidthSlide(this.slideInfo().expandedSlideWidth(), '0s')
+      this.changeWidthSlide(this.slideInfo().layout().expandedSlideSize, '0s')
       this.animateImageChange(0, '0s');
       if (slideElement) this.expanded.emit(slideElement)
       this.attachTrailer()
     }, 300)
-  }
-
-  canExpand(): boolean {
-    if(!this.windowService.isDesktop()) return false
-    const activeIndex = this.activeIndex()
-    const cardIndex = this.cardIndex()
-    if (activeIndex === undefined || cardIndex === undefined) return true
-    const lastSlideCanExpand = activeIndex + (this.slideInfo().slidesPerView() - 1)
-    return cardIndex >= activeIndex && cardIndex <= lastSlideCanExpand
   }
 
   private getDetailsSerie() {
@@ -75,7 +75,6 @@ export class HoverSerieExpandDirective {
 
   private changeWidthSlide(width: number, delay: string) {
     this.renderer.setStyle(this.cardElement, 'transition', `width .3s cubic-bezier(.2,.45,0,1) ${delay}`)
-    this.renderer.setStyle(this.cardElement, 'transform-origin', 'left')
     this.renderer.setStyle(this.cardElement, 'width', `${width}px`)
   }
 
@@ -101,7 +100,7 @@ export class HoverSerieExpandDirective {
   private resetSlide() {
     const slideElement = this.parentElement()
     this.floatTrailer.detachTrailerEmbed()
-    this.changeWidthSlide(this.slideInfo().slideBaseWidth, '300ms')
+    this.changeWidthSlide(this.slideInfo().layout().slideMainAxisSize, '300ms')
     this.animateImageChange(1, '300ms')
     if (slideElement) this.collapse.emit(slideElement)
   }

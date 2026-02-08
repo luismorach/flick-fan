@@ -1,1 +1,14 @@
 
+.card-base-movie {
+  @apply relative shadow-lg bg-black flex flex-col rounded-2xl h-full ;
+}
+
+.card-hover-overlay {
+  @apply transition-all duration-500 overflow-hidden absolute bg-black w-full rounded-b-2xl 
+  max-h-0 group-hover:max-h-48 group-hover:p-4 group-hover:pt-2
+}
+
+.card-image {
+  @apply w-full object-cover object-center;
+}
+

@@ -1,0 +1,28 @@
+.custom-select {
+    @apply relative min-w-36;
+}
+
+.select-trigger {
+    @apply w-full bg-white/5 text-white/90 px-6 py-3 border-none flex justify-between items-center cursor-pointer rounded-full text-sm
+}
+
+.arrow {
+    @apply w-4 h-4 opacity-60
+}
+
+.select-options {
+    @apply bg-[#181111] rounded-lg min-w-56 overflow-hidden text-sm overflow-y-scroll max-h-[21rem]; 
+    box-shadow: 0 0px 15px rgba(105, 0, 0, .37);
+}
+
+.select-options li {
+    @apply h-12 px-3 text-white/90 cursor-pointer flex justify-between items-center hover:bg-white/10
+}
+
+.select-options li:hover {
+    @apply bg-white/10;
+}
+
+.select-options li.active {
+    background: #2a2a40;
+}

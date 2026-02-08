@@ -13,7 +13,7 @@ import { EmptyComponent } from '../shared/components/empty/empty.component';
 import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { forkJoin, of, switchMap } from 'rxjs';
-import { DataLoaderManager } from '../shared/utils/data-loader-manager';
+import { LoaderCore } from '../shared/utils/data-loaders/types';
 
 @Component({
   selector: 'app-search',
@@ -87,10 +87,10 @@ export default class SearchComponent {
   }
 
   getDataLoaders() {
-    const loaders: DataLoaderManager<Movie | Serie>[] = [];
+    const loaders: LoaderCore<MovieList | SerieList, 'results'>[] = [];
 
-    if (this.selectedType() !== 'series') loaders.push(this.moviesGrid().dataLoaderManager);
-    if (this.selectedType() !== 'movies') loaders.push(this.seriesGrid().dataLoaderManager);
+    if (this.selectedType() !== 'series') loaders.push(this.moviesGrid().loader);
+    if (this.selectedType() !== 'movies') loaders.push(this.seriesGrid().loader);
     return loaders;
   }
 

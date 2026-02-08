@@ -1,23 +1,27 @@
 import { Images } from "../media/images.interface"
 import { Videos } from "../media/videos.interface"
+import { PaginatedMetaData } from "../shared/generic.interface"
 import { Genre } from "../shared/genre.interface"
 import { ProductionCompany, ProductionCountry } from "../shared/production.interface"
+import { ListReleaseDates } from "../shared/release-dates.interface"
 
-export interface MovieList {
-    page: number
+export interface MovieList extends PaginatedMetaData {
     results: Movie[]
-    total_pages: number
-    total_results: number
-    type: string
+}
+
+export interface OptionMovie{
+    name:string
+    id:number
+    value:string
 }
 
 export interface Movie {
     adult: boolean
     backdrop_path: string
-    genre_ids:number[]
+    genre_ids: number[]
     genres: Genre[]
     id: number
-    imdb_id:string
+    imdb_id: string
     original_language: string
     original_title: string
     overview: string
@@ -25,8 +29,9 @@ export interface Movie {
     poster_path: string
     release_date: Date
     title: string
+    tagline: string
     videos: Videos
-    images:Images
+    images: Images
     vote_average: number
     vote_count: number
     runtime: number
@@ -36,4 +41,5 @@ export interface Movie {
     homepage: string
     production_companies: ProductionCompany[]
     production_countries: ProductionCountry[]
+    release_dates: ListReleaseDates
 }

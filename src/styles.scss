@@ -20,7 +20,7 @@ html {
 
 /* -------------------- CONTAINERS -------------------- */
 .overlay{
-   @apply w-full absolute top-0 h-screen bg-gradient-to-r from-black 
+   @apply w-full absolute top-0 h-full bg-gradient-to-r from-black 
           from-15% via-[rgba(15,15,15,.9)] via-50% to-[rgba(83,200,141,0)] 
           to-100% 
 }
@@ -28,27 +28,25 @@ html {
 /* -------------------- CARDS -------------------- */
 
 .card-base {
-  @apply relative z-0 w-[310px] transition-transform duration-300 hover:scale-[1.15] hover:z-20;
+  @apply relative z-0  transition-transform duration-300 hover:scale-[1.15] hover:z-10 will-change-transform;
+  
+}
+.card-base.is-active{
+  @apply origin-left
 }
 
-.card-base-movie {
-  @apply relative shadow-lg bg-black flex flex-col rounded-2xl;
+.card-base.is-last{
+  @apply origin-right
 }
 
-
-.card-hover-overlay {
-  @apply transition-all duration-500 overflow-hidden absolute bg-black w-full -ml-4 rounded-b-2xl 
-  max-h-0 group-hover:max-h-48 group-hover:p-4  group-hover:pt-2 
-}
-
-.card-image {
-  @apply w-full object-cover object-center;
+.card-base-revert-scale{
+  @apply group-hover:scale-[0.869565]
 }
 
 /* -------------------- BOTONES -------------------- */
 .btn-primary {
-  @apply rounded-full flex justify-center gap-4 transition-all duration-100 font-racing
-                        items-center bg-white/5 backdrop-blur-sm;
+  @apply rounded-full transition-all duration-100 font-racing bg-white/5 backdrop-blur-sm text-sm 
+  flex justify-center items-center gap-2 sm:gap-2.5 sm:text-base;
 }
 
 .btn-primary:disabled{
@@ -71,7 +69,8 @@ html {
 
 /* -------------------- BADGES / LABELS -------------------- */
 .badge-vote {
-  @apply absolute top-4 right-4 bg-black/80 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1 border border-red-900/30;
+  @apply absolute top-4 right-4 bg-black/80 backdrop-blur-sm rounded-full px-3 py-1 flex items-center 
+    gap-1 border border-red-900/30;
 }
 
 .badge-text {
@@ -83,21 +82,25 @@ html {
 .text-title{
   @apply text-5xl font-bold inline-block text-white mb-4 tracking-tight bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent
 }
-
-.text-title-carousel {
-  @apply text-3xl font-bold inline-block relative bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent after:h-1 after:w-3/5 after:bg-gradient-to-r after:from-red-500 after:to-red-300 after:rounded-full after:absolute after:bottom-0 after:left-0 pb-2
+.text-title-carousel{
+@apply text-white text-2xl font-bold mb-6 flex items-center gap-2
 }
+/* .text-title-carousel {
+  @apply text-2xl sm:text-3xl font-bold inline-block relative bg-gradient-to-r from-red-500 to-red-300 bg-clip-text 
+  text-transparent after:h-1 after:w-3/5 after:bg-gradient-to-r after:from-red-500 after:to-red-300 
+  after:rounded-full after:absolute after:bottom-0 after:left-0 pb-2 
+} */
 
 .text-title-card {
-  @apply text-white font-bold text-lg line-clamp-1;
+  @apply text-white font-medium text-base line-clamp-1 group-hover:text-[14px];;
 }
 
 .text-genre-card {
-  @apply text-red-400 text-sm font-medium group-hover:text-[12px];
+  @apply text-red-400 text-sm font-light group-hover:text-[12px];
 }
 
 .text-info-card {
-  @apply text-gray-400 text-sm group-hover:text-[12px];
+  @apply text-gray-400 text-sm font-light group-hover:text-[12px];
 }
 
 .text-overview-card {
@@ -110,17 +113,17 @@ html {
 }
 
 .frame-container{
-  @apply w-screen min-h-screen relative flex justify-center items-center
+  @apply w-screen min-h-screen relative flex justify-center items-center box-border
 }
 .player-frame {
-  @apply relative shadow-xl z-10 w-full h-full pointer-events-auto ;
+  @apply relative shadow-xl z-10 w-full aspect-video pointer-events-auto ;
 }
 .player-frame-transition{
   @apply transition-all duration-300 ease-in-out
 }
 
 .player-frame--normal {
-  @apply inset-0 m-auto w-[70vw] h-[90vh];
+  @apply inset-0 m-auto w-[70vw];
 }
 
 .player-frame--normal app-trailer {
@@ -128,8 +131,7 @@ html {
 }
 
 .player-frame--mini {
-  @apply absolute bottom-5 right-5 w-96 h-52 cursor-pointer z-50 ;
-  /* w-80 = 320px, h-45 = 180px */
+  @apply absolute bottom-5 right-5 w-96 cursor-pointer z-50 ;
 }
 
 .player-frame--mini app-trailer {
@@ -146,7 +148,7 @@ html {
 }
 
 .player {
-  @apply absolute top-0 right-0 bottom-0 left-0
+  @apply absolute top-0 right-0 bottom-0 left-0 w-full h-full bg-black
 }
 
 .backdrop-hidden{
@@ -155,9 +157,11 @@ html {
 app-trailer youtube-player-placeholder {
   @apply w-full h-full !important
 }
-
-app-trailer youtube-player>div, app-trailer youtube-player>div>iframe {
-  @apply block w-full h-full !important
+app-trailer youtube-player>div{
+  @apply block w-full h-full !important;
+}
+app-trailer youtube-player>div>iframe {
+  @apply block w-full h-full !important;
 }
 
 .trailer-fade {
@@ -188,17 +192,11 @@ app-trailer youtube-player>div, app-trailer youtube-player>div>iframe {
 }
 
 .carousel-container{
-    @apply flex overflow-auto w-full;
-    scrollbar-width: none; 
-
-  /* IE / Edge legacy */
-   -ms-overflow-style: none; 
-}
-
-.carousel-container ::-webkit-scrollbar{
- /*  display: none; */
+    @apply flex overflow-auto w-auto h-full transition-transform duration-500 ease-in-out;
+    scrollbar-width: none
 }
 
 .carousel-item {
-    @apply min-w-52 flex-shrink-0;
+    @apply flex-shrink-0 relative;
 }
+

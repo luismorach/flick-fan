@@ -7,7 +7,7 @@ import { TimerManager } from '../../../../utils/timer-manager';
 import { AutoImagePipe } from '../../../../pipes/autoimage/auto-image.pipe';
 import { IconComponent } from "../../../../icon/icon.component";
 import { CdkPortalOutlet } from '@angular/cdk/portal';
-import { SkeletonSlidesHook } from '../../../../utils/use-skeleton-slides';
+import { SlidesInfoHook } from '../../../../utils/use-slides-info';
 import { HoverSerieExpandDirective } from "../../../../../core/directives/hover-serie-expand/hover-serie-expand.directive";
 
 @Component({
@@ -22,7 +22,7 @@ import { HoverSerieExpandDirective } from "../../../../../core/directives/hover-
 export class CardSerieComponent {
 
   readonly serie = input.required<Serie>();
-  readonly slideInfo = input.required<SkeletonSlidesHook>()
+  readonly slideInfo = input.required<SlidesInfoHook>()
   readonly cardIndex = input<number>()
   readonly activeIndex = input<number>()
 

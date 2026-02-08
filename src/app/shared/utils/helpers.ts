@@ -14,33 +14,6 @@ export function getKeyTrailer(videos:Videos): string |undefined {
     return videos.results.find((v: video) => v.type === 'Trailer')?.key ;
 }
 
-/**
- * Divide un array en chunks de tamaño específico
- * @param data Array a dividir
- * @param chunkSize Tamaño de cada chunk (debe ser > 0)
- * @returns Array de arrays (chunks)
- * @throws Error si chunkSize <= 0
- * @example
- * createChunks([1,2,3,4,5], 2) // [[1,2], [3,4], [5]]
- */
-
-export function createChunks<T>(data: T[], chunkSize: number): T[][] {
-    if (chunkSize <= 0) {
-        throw new Error('chunkSize must be greater than 0');
-    }
-
-    if (!Array.isArray(data) || data.length === 0) {
-        return [];
-    }
-
-    const chunks: T[][] = [];
-    for (let i = 0; i < data.length; i += chunkSize) {
-        chunks.push(data.slice(i, i + chunkSize));
-    }
-
-    return chunks;
-}
-
 export function validateElement(element: ElementRef | HTMLElement | undefined | null): void {
     if (!element) {
         throw new Error('Element must be provided, received null or undefined');

@@ -1,10 +1,7 @@
-swiper-container::part(container) {
-    overflow-y: visible;
-    overflow-x: clip;
+.show-overflow{
+   @apply has-[.card-base:hover]:-my-96 has-[.card-base:hover]:py-96
 }
 
-.active {
-    opacity: 100%;
-    transition: opacity 0.5s ease-in;
-    transition-delay: 3s;
+.show-overflow:not(.show-overflow:has(.card-base:hover)){
+  @apply transition-all duration-300;
 }

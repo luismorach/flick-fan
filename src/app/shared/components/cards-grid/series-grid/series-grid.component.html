@@ -1,49 +1,49 @@
 <!-- Reusable series grid -->
 <ng-template #seriesGrid>
-    @for (chunk of chunks(); track gridHelper.trackByChunk(chunk)) {
+    @for (chunk of chunks(); track slideExpansion.trackByChunk(chunk)) {
         <div 
           class="flex justify-start overflow-x-auto hide-scrollbar scroll-smooth" @fade
-          [style.gap.px]="slides.spaceBetween()"
-          [style.padding-left.px]="slides.spaceBetween()"
-          [style.padding-right.px]="slides.spaceBetween()">
+          [style.gap.px]="slidesInfo.layout().spaceBetween"
+          [style.padding-left.px]="slidesInfo.layout().peekSize"
+          [style.padding-right.px]="slidesInfo.layout().peekSize" #container>
           
           @for (serie of chunk; track serie.id) {
             <app-card-serie 
               [serie]="serie" 
-              [slideInfo]="slides"
-              (hoverEnter)="gridHelper.handleCardHover($event, slides)"
-              (hoverLeave)="gridHelper.resetCardHover($event)"
+              [slideInfo]="slidesInfo"
+              (hoverEnter)="slideExpansion.adjustTranslateForExpandedSlide($event, slidesInfo, 0)"
+              (hoverLeave)="slideExpansion.restoreBaseTranslate()"
               @fade>
             </app-card-serie>
           }
 
           <!-- Space for expanded card -->
-          <div class="shrink-0" [style.width.px]="slides.expandedSlideWidth()"></div>
+          <div class="shrink-0" [style.width.px]="slidesInfo.layout().expandedSlideSize"></div>
         </div>
       }
 
-      @if(dataLoaderManager.isFetchingMoreData()){
-        <app-carousel-series-skeleton [slidesInfo]="slides" [hasHeader]="false" @fade></app-carousel-series-skeleton>
-      }
+     <!--  @if(loader.isFetchingMoreData()){
+        <app-carousel-series-skeleton [hasHeader]="false" @fade></app-carousel-series-skeleton>
+      } -->
 </ng-template>
 
 <!-- Initial loading state -->
-@if(dataLoaderManager.isInitialLoading()){
-   <app-carousel-series-skeleton [slidesInfo]="slides" [hasHeader]="false" @fade></app-carousel-series-skeleton>
+@if(loader.isInitialized()){
+   <app-carousel-series-skeleton [hasHeader]="false" @fade></app-carousel-series-skeleton>
 }
 
 <!-- Mode: Infinite Scroll -->
-@if(type()==='scroll' &&  dataLoaderManager.hasData()){
+@if(type()==='scroll' &&  loader.hasData()){
   <section 
     role="feed"
     aria-label="Series populares"
-    [attr.aria-busy]="dataLoaderManager.isFetchingMoreData()"
+    [attr.aria-busy]="isFetchingMoreData()"
     class="flex flex-col mb-16" 
-    [style.gap.px]="slides.spaceBetween()"
+    [style.gap.px]="slidesInfo.layout().spaceBetween"
     infiniteScroll
     [infiniteScrollDistance]="scrollConfig.SCROLL_CONFIG.distance" 
     [infiniteScrollThrottle]="scrollConfig.SCROLL_CONFIG.throttle"
-    (scrolled)="dataLoaderManager.loadMoreData()">
+    (scrolled)="loadMoreData()">
 
     <ng-container *ngTemplateOutlet="seriesGrid"></ng-container>
   
@@ -51,7 +51,7 @@
 }
 
 <!-- Mode: manual (with button) -->
-@else if((type() ==='series' || type() ==='all') && dataLoaderManager.hasData() ){
+@else if((type() ==='series' || type() ==='all') && loader.hasData() ){
   <section 
     role="region"
     aria-label="Series buscadas"
@@ -59,19 +59,18 @@
     aria-labelledby="series-header"
     @fade>
 
-    <header id="series-header" class="mb-2" [style.padding.px]="slides.fullSpacing()">
+    <header id="series-header" class="mb-2">
         <h2 class="text-title-carousel">  Series  </h2>
     </header>
         
     <div class="flex flex-col mb-16" 
-    [style.gap.px]="slides.spaceBetween()">
+    [style.gap.px]="slidesInfo.layout().spaceBetween">
         <ng-container *ngTemplateOutlet="seriesGrid"></ng-container>
     </div> 
 
-    @if(dataLoaderManager.canLoadMore()){
+    @if(canLoadMore()){
         <button aria-label="Cargar más series" class="btn-primary" 
-          [style.margin-left.px]="slides.fullSpacing()" [style.margin-bottom.px]="slides.fullSpacing()"
-            (click)="dataLoaderManager.loadMoreData({query:searchQuery()})">
+            (click)="loadMoreData({query:searchQuery()})">
             Cargar mas series
         </button>
     }

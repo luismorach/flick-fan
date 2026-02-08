@@ -1,8 +1,6 @@
 import { Component, input } from '@angular/core';
-import { Movie} from '../../../../core/interfaces/movie/movie.interface';
-import { Serie} from '../../../../core/interfaces/serie/serie.interface';
 import { NgClass } from '@angular/common';
-import { CarouselService } from '../../../../core/services/carousel/carousel.service';
+import { CarouselService } from '../../../../core/services/carousel/carousel-service';
 
 @Component({
   selector: 'app-carousel-navigation',
@@ -10,7 +8,6 @@ import { CarouselService } from '../../../../core/services/carousel/carousel.ser
   templateUrl: './carousel-navigation.component.html',
   styleUrl: './carousel-navigation.component.css'
 })
-export class CarouselNavigationComponent {
-  readonly carouselService = input.required<CarouselService<Movie> | CarouselService<Serie>>();
-  readonly direcction = input<String>('horizontal')
+export class CarouselNavigationComponent<T extends Object, R extends keyof T> {
+  readonly carouselService = input.required<CarouselService<T, R>>();
 }

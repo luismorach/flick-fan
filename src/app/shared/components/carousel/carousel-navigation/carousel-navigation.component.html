@@ -1,32 +1,32 @@
-<button type="button" aria-label="Diapositiva anterior" (click)="carouselService().prev()"
+<button type="button" aria-label="Diapositiva anterior" (click)="carouselService().navigation.prev()"
     class="btn-navigation "
     [ngClass]="{
-        'btn-navigation-horizontal-prev':direcction()==='horizontal',
-        'btn-navigation-vertical-prev':direcction()==='vertical'
+        'btn-navigation-horizontal-prev':carouselService().slidesInfo.direction()==='horizontal',
+        'btn-navigation-vertical-prev':carouselService().slidesInfo.direction()==='vertical'
     }"
-    [disabled]="carouselService().isAtStart() || !carouselService().isHoveredOverCarousel()">
+    [disabled]="carouselService().state().isAtStart() || !carouselService().isHoveredOverCarousel()">
     <i 
         class="fa-solid" 
         [ngClass]="{
-            'fa-chevron-left':direcction()==='horizontal',
-            'fa-chevron-up ':direcction()==='vertical'
+            'fa-chevron-left':carouselService().slidesInfo.direction() ==='horizontal',
+            'fa-chevron-up ':carouselService().slidesInfo.direction()==='vertical'
         }"
         aria-hidden="true">
     </i>
 </button>
 
-<button type="button" aria-label="Diapositiva siguiente" (click)="carouselService().next()"
+<button type="button" aria-label="Diapositiva siguiente" (click)="carouselService().navigation.next()"
     class="btn-navigation"
     [ngClass]="{
-        'btn-navigation-horizontal-next':direcction()==='horizontal',
-        'btn-navigation-vertical-next':direcction()==='vertical'
+        'btn-navigation-horizontal-next':carouselService().slidesInfo.direction()==='horizontal',
+        'btn-navigation-vertical-next':carouselService().slidesInfo.direction()==='vertical'
     }"
-    [disabled]="carouselService().isAtEnd() || !carouselService().isHoveredOverCarousel()">
+    [disabled]="carouselService().state().isAtEnd() || !carouselService().isHoveredOverCarousel()">
     <i 
         class="fa-solid" 
         [ngClass]="{
-            'fa-chevron-right':direcction()==='horizontal',
-            'fa-chevron-down':direcction()==='vertical'
+            'fa-chevron-right':carouselService().slidesInfo.direction()==='horizontal',
+            'fa-chevron-down':carouselService().slidesInfo.direction()==='vertical'
         }"
         aria-hidden="true">
     </i>

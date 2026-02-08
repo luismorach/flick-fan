@@ -1,28 +1,29 @@
-@if(carouselService.dataLoaderManager.hasData()){
-<main class="w-full h-screen relative mb-32" @fade>
-    <div class="relative">
-        <app-carousel-navigation [carouselService]="carouselService"></app-carousel-navigation>
-        <div cdkScrollable #carousel class="carousel-container gradient">
-            @for(movie of carouselService.dataLoaderManager.data();track $index;let i=$index){
+@if(loader.hasData()){
+    <main class="w-full min-h-screen mb-16 relative" @fade>
+        <div class="relative gradient overflow-hidden">
+            
+            <app-carousel-navigation [carouselService]="carouselService"></app-carousel-navigation>
+            
+            <div #carousel class="carousel-container">
+                @for(movie of loader.data();track $index;let i=$index){
+                   <div class="carousel-item min-h-screen w-screen" [attr.data-id]="movie.id" #slide>
+                        <app-banner-movie-details @fade
+                            [movie]="movie" 
+                            [cardIndex]="i"
+                            [activeIndex]="carouselService.state().activeIndex()">
+                        </app-banner-movie-details>
+                    </div>
+                }
 
-            <div class="carousel-item w-screen h-screen relative" [attr.data-id]="movie.id">
-                <app-banner-movie-details 
-                    [movie]="movie" 
-                    [cardIndex]="i"
-                    [activeIndex]="carouselService.activeIndex()">
-                </app-banner-movie-details>
+                @if(canLoadMore()){
+                    <div class="carousel-item w-screen h-full" @fade>
+                        <app-banner-skeleton></app-banner-skeleton>
+                    </div>
+                }
             </div>
-            }
-
-            @if(carouselService.dataLoaderManager.canLoadMore()){
-                <div class="carousel-item w-screen h-screen " @fade>
-                  <app-banner-skeleton></app-banner-skeleton>
-                </div>
-            }
         </div>
-    </div>
-</main>
+    </main>
 }
-@else if(carouselService.dataLoaderManager.isInitialLoading()){
+@else if(loader.isInitialized()){
     <app-banner-skeleton @fade></app-banner-skeleton>
 }

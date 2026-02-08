@@ -8,7 +8,7 @@ import { Serie, SerieList } from '../core/interfaces/serie/serie.interface';
 import { forkJoin } from 'rxjs';
 import { EmptyComponent } from '../shared/components/empty/empty.component';
 import { SeriesGridComponent } from '../shared/components/cards-grid/series-grid/series-grid.component';
-import { DataLoaderManager } from '../shared/utils/data-loader-manager';
+import { LoaderCore } from '../shared/utils/data-loaders/types';
 
 @Component({
   selector: 'app-series',
@@ -46,9 +46,9 @@ export default class SeriesComponent {
     });
   }
   getDataLoaders() {
-      const loaders: DataLoaderManager<Serie>[] = [];
+      const loaders: LoaderCore<SerieList,'results'>[] = [];
   
-      loaders.push(this.seriesGrid().dataLoaderManager);
+      loaders.push(this.seriesGrid().loader);
       //loaders.push(this.bannerSeries().swiperHelper.dataLoaderManager);
       return loaders;
     }

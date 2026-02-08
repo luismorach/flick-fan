@@ -1,48 +1,58 @@
-<!-- @if(swiperHelper.dataLoaderManager.isInitialLoading()){
-    <app-skeleton @fade></app-skeleton>
-}
-@else if(swiperHelper.dataLoaderManager.hasData()){ -->
-    <main class="w-full mb-24 grid grid-cols-3 gap-8 relative h-screen">
+@if(loader.hasData()){
+    <main class="w-full mb-24 relative min-h-screen grid items-end grid-cols-1 
+    [grid-template-areas:'info''carousel'] md:grid-cols-2 md:[grid-template-areas:'carousel_info'] 
+    lg:grid-cols-3 lg:[grid-template-areas:'carousel_info_info']" >
+        
+        <section class=" relative overflow-hidden z-20 md:px-8  [grid-area:carousel] mx-auto w-full"
+            [style.max-width]="isVertical() ? 'none' : '500px'"
+            [style.height]="viewportHeight()">
+           <app-carousel-navigation [carouselService]="carouselService"> </app-carousel-navigation>
 
-        <!-- <section class="h-screen relative ml-8"> -->
-            <!-- <app-carousel-navigation 
-                [swiperHelper]="swiperHelper" 
-                direcction="vertical">
-            </app-carousel-navigation> -->
+            <div cdkScrollable class="carousel-container h-full w-full" #carousel 
+                [class.flex-col]="carouselService.slidesInfo.direction() === 'vertical'"
+                [style.padding]="spacingToCenter()">
+                
+                @for(serie of loader.data();track serie.id;let i=$index;){
+                    <div appSlideStyle [attr.data-id]="serie.id"
+                        [index]="i" 
+                        [carousel]="carouselService"
+                        [style.height]="slideHeight()"
+                        [style.width]="slideWidth()"
+                        [style.aspect-ratio]="isVertical() ? '16 / 9': '9 / 16'"
+                        class="carousel-item slide" #slide>
 
-      <!--       <swiper-container init="false" class="h-full w-full" #swiper>
-                @for(serie of swiperHelper.dataLoaderManager.data();track serie.id;let i=$index){
-                <swiper-slide appSlideStyle [index]="i" [active]="swiperHelper.activeIndex()" [attr.data-id]="serie.id" >
-                    <figure class="img-container">
-                        <img [ngSrc]="serie.backdrop_path | autoImage:'backdrop-wide'" 
-                         [alt]="serie.name" fill #img loading="lazy"
-                            class="w-full h-full object-cover object-center rounded-md">
-                    </figure>
-
-                </swiper-slide>
+                        <figure class="img-container">
+                            <img [ngSrc]="serie.backdrop_path | autoImage:'backdrop-wide'" 
+                            [alt]="serie.name" fill #img loading="lazy"
+                                class="w-full h-full object-cover object-center rounded-md ">
+                        </figure>
+                    </div>
                 }
 
-                @if(swiperHelper.dataLoaderManager.canLoadMore() || swiperHelper.dataLoaderManager.isFetchingMoreData()){ 
-                    <swiper-slide appSlideStyle 
-                        [index]="swiperHelper.dataLoaderManager.data().length" 
-                        [active]="swiperHelper.activeIndex()"
-                        class="animate-pulse">
-                    </swiper-slide> 
+               @if(canLoadMore()){ 
+                    <div appSlideStyle 
+                        [index]="loader.data().length" 
+                        [carousel]="carouselService"
+                        [style.height]="slideHeight()"
+                        [style.width]="slideWidth()"
+                        [style.aspect-ratio]="isVertical() ? '16 / 9': '9 / 16'"
+                        class="carousel-item animate-pulse slide">
+                    </div> 
                 }
-            </swiper-container>
+            </div>
         </section>
 
-        @if(swiperHelper.dataLoaderManager.isFetchingMoreData()){
+       @if(carouselService.state().isAtSkeleton()){
             <app-skeleton mode="overlay"></app-skeleton>
         }@else{
             <figure class="w-full h-screen absolute gradient-top">
-                <img [ngSrc]="swiperHelper.currentElement().backdrop_path|autoImage:'backdrop-square'" fill
-                priority [alt]="swiperHelper.currentElement().name"
+                <img [ngSrc]="carouselService.state().currentElement().backdrop_path|autoImage:'backdrop-square'" fill
+                priority [alt]="carouselService.state().currentElement().name"
                 class="w-full h-full object-cover object-center gradient-top">
-                <div class="overlay"></div>    
+                <div class="overlay"></div>
             </figure>
 
-            <app-banner-details class="col-span-2" [serie]="swiperHelper.currentElement()"></app-banner-details>
-        } -->
+            <app-banner-details class="[grid-area:info]" [serie]="carouselService.state().currentElement()"></app-banner-details>
+        }
     </main>
-<!-- } -->
+}

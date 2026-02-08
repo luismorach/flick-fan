@@ -8,12 +8,12 @@ import { ApiService } from '../../core/services/API/api.service';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
 import { MovieList } from '../../core/interfaces/movie/movie.interface';
 import { CarouselMoviesComponent } from '../../shared/components/carousel/carousel-movies/carousel-movies.component';
-import { CarouselSkeletonComponent } from '../../shared/components/carousel/carousel-movies/carousel-skeleton/carousel-skeleton.component';
+import { CarouselMoviesSkeletonComponent } from '../../shared/components/carousel/carousel-movies/carousel-skeleton/carousel-movies-skeleton.component';
 
 
 @Component({
   selector: 'app-play-movie',
-  imports: [UrlSafePipe, NgOptimizedImage,CarouselMoviesComponent, CarouselSkeletonComponent],
+  imports: [UrlSafePipe, NgOptimizedImage,CarouselMoviesComponent, CarouselMoviesSkeletonComponent],
   templateUrl: './play-movie.component.html',
   styleUrl: './play-movie.component.css',
   animations: [fade]

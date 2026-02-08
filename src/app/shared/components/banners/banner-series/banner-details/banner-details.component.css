@@ -4,10 +4,10 @@
 }
 
 .buttons{
-  @apply flex justify-start gap-4 font-racing text-lg my-4 h-12 ;
+  @apply flex flex-wrap justify-start gap-4 font-racing text-lg my-4 h-9 lg:h-10 ;
 }
 
 .overview{
-  @apply pt-2 text-justify max-h-[15vh] line-clamp-3;
+  @apply text-gray-300 pt-2 text-justify max-h-[15vh] line-clamp-3 text-sm lg:text-base ;
 }
 

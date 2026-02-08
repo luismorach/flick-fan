@@ -1,26 +1,25 @@
 import {
   Component, inject, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectionStrategy, ElementRef,
-  input, viewChild, computed, effect
+  input, viewChild, computed, effect,
+  viewChildren
 } from '@angular/core';
 import { fade } from '../../../animations/animations';
 import { BannerSkeletonComponent } from './banner-skeleton/banner-skeleton.component';
-import { MovieList, Movie } from '../../../../core/interfaces/movie/movie.interface';
-import { DataLoaderManager } from '../../../utils/data-loader-manager';
+import { MovieList} from '../../../../core/interfaces/movie/movie.interface';
 import { CarouselNavigationComponent } from "../../carousel/carousel-navigation/carousel-navigation.component";
 import { BannerDetailComponent } from "./banner-movie-details/banner-movie-details.component";
 import { getKeyTrailer } from '../../../utils/helpers';
 import { FloatTrailerService } from '../../../../core/services/float-trailer/float-trailer.service';
-import { CarouselService } from '../../../../core/services/carousel/carousel.service';
-import { IntersectionObserverManager } from '../../../utils/intersectionObserver';
+import { CarouselOptions} from '../../../../core/interfaces/shared/carousel-interface';
+import { CarouselService } from '../../../../core/services/carousel/carousel-service';
+import { WithDetails } from '../../../utils/data-loaders/enhancers/with-details';
+import { hasPagination, withPagination } from '../../../utils/data-loaders/enhancers/with-pagination';
+import { useDataLoader } from '../../../utils/data-loaders/use-data-loader';
 
 @Component({
   selector: 'app-banner-movies',
-  imports: [
-    BannerSkeletonComponent,
-    CarouselNavigationComponent,
-    BannerDetailComponent
-  ],
-  providers: [DataLoaderManager, CarouselService,IntersectionObserverManager],
+  imports: [BannerSkeletonComponent, CarouselNavigationComponent, BannerDetailComponent],
+  providers: [CarouselService],
   templateUrl: './banner-movies.component.html',
   styleUrl: './banner-movies.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -30,7 +29,7 @@ import { IntersectionObserverManager } from '../../../utils/intersectionObserver
 
 export default class BannerMoviesComponent {
   // Dependencies
-  readonly carouselService = inject(CarouselService<Movie>);
+  readonly carouselService = inject(CarouselService<MovieList, 'results'>);
   private readonly floatTrailer = inject(FloatTrailerService);
 
   // Inputs
@@ -39,20 +38,36 @@ export default class BannerMoviesComponent {
   // View Queries
   private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carousel')
 
+  readonly loader = useDataLoader<MovieList, 'results'>('results', this.movieList).pipe(
+    withPagination,
+    WithDetails,
+  )
+
   readonly currentTrailerKey = computed(() => {
-    if (!this.carouselService.currentElement()) return undefined
-    return getKeyTrailer(this.carouselService.currentElement().videos)
-  }
-  );
+    if (!this.carouselService.state().currentElement()) return undefined
+    return getKeyTrailer(this.carouselService.state().currentElement().videos)
+  });
 
   updateVideoKey = effect(() => {
     this.floatTrailer.setVideoKey(this.currentTrailerKey())
   })
 
-  constructor() {
-    this.carouselService.initialize(this.carouselContainer, this.movieList, { requiresIntersectionObserver: true })
+
+  private carouselOptions: CarouselOptions = {
+    requiresEnrichment: true,
+    slidesPerGroup: 1,
+    orientation: 'horizontal',
+    slidesConfig: {}
   }
 
+
+  constructor() {
+    this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.loader)
+  }
+
+  canLoadMore() {
+    return hasPagination(this.loader) && this.loader.canLoadMore()
+  }
 }
 
 

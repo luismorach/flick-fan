@@ -1,0 +1,5 @@
+ .tooltip {
+     @apply bg-[#111] text-white/90 px-2.5 py-1.5 rounded-lg text-sm whitespace-nowrap;
+     box-shadow: 0 0px 15px rgba(105, 0, 0, .37);
+
+ }

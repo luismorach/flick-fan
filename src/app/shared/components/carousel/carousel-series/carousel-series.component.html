@@ -1,45 +1,54 @@
-@if (carouselService.dataLoaderManager.hasData()) {
-    <main class=" w-full mb-8">
-        <header class="mb-2" [style.padding.px]="slidesInfo.spaceBetween()">
-            <h2 class="text-title-carousel"> {{title()}}</h2>
+@if (loader.hasData()) {
+    <main class=" w-full mb-16">
+        <header class="mb-6" [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize">
+             <h2 class="text-title-carousel">
+                 <span class="w-1 h-6 bg-[#f20d0d] rounded-full"></span> 
+                {{title()}}</h2>
         </header>
 
-        <section class="relative">
+        <section 
+            [attr.aria-label]="title() + ' carousel'" 
+            role="region" 
+            class=" relative">
+
             <app-carousel-navigation [carouselService]="carouselService"></app-carousel-navigation>
             
             <div cdkScrollable #carousel class="carousel-container"
-                [style.gap.px]="slidesInfo.spaceBetween()"
-                [style.padding-left.px]="slidesInfo.spaceBetween()" 
-                [style.padding-right.px]="slidesInfo.spaceBetween() + slidesInfo.expandedSlideWidth()" >
-                @for(serie of carouselService.dataLoaderManager.data(); track serie.id; let i = $index){
+                [style.gap.px]="carouselService.slidesInfo.layout().spaceBetween"
+                [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize" 
+                [style.padding-right.px]="carouselService.slidesInfo.layout().peekSize ">
 
-                <div class="carousel-item">
-                    <app-card-serie @fade
-                        [slideInfo]="slidesInfo" 
-                        [serie]="serie"
-                        [activeIndex]="carouselService.activeIndex()"
-                        [cardIndex]="i"
-                        (hoverEnter)="onSlideExpandHover(i)"
-                        (hoverLeave)="onSlideCollapseHover()">
-                    </app-card-serie>
-                </div>
+                @for(serie of loader.data(); track serie.id; let i = $index){
+                    <div class="carousel-item" #slide>
+                        <app-card-serie @fade
+                            [slideInfo]="carouselService.slidesInfo" 
+                            [serie]="serie"
+                            [activeIndex]="carouselService.state().activeIndex()"
+                            [cardIndex]="i"
+                            (hoverEnter)="onSlideExpandHover(i)"
+                            (hoverLeave)="onSlideCollapseHover()">
+                        </app-card-serie>
+                    </div>
                 }
                 
-                @if(carouselService.dataLoaderManager.canLoadMore()){
-                    @for(_ of slidesInfo.skeletonSlideIndexes(); track $index) {
-                        <div class="carousel-item"  @fade>
+                @if(canLoadMore()){
+                    @for(_ of carouselService.slidesInfo.skeletonSlideIndexes(); track $index) {
+                        <div class="carousel-item w-full"  @fade
+                        [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize"
+                        [style.height.px]="carouselService.slidesInfo.layout().slideMainAxisSize * 1.5">
                             <app-carousel-series-skeleton 
-                                [slidesInfo]="slidesInfo" 
                                 [hasHeader]="false" 
                                 [insideCarousel]="true">
                             </app-carousel-series-skeleton>
                         </div>
                     }
                 }
+                <div class="carousel-item" [style.width.px]="carouselService.slidesInfo.layout().expandedSlideSize + 
+                carouselService.slidesInfo.layout().spaceBetween"></div>
             </div>
         </section>
     </main>
 }
-@else if(carouselService.dataLoaderManager.isInitialLoading()){
- <app-carousel-series-skeleton [slidesInfo]="slidesInfo" @fade></app-carousel-series-skeleton>
+@else if(loader.isInitialized()){
+ <app-carousel-series-skeleton  @fade></app-carousel-series-skeleton>
 }

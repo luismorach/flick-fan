@@ -1,20 +1,41 @@
-swiper-container::part(container){
-     overflow-y: clip;
-    overflow-x: visible; 
-}
 
+.container{
+    @apply w-full mb-24  relative min-h-screen;
+}
 .slide{
-    @apply self-center w-1/2 aspect-video rounded-md transition-all duration-300 ease-in bg-zinc-700 ;
+    @apply self-center rounded-md transition-transform duration-300 ease-in bg-zinc-700 ;
 }
 
 .img-container{
-    @apply w-full h-full relative cursor-pointer transition-all duration-300 ease-in opacity-40
+    @apply w-full h-full relative cursor-pointer transition-transform duration-300 ease-in opacity-40
 }
 
-swiper-slide.scale-150 .img-container   { @apply !opacity-60; }
+.slide.is-active{
+    @apply scale-[2] z-20;
+}
+.slide.is-near{
+    @apply scale-150 z-10
+}
+.slide.is-far.prev-vertical{
+    @apply translate-y-[40%]
+}
+.slide.is-far.next-vertical{
+    @apply -translate-y-[40%]
+}
 
-swiper-slide[class*="scale-[2]"] .img-container {
-  @apply opacity-100 !important;
+.slide.is-far.prev-horizontal{
+    @apply translate-x-[40%]
+}
+.slide.is-far.next-horizontal{
+    @apply -translate-x-[40%]
+}
+
+.slide.is-active .img-container{
+    @apply !opacity-100;
+}
+
+.slide.is-near .img-container   {
+     @apply !opacity-60; 
 }
 
 

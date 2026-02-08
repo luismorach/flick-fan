@@ -1,25 +1,12 @@
-swiper-container::part(pagination) {
-  @apply w-[110px] 
-}
-
-swiper-container::part(bullet) {
-  @apply bg-white/50 opacity-100;
-  
-}
-
-swiper-container::part(bullet-active) {
-  @apply w-[32px] rounded-lg transition-all duration-300 ease-in-out opacity-100
-  bg-gradient-to-r from-red-700 to-red-500;
-}
 
 .overlay{
-   @apply w-full absolute top-0 h-screen bg-gradient-to-r from-black 
+   @apply w-full h-full absolute top-0  bg-gradient-to-r from-[#181111] 
           from-15% via-[rgba(15,15,15,.9)] via-50% to-[rgba(83,200,141,0)] 
           to-100% 
 }
  
 .title{
-  @apply font-racing uppercase text-3xl text-left sm:text-4xl lg:text-5xl relative 
+  @apply font-racing uppercase text-2xl text-left sm:text-3xl md:text-4xl lg:text-5xl relative 
           w-full max-h-48 object-contain object-center line-clamp-2;
 }
 .metadata{
@@ -27,10 +14,10 @@ swiper-container::part(bullet-active) {
 }
 
 .overview{
-  @apply pt-2 text-justify max-h-[20vh] line-clamp-5 opacity-0;
+  @apply text-gray-300 pt-2 text-justify text-sm sm:text-base h-full line-clamp-5 opacity-0;
 }
 
 .buttons{
-  @apply flex justify-start gap-4 font-racing text-lg my-4 h-12 opacity-0;
+  @apply flex justify-start gap-4 font-racing text-lg my-4 opacity-0  h-9 sm:h-10 ;
 }
 

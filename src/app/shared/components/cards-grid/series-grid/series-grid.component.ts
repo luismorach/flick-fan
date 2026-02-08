@@ -1,14 +1,18 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
-import { GridHelperService } from '../../../../core/services/grid-helper/grid-helper.service';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, input, signal, viewChild, viewChildren } from '@angular/core';
 import { ScrollConfigService } from '../../../../core/services/scroll-config/scroll-config.service';
-import { DataLoaderManager } from '../../../utils/data-loader-manager';
-import { useSkeletonSlides } from '../../../utils/use-skeleton-slides';
+import { useSlidesInfo } from '../../../utils/use-slides-info';
 import { Serie, SerieList } from '../../../../core/interfaces/serie/serie.interface';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { CardSerieComponent } from '../../carousel/carousel-series/card-serie/card-serie.component';
 import { CarouselSeriesSkeletonComponent } from '../../carousel/carousel-series/carousel-series-skeleton/carousel-series-skeleton.component';
 import { fade } from '../../../animations/animations';
 import { NgTemplateOutlet } from '@angular/common';
+import { slidesConfig } from '../../../../core/interfaces/shared/carousel-interface';
+import { useSlideExpansion } from '../../../utils/use-slide-expansion';
+import { useDataLoader } from '../../../utils/data-loaders/use-data-loader';
+import { hasPagination, withPagination } from '../../../utils/data-loaders/enhancers/with-pagination';
+import { ParamsApi } from '../../../../core/interfaces/shared/params-http.interface';
+import { LoaderWithPagination } from '../../../utils/data-loaders/types';
 
 /**
  * Dynamic grid component for series with horizontal chunking and hover expansion.
@@ -27,12 +31,12 @@ import { NgTemplateOutlet } from '@angular/common';
  */
 @Component({
   selector: 'app-series-grid',
-  imports: [InfiniteScrollDirective, CardSerieComponent,CarouselSeriesSkeletonComponent,NgTemplateOutlet],
-  providers:[DataLoaderManager],
+  imports: [InfiniteScrollDirective, CardSerieComponent, CarouselSeriesSkeletonComponent, NgTemplateOutlet],
+  providers: [],
   templateUrl: './series-grid.component.html',
   styleUrl: './series-grid.component.css',
-  animations:[fade],
-  changeDetection:ChangeDetectionStrategy.OnPush
+  animations: [fade],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SeriesGridComponent {
   /** Fixed width for series skeleton loading cards (pixels) */
@@ -50,7 +54,7 @@ export class SeriesGridComponent {
    * ```
    */
   readonly data = input.required<SerieList | undefined>()
-  
+
   /**
    * display mode
    *
@@ -80,30 +84,61 @@ export class SeriesGridComponent {
   readonly genreId = input<number>(0)
 
   /** Manages data loading, pagination, and filtering */
-  readonly dataLoaderManager:DataLoaderManager<Serie> = inject(DataLoaderManager<Serie>);
+  readonly loader = useDataLoader<SerieList, 'results'>('results', this.data).pipe(
+    withPagination
+  )
 
   /** Infinite scroll configuration (distance, throttle) */
   readonly scrollConfig = inject(ScrollConfigService);
 
   /** Helper for grid layout and hover effects */
-  readonly gridHelper = inject(GridHelperService);
+  readonly slideExpansion = useSlideExpansion()
 
   /** Skeleton slide configuration for loading states */
-  readonly slides = useSkeletonSlides(this.SKELETON_SLIDE_WIDTH);
+  private readonly container = viewChild<ElementRef<HTMLElement>>('container')
 
-  /**
+  readonly cardsConfig: slidesConfig = {
+    slidesPerView: 1,
+    peekSkeletonOffset: 0,
+    peek: 24,
+    spaceBetween: 24,
+    expandedSlideMultiplier: 2.6,
+    breakpoints: {
+      508: { slidesPerView: 2, },
+      748: { slidesPerView: 3, peek: 32 },
+      988: { slidesPerView: 4, peek: 44 },
+      1388: { slidesPerView: 5 }
+    }
+  }
+
+  readonly slidesInfo = useSlidesInfo(this.container, this.cardsConfig);
+
+  /** 
    * Horizontal chunks of series for row-based layout.
    * Updates when data or slidesPerView changes.
    */
-  readonly chunks = this.gridHelper.createChunks<Serie>(this.dataLoaderManager.data, this.slides.slidesPerView())
+  readonly chunks = this.slideExpansion.createChunks<Serie>(this.loader.data,
+    this.slidesInfo.layout().slidesPerView)
 
   constructor() {
-     /**
- * Pass the full signal (not the value) so that DataLoaderManager
- * uses `effect(() => signal())` and reacts to changes.
- */
-this.dataLoaderManager.data()
-    this.dataLoaderManager.setupDataSource(this.data,this.genreId)
+    
+    //this.dataLoaderManager.setupDataSource(this.data, this.genreId)
+  }
+
+  readonly isFetchingMoreData = computed(() => {
+    if (hasPagination(this.loader))
+      return this.loader.isFetchingMoreData()
+    else
+      return false
+
+  })
+
+  canLoadMore() {
+    return hasPagination(this.loader) && this.loader.canLoadMore()
+  }
+  loadMoreData(params: ParamsApi = {}) {
+    if (hasPagination(this.loader) && this.loader.canLoadMore())
+      this.loader.loadMoreData(params)
   }
 
 }

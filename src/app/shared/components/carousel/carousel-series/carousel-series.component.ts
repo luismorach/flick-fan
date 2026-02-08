@@ -1,21 +1,23 @@
 import {
-  ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA,ElementRef, inject, input, viewChild,
+  ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, input, viewChild,
 } from '@angular/core';
 import { fade } from '../../../animations/animations';
 import { CardSerieComponent } from './card-serie/card-serie.component';
 import { Serie, SerieList } from '../../../../core/interfaces/serie/serie.interface';
-import { SkeletonSlidesHook, useSkeletonSlides } from '../../../utils/use-skeleton-slides';
 import { CarouselSeriesSkeletonComponent } from './carousel-series-skeleton/carousel-series-skeleton.component';
 import { CarouselNavigationComponent } from '../carousel-navigation/carousel-navigation.component';
-import { DataLoaderManager } from '../../../utils/data-loader-manager';
-import { CarouselService } from '../../../../core/services/carousel/carousel.service';
-import { SlideExpansionService } from '../../../../core/services/slide-expansion/slide-expansion.service';
-import { IntersectionObserverManager } from '../../../utils/intersectionObserver';
+import { CarouselOptions } from '../../../../core/interfaces/shared/carousel-interface';
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { useSlideExpansion } from '../../../utils/use-slide-expansion';
+import { CarouselService } from '../../../../core/services/carousel/carousel-service';
+import { hasPagination, withPagination } from '../../../utils/data-loaders/enhancers/with-pagination';
+import { useDataLoader } from '../../../utils/data-loaders/use-data-loader';
+import { WithDetails } from '../../../utils/data-loaders/enhancers/with-details';
 
 @Component({
   selector: 'app-carousel-series',
-  imports: [CardSerieComponent, CarouselSeriesSkeletonComponent, CarouselNavigationComponent],
-  providers: [DataLoaderManager, CarouselService, SlideExpansionService,IntersectionObserverManager],
+  imports: [CardSerieComponent, CarouselSeriesSkeletonComponent, CarouselNavigationComponent, CdkScrollable],
+  providers: [CarouselService],
   templateUrl: './carousel-series.component.html',
   styleUrl: './carousel-series.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -28,34 +30,58 @@ export class CarouselSeriesComponent {
   // Inputs
   readonly seriesList = input.required<SerieList | undefined>();
   readonly title = input.required<string>();
-  readonly slideExpansionService = inject(SlideExpansionService)
 
   // Dependencies
-  readonly carouselService = inject(CarouselService<Serie>)
+  readonly carouselService = inject(CarouselService<SerieList, 'results'>)
+  readonly slideExpansion = useSlideExpansion()
+  readonly loader = useDataLoader<SerieList, 'results'>('results', this.seriesList).pipe(
+    withPagination,
+    WithDetails,
+  )
 
   // Configuration
-  private static readonly SLIDE_WIDTH = 288;
-
-  readonly slidesInfo: SkeletonSlidesHook = useSkeletonSlides(
-    CarouselSeriesComponent.SLIDE_WIDTH,
-    true
-  );
-
   private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carousel')
 
+  private carouselOptions: CarouselOptions = {
+    requiresEnrichment: false,
+    orientation: 'horizontal',
+    requireSnapMandatory: false,
+    slidesConfig: {
+      slidesPerView: 1,
+      peekSkeletonOffset: 1,
+      peek: 24,
+      spaceBetween: 24,
+      expandedSlideMultiplier: 2.6,
+      breakpoints: {
+        398: { slidesPerView: 1.5 },
+        508: { slidesPerView: 2, },
+        748: { slidesPerView: 3, peek: 32 },
+        988: { slidesPerView: 4, peek: 44 },
+        1388: { slidesPerView: 5 }
+      }
+    }
+  }
+
   constructor() {
-    this.carouselService.initialize(this.carouselContainer, this.seriesList, {slidesInfo:this.slidesInfo})
+    this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.loader)
   }
 
   onSlideExpandHover(index: number) {
-    const slide = this.carouselContainer()?.nativeElement.children[index] as HTMLElement 
-    if(!slide)return
+    const slide = this.carouselContainer()?.nativeElement.children[index] as HTMLElement
+    if (!slide) return
 
-    this.slideExpansionService.adjustTranslateForExpandedSlide(slide, this.slidesInfo, this.carouselService.currentPosition())
+    this.slideExpansion.adjustTranslateForExpandedSlide(
+      slide,
+      this.carouselService.slidesInfo,
+      this.carouselService.state().currentPosition())
   }
 
   onSlideCollapseHover() {
-    this.slideExpansionService.restoreBaseTranslate()
+    this.slideExpansion.restoreBaseTranslate()
+  }
+
+  canLoadMore() {
+    return hasPagination(this.loader) && this.loader.canLoadMore()
   }
 
 }

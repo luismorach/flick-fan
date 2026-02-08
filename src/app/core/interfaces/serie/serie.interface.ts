@@ -1,18 +1,14 @@
 import { Images } from "../media/images.interface"
 import { Videos } from "../media/videos.interface"
 import { Crew } from "../people/credits.interface"
+import { PaginatedMetaData } from "../shared/generic.interface"
 import { Genre } from "../shared/genre.interface"
 import { CreatedBy, ProductionCompany, ProductionCountry } from "../shared/production.interface"
 
-
-
-export interface SerieList {
-    page: number
+export interface SerieList extends PaginatedMetaData {
     results: Serie[]
-    total_pages: number
-    total_results: number
-    type: string
 }
+
 export interface Serie {
     adult: boolean
     backdrop_path: string

@@ -6,7 +6,6 @@ import { MovieList, Movie } from '../../interfaces/movie/movie.interface';
 import { Serie, SerieList } from '../../interfaces/serie/serie.interface';
 import { environment } from '../../environment/environment';
 import { Genre } from '../../interfaces/shared/genre.interface';
-import { PaginatedData } from '../../interfaces/shared/generic.interface';
 import { ParamsApi } from '../../interfaces/shared/params-http.interface';
 import { Cacheable } from 'ngx-cacheable';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -20,10 +19,12 @@ export class ApiService {
   private readonly API_BASE = environment.tmdb.API_URL;
   private readonly DEFAULT_LANGUAGE = 'es-VE';
   private genresCache$?: Observable<Genre[]>;
+  public moviesGenres: WritableSignal<Genre[]> = signal([])
+  public seriesGenres: WritableSignal<Genre[]> = signal([])
   public allGenres: WritableSignal<Genre[]> = signal([]);
   private readonly ENRICHMENT_CONCURRENCY = 4;
 
-  private readonly methodMap: { [key: string]: any } = {
+  readonly methodMap: { [key: string]: any } = {
     now_playing_movies: this.getNowPlaying.bind(this),
     upcoming_movies: this.getUpcoming.bind(this),
     popular_movies: this.getPopular.bind(this),
@@ -71,7 +72,7 @@ export class ApiService {
   getDetailsMovie(params: ParamsApi): Observable<Movie> {
     return this.http
       .get<Movie>(`${this.API_BASE}/movie/${params.dataId}`, {
-        params: this.buildParams({ append_to_response: 'videos' })
+        params: this.buildParams({ append_to_response: 'videos,release_dates' })
       })
   }
 
@@ -156,12 +157,12 @@ export class ApiService {
 
   /* @Cacheable() */
   getOnTheAirSeries(params: ParamsApi) {
-     const type = 'on_the_air_series'
-    return this.getMediaDetails<SerieList>('tv/on_the_air', params, type) 
+    const type = 'on_the_air_series'
+    return this.getMediaDetails<SerieList>('tv/on_the_air', params, type)
     /* params.type = 'on_the_air_series'
     return this.getSeriesWithDetails('tv/on_the_air', params); */
   }
- /*  @Cacheable() */
+  /*  @Cacheable() */
   getPopularSeries(params: ParamsApi) {
     params.type = 'popular_series'
     return this.getSeriesWithDetails('tv/popular', params);
@@ -173,7 +174,7 @@ export class ApiService {
       .get<Serie>(`${this.API_BASE}/tv/${params.dataId}`, {
         params: this.buildParams({ append_to_response: 'videos,external_ids' }),
       })
-     
+
 
   }
 
@@ -267,6 +268,8 @@ export class ApiService {
 
       this.genresCache$ = forkJoin([genresMovies$, genresSeries$]).pipe(
         map(([movies, series]) => {
+          this.moviesGenres.set(movies.genres)
+          this.seriesGenres.set(series.genres)
           const all = [...movies.genres, ...series.genres];
           return all.filter(
             (genre, index, self) => index === self.findIndex((g) => g.id === genre.id)
@@ -310,7 +313,7 @@ export class ApiService {
   }
 
   async fetchNextPage<T>(params: ParamsApi = {}
-  ): Promise<PaginatedData<T>> {
+  ): Promise<T> {
 
     const type = params.type ?? ''
     const apiMethod = this.methodMap[type];
@@ -320,7 +323,7 @@ export class ApiService {
     const newData: T = await lastValueFrom(
       apiMethod(params));
     console.log(newData)
-    return newData as PaginatedData<T>
+    return newData as T
   }
 
   async getDetails<T>(params: ParamsApi) {

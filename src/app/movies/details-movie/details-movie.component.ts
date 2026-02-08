@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, Renderer2, signal, ViewChild, WritableSignal } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, Renderer2, signal, viewChild, ViewChild, viewChildren, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Params, RouterLink } from '@angular/router';
 import { concatAll, map } from 'rxjs/operators';
 import { CurrencyPipe, DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
@@ -10,14 +10,20 @@ import { ComunicatorService } from '../../core/services/comunicator/comunicator.
 import { Credits } from '../../core/interfaces/people/credits.interface';
 import { Movie } from '../../core/interfaces/movie/movie.interface';
 import { CarouselSeriesComponent } from '../../shared/components/carousel/carousel-series/carousel-series.component';
-import { SkeletonSlidesHook, useSkeletonSlides } from '../../shared/utils/use-skeleton-slides';
+import { SlidesInfoHook, useSlidesInfo } from '../../shared/utils/use-slides-info';
 import { AutoImagePipe } from '../../shared/pipes/autoimage/auto-image.pipe';
 import { SwiperOptions } from 'swiper/types';
-register();
+import { IconComponent } from "../../shared/icon/icon.component";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { CarouselOptions } from '../../core/interfaces/shared/carousel-interface';
+import { CarouselService } from '../../core/services/carousel/carousel-service';
+import { useDataLoader } from '../../shared/utils/data-loaders/use-data-loader';
+import { CarouselNavigationComponent } from "../../shared/components/carousel/carousel-navigation/carousel-navigation.component";
 
 @Component({
   selector: 'app-details-movie',
-  imports: [DatePipe, NgOptimizedImage, DecimalPipe, RouterLink, MinutesToTimePipe,AutoImagePipe],
+  imports: [DatePipe, NgOptimizedImage, DecimalPipe, RouterLink, MinutesToTimePipe, AutoImagePipe, IconComponent, CdkScrollable, CarouselNavigationComponent],
+  providers: [CarouselService],
   templateUrl: './details-movie.component.html',
   styleUrl: './details-movie.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -29,6 +35,29 @@ export default class DetailsMovieComponent {
   @ViewChild('containerCast') containerCast!: ElementRef<HTMLElement>
   @ViewChild('swiperCrew', { static: false }) swiperCrew!: ElementRef<SwiperContainer>
   @ViewChild('containerCrew') containerCrew!: ElementRef<HTMLElement>
+
+  private readonly slides = viewChildren<ElementRef<HTMLElement>>('slide')
+  private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carousel')
+  readonly carouselService = inject(CarouselService<Credits, 'cast'>);
+  readonly loader = useDataLoader<Credits, 'cast'>('cast', this.credits)
+
+  readonly carouselOptions: CarouselOptions = {
+    requiresEnrichment: false,
+    orientation: 'horizontal',
+    requireSnapMandatory: false,
+    slidesConfig: {
+      slidesPerView: 2,
+      peekSkeletonOffset: 0,
+      spaceBetween: 24,
+      breakpoints: {
+        748: { slidesPerView: 4 },
+        988: { slidesPerView: 5 },
+        1388: { slidesPerView: 5 }
+      }
+    }
+  }
+
+
   isLiked = false;
   isBookmarked = false;
   slideWidth = 144
@@ -42,29 +71,25 @@ export default class DetailsMovieComponent {
     width: 144,
     isCarousel: true
   } as const;
-  slides: SkeletonSlidesHook = useSkeletonSlides(
-      DetailsMovieComponent.SLIDE_CONFIG.width,
-      DetailsMovieComponent.SLIDE_CONFIG.isCarousel
-  );
+  slidesInfo: SlidesInfoHook = useSlidesInfo(signal(undefined), {});
 
-  constructor(private rutaActiva: ActivatedRoute,
+  constructor(private activeRoute: ActivatedRoute,
     private api: ApiService, private comunicatorService: ComunicatorService, private renderer: Renderer2) {
-    /* this.swiperHelperCast = new SwiperHelper()
-    this.swiperHelperCrew = new SwiperHelper() */
+    this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.loader)
     this.comunicatorService.setBackgroundNav(true)
     this.getDetailsMovie()
     this.getCreditsMovie()
   }
   ngAfterViewInit() {
-    
+
     //this.swiperHelperCast.initSwiper(this.swiperCast)
-   // this.swiperHelperCrew.initSwiper(this.swiperCrew)
+    // this.swiperHelperCrew.initSwiper(this.swiperCrew)
     this.addEventSlideChange()
     this.setEventsNavigation(this.swiperCast, 'cast')
     this.setEventsNavigation(this.swiperCrew, 'crew')
   }
   setOptionsSwiper(type: string, swiper: ElementRef<SwiperContainer>) {
-      const swiperOptions: SwiperOptions = {
+    const swiperOptions: SwiperOptions = {
       slidesPerView: 'auto',
       slidesPerGroup: 4,
       spaceBetween: 18,
@@ -111,8 +136,8 @@ export default class DetailsMovieComponent {
 
 
   getDetailsMovie() {
-    let detailsMovie$ = this.rutaActiva.params.pipe(
-      map((params: Params) => this.api.getDetailsMovie(params['id_movie'])), concatAll())
+    let detailsMovie$ = this.activeRoute.params.pipe(
+      map((params: Params) => this.api.getDetailsMovie({ dataId: params['id_movie'] })), concatAll())
 
     detailsMovie$.subscribe((movie: Movie) => {
       document.scrollingElement?.scrollTo(0, 0)
@@ -121,9 +146,18 @@ export default class DetailsMovieComponent {
 
   }
 
+  getReleaseDate() {
+    const movie = this.movie()
+    if (!movie) return
+    const list = movie.release_dates.results.filter((element) => element.iso_3166_1 === 'US')
+    const release_dates = list[0].release_dates.filter((element) => element.certification !== '')
+    console.log(release_dates[0])
+    return release_dates[0]
+  }
+
   getCreditsMovie() {
-    let creditsMovie$ = this.rutaActiva.params.pipe(
-      map((params: Params) => this.api.getCreditsMovie(params['id_movie'])), concatAll())
+    let creditsMovie$ = this.activeRoute.params.pipe(
+      map((params: Params) => this.api.getCreditsMovie({ dataId: params['id_movie'] })), concatAll())
     creditsMovie$.subscribe((credits: Credits) => this.credits.set(credits))
 
   }

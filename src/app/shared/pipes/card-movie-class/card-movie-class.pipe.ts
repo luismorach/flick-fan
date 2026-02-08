@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform, computed, inject } from '@angular/core';
-import { SkeletonSlidesHook } from '../../utils/use-skeleton-slides';
+import { SlidesInfoHook } from '../../utils/use-slides-info';
 import { MovieList } from '../../../core/interfaces/movie/movie.interface';
 
 @Pipe({
@@ -9,9 +9,9 @@ import { MovieList } from '../../../core/interfaces/movie/movie.interface';
 })
 export class CardMovieClassPipe implements PipeTransform {
 
-  transform(slides: SkeletonSlidesHook, index: number): string {
+  transform(slides: SlidesInfoHook, index: number): string {
     
-    const slidesPerView = slides.slidesPerView();
+    const slidesPerView = slides.layout().slidesPerView;
     if (slidesPerView <= 1) return 'origin-center';
 
     const position = index % slidesPerView;

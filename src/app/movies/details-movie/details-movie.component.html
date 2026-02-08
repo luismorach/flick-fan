@@ -1,3 +1,329 @@
+<main class="py-16">
+    <div class="relative w-full h-[60vh] md:h-[70vh] lg:h-[85vh] ">
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" [style.background-image]="getBackgroundImage()">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#181111]  via-[#181111]/80 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#181111] via-[#181111]/40 to-transparent"></div>
+        </div>
+
+        <div class="relative h-full container mx-auto px-4 md:px-10 flex flex-col justify-end ">
+            <div class="flex flex-col md:flex-row gap-8 items-end">
+                <!-- Poster (Hidden on mobile, visible on tablet+) -->
+                <figure
+                    class="hidden md:block w-[240px] shrink-0 rounded-xl overflow-hidden shadow-2xl shadow-primary/20 border border-white/10 transform  z-10">
+                    <img [ngSrc]="movie()?.poster_path | autoImage : 'tall'"  class="aspect-[2/3] bg-cover bg-center">
+                </figure>
+
+                <!-- Text Content -->
+                <div class="flex flex-col gap-4  z-10">
+                    <!-- Breadcrumb/Tagline -->
+                    <div
+                        class="flex items-center gap-2 text-[#f20d0d] font-bold tracking-widest uppercase text-xs md:text-sm animate-pulse">
+                        <span>#1 in Movies Today</span>
+                    </div>
+                    <!-- Title -->
+                    <h1
+                        class="text-slate-900 dark:text-white text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-[-0.033em] drop-shadow-lg">
+                        {{movie()?.title}}
+                    </h1>
+                    <!-- Meta Info Row -->
+                    <div
+                        class="flex flex-wrap items-center gap-4 text-slate-700 dark:text-gray-300 text-sm md:text-base font-medium">
+                        <span class="text-green-600 font-bold">98% Match</span>
+                        <span>{{getReleaseDate()?.release_date|date:'yyyy'}}</span>
+                        <span
+                            class="border border-slate-300 dark:border-gray-600 px-2 py-0.5 rounded text-xs uppercase">
+                            {{getReleaseDate()?.certification}}
+                        </span>
+                        <span>{{movie()?.runtime | minutesToTime}}</span>
+                        <span
+                            class="bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded text-xs uppercase flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">hd</span> HD
+                        </span>
+                    </div>
+                    <!-- Genre Chips -->
+                    <div class="flex gap-2 flex-wrap my-2">
+                        <div class="flex gap-2 flex-wrap my-2">
+                            @for(genre of movie()?.genres;track genre.id){
+                            <div
+                                class="flex h-8 items-center justify-center px-4 rounded-full bg-slate-200 dark:bg-[#492222] hover:bg-slate-300 dark:hover:bg-[#5e2b2b] transition cursor-pointer">
+                                <span class="text-slate-900 dark:text-white text-xs font-bold uppercase tracking-wide">
+                                    {{ genre.name }}
+                                </span>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    <!-- Description -->
+                    <p
+                        class="text-gray-300 text-base md:text-lg leading-relaxed line-clamp-3 md:line-clamp-none max-w-3xl drop-shadow-md">
+                        {{movie()?.overview}}
+                    </p>
+                    <!-- Buttons -->
+                    <div class="flex flex-wrap gap-4 mt-4">
+                        <button
+                            class="flex items-center justify-center gap-2 rounded-lg h-12 px-8 bg-[#f20d0d] hover:bg-red-700 text-white text-base font-bold transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-primary/30">
+                            <app-icon name="play" size="w-6 h-6"></app-icon>
+                            <span>Ver ahora</span>
+                        </button>
+                        <button
+                            class="flex items-center justify-center gap-2 rounded-lg h-12 px-8 bg-slate-200 dark:bg-[#492222] hover:bg-slate-300 dark:hover:bg-[#5e2b2b] text-slate-900 dark:text-white text-base font-bold transition-transform hover:scale-105 active:scale-95">
+                            <app-icon name="film" size="w-4 h-4"></app-icon>
+                            <span>Trailer</span>
+                        </button>
+                        <button
+                            class="flex items-center justify-center rounded-lg size-12 border border-slate-300 dark:border-gray-600 bg-transparent hover:bg-slate-200 dark:hover:bg-white/10 text-slate-900 dark:text-white transition-colors ml-auto md:ml-0"
+                            title="Add to My List">
+                            <app-icon name="plus" size="w-6 h-6"></app-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Body -->
+    <div class="container mx-auto px-4 md:px-10 py-12 md:py-20 flex flex-col lg:flex-row gap-12">
+        <!-- Left Column (Main Details) -->
+        <div class="flex-1 space-y-12">
+            <!-- Cast Section -->
+            <section>
+                <h3 class="text-slate-900 dark:text-white text-2xl font-bold mb-6 flex items-center gap-2">
+                    <span class="w-1 h-6 bg-[#f20d0d] rounded-full"></span> Top Cast
+                </h3>
+                <div class="overflow-hidden grid grid-cols-1 relative">
+                    <app-carousel-navigation [carouselService]="carouselService"></app-carousel-navigation>
+                    <div cdkScrollable class="carousel-container" #carousel 
+                         [style.gap.px]="carouselService.slidesInfo.layout().spaceBetween">
+                        @for(cast of loader.data();track cast){
+                        
+                        <div class="flex flex-col items-center gap-3 group cursor-pointer">
+                            <div class="relative" [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize">
+                                <figure
+                                    class="w-full aspect-square rounded-full overflow-hidden border-2 border-transparent group-hover:border-[#f20d0d] transition-all">
+                                    <img [ngSrc]="cast.profile_path| autoImage : 'square'" fill
+                                        class="rounded-full bg-cover object-cover bg-center">
+                                </figure>
+                            </div>
+                           <div class="text-center">
+                                <h1 class="text-slate-900 dark:text-white font-bold text-sm">{{cast.name}}</h1>
+                                <h2 class="text-slate-500 dark:text-gray-400 text-xs">{{cast.character}}</h2>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- <div class="grid grid-cols-2 grid-rows-1 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    @for(cast of credits()?.cast;track cast){
+                    <div class="flex flex-col items-center gap-3 group cursor-pointer">
+                        <div class="relative">
+                            <figure
+                                class="size-24 md:size-28 rounded-full overflow-hidden border-2 border-transparent group-hover:border-[#f20d0d] transition-all">
+                                <img [ngSrc]="cast.profile_path| autoImage : 'square'" fill
+                                    class="rounded-full bg-cover bg-center">
+                            </figure>
+                        </div>
+                        <div class="text-center">
+                            <h1 class="text-slate-900 dark:text-white font-bold text-sm">{{cast.name}}</h1>
+                            <h2 class="text-slate-500 dark:text-gray-400 text-xs">{{cast.character}}</h2>
+                        </div>
+                    </div>
+                    }
+
+                </div> -->
+            </section>
+
+            <section>
+                <h3 class="text-slate-900 dark:text-white text-2xl font-bold mb-6 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-1 h-6 bg-primary rounded-full"></span> More Like This
+                    </div>
+                    <a class="text-primary text-sm font-semibold hover:underline" href="#">See All</a>
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    <!-- Movie Card 1 -->
+                    <div class="group relative rounded-lg overflow-hidden cursor-pointer aspect-[2/3] bg-gray-800">
+                        <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                            data-alt="Interstellar movie poster"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBgeE-WckN1U0GmHQ5rUSmbqBWXaC0zRatrxWZHiY-HE6QYW5SjgUzcPs0eI1J9aKnpmLz464GBHRAmWecUbcPOLKdsnCsQMir-Uvrkd889mpbWQupHto8-6S5ovrcuuhiJfMFmGhXesRDiw3OxDowlF70Lh9v32BQl5mCGAC9sE042RzQHOszNE6i2pAGWu7pSjy-ERW_Si_Pt__v9k2O9y2dzYUCPVKW8R5EPYnAazcb0I45dflItEpCuF0uzHTUW9GzbTQ5Pd1Q");'>
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity">
+                        </div>
+                        <div class="absolute bottom-0 left-0 p-4 w-full">
+                            <h4 class="text-white font-bold text-lg truncate">Interstellar</h4>
+                            <div class="flex items-center gap-2 text-xs text-gray-300">
+                                <span class="text-green-400 font-bold">96%</span>
+                                <span>2014</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Movie Card 2 -->
+                    <div class="group relative rounded-lg overflow-hidden cursor-pointer aspect-[2/3] bg-gray-800">
+                        <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                            data-alt="The Prestige movie poster"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJvJQkNTDeMHV4eJ1fWj7PTQrCuembZpPmQskMXfF_-1nAsCjU4BT3R1CxgE0NMA7aCXEzZkEySt4ozJL60LtEkMDUgsegpPhJW2jp3JIrkYLW0YeCaK6TaG9bh6UIwCWkWhU5pl_nsbVBmZeLZnSB2Qpn-i09IAj1GRFEKo6TU8saShu68j8gAC68J8GR81JKaxE59k5cDyzZ7fVFla2-SEkC0Q50oGITnSALcC0_Op2AtKvW32DgP9VH_lI5sCtWvnnf_2JrI1Q");'>
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity">
+                        </div>
+                        <div class="absolute bottom-0 left-0 p-4 w-full">
+                            <h4 class="text-white font-bold text-lg truncate">The Prestige</h4>
+                            <div class="flex items-center gap-2 text-xs text-gray-300">
+                                <span class="text-green-400 font-bold">92%</span>
+                                <span>2006</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Movie Card 3 -->
+                    <div class="group relative rounded-lg overflow-hidden cursor-pointer aspect-[2/3] bg-gray-800">
+                        <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                            data-alt="Tenet movie poster"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC13Ck10UfkOet3vOHxCPQEsAPGqwdgB-r5OniWQ_5wYbfMYWTtFq27m0XN0vEips4mKAwaoiPhVFc5tXUrYteJFPvJGc0RXi4nx7LqnVofRQRYRlIS5Ru_IIdmc8bjUKRJNd4Y_sCilVFMue7JwC3FcHQ7CZX-qAKxqnCVN2XBGuhbhhoJzKKXh3ji5YAh2tEV4LeDD6EeTc3aBONAgy4n3Bq8Rj8lwyQg77YMe1CJxypmvO1n7w7v4fdZ_poG67LW5Bf1b2Z_ISY");'>
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity">
+                        </div>
+                        <div class="absolute bottom-0 left-0 p-4 w-full">
+                            <h4 class="text-white font-bold text-lg truncate">Tenet</h4>
+                            <div class="flex items-center gap-2 text-xs text-gray-300">
+                                <span class="text-green-400 font-bold">85%</span>
+                                <span>2020</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Movie Card 4 -->
+                    <div class="group relative rounded-lg overflow-hidden cursor-pointer aspect-[2/3] bg-gray-800">
+                        <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                            data-alt="Shutter Island movie poster"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB5sMV6F7ZoJbFr4Vs5kZWYkANYoYW3n9NPFaAIE6lIAJ8p0p_0Y6fWvq4blFqTELJoZ2IPXKm9aXDzhJMU61UfG7qUgPn4G3Td52wsAEmtQ8pJQK6VPuWTdS8or2Dk5pV6QPNIgxyGzuPYGFqrkFBCm743-n5KrDA--9vi-gkNf9xzdvnEhYw466e_Xsf2qgYcXIbZZYUEVhlI-eI711B5Zu-JnKeTOLsuxwl7irJk9alrTb-4bbUC56HOluwH5pGuqrx20C-xz8E");'>
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity">
+                        </div>
+                        <div class="absolute bottom-0 left-0 p-4 w-full">
+                            <h4 class="text-white font-bold text-lg truncate">Shutter Island</h4>
+                            <div class="flex items-center gap-2 text-xs text-gray-300">
+                                <span class="text-green-400 font-bold">90%</span>
+                                <span>2010</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Right Sidebar (Stats & Info) -->
+        <div class="w-full lg:w-1/3 flex flex-col gap-8">
+            <!-- Ratings Card -->
+            <div class="bg-white dark:bg-[#2c1616] rounded-xl p-6 border border-gray-100 dark:border-white/5 shadow-lg">
+                <h4 class="text-slate-900 dark:text-white font-bold text-lg mb-4">Audience Rating</h4>
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-end gap-3">
+                        <p class="text-slate-900 dark:text-white text-5xl font-black leading-none tracking-tight">4.8
+                        </p>
+                        <div class="flex flex-col mb-1">
+                            <div class="flex gap-0.5 text-primary">
+                                <span class="material-symbols-outlined text-[20px] fill-current">star</span>
+                                <span class="material-symbols-outlined text-[20px] fill-current">star</span>
+                                <span class="material-symbols-outlined text-[20px] fill-current">star</span>
+                                <span class="material-symbols-outlined text-[20px] fill-current">star</span>
+                                <span class="material-symbols-outlined text-[20px] fill-current">star_half</span>
+                            </div>
+                            <p class="text-slate-500 dark:text-gray-400 text-xs font-medium">12k verified reviews</p>
+                        </div>
+                    </div>
+                    <!-- Rating Bars -->
+                    <div class="space-y-2 mt-2">
+                        <div class="grid grid-cols-[20px_1fr_40px] items-center gap-2">
+                            <span class="text-xs font-bold text-slate-500 dark:text-gray-400">5</span>
+                            <div class="h-1.5 w-full bg-gray-200 dark:bg-[#492222] rounded-full overflow-hidden">
+                                <div class="h-full bg-primary w-[75%] rounded-full"></div>
+                            </div>
+                            <span class="text-xs text-right text-slate-500 dark:text-gray-400">75%</span>
+                        </div>
+                        <div class="grid grid-cols-[20px_1fr_40px] items-center gap-2">
+                            <span class="text-xs font-bold text-slate-500 dark:text-gray-400">4</span>
+                            <div class="h-1.5 w-full bg-gray-200 dark:bg-[#492222] rounded-full overflow-hidden">
+                                <div class="h-full bg-primary w-[15%] rounded-full"></div>
+                            </div>
+                            <span class="text-xs text-right text-slate-500 dark:text-gray-400">15%</span>
+                        </div>
+                        <div class="grid grid-cols-[20px_1fr_40px] items-center gap-2">
+                            <span class="text-xs font-bold text-slate-500 dark:text-gray-400">3</span>
+                            <div class="h-1.5 w-full bg-gray-200 dark:bg-[#492222] rounded-full overflow-hidden">
+                                <div class="h-full bg-primary w-[5%] rounded-full"></div>
+                            </div>
+                            <span class="text-xs text-right text-slate-500 dark:text-gray-400">5%</span>
+                        </div>
+                        <div class="grid grid-cols-[20px_1fr_40px] items-center gap-2">
+                            <span class="text-xs font-bold text-slate-500 dark:text-gray-400">2</span>
+                            <div class="h-1.5 w-full bg-gray-200 dark:bg-[#492222] rounded-full overflow-hidden">
+                                <div class="h-full bg-primary w-[3%] rounded-full"></div>
+                            </div>
+                            <span class="text-xs text-right text-slate-500 dark:text-gray-400">3%</span>
+                        </div>
+                        <div class="grid grid-cols-[20px_1fr_40px] items-center gap-2">
+                            <span class="text-xs font-bold text-slate-500 dark:text-gray-400">1</span>
+                            <div class="h-1.5 w-full bg-gray-200 dark:bg-[#492222] rounded-full overflow-hidden">
+                                <div class="h-full bg-primary w-[2%] rounded-full"></div>
+                            </div>
+                            <span class="text-xs text-right text-slate-500 dark:text-gray-400">2%</span>
+                        </div>
+                    </div>
+                    <button
+                        class="w-full py-2 mt-2 text-sm text-primary font-bold hover:bg-primary/5 rounded border border-transparent hover:border-primary/20 transition-colors">See
+                        all reviews</button>
+                </div>
+            </div>
+            <!-- Movie Info List -->
+            <div
+                class="bg-white dark:bg-[#2c1616] rounded-xl overflow-hidden border border-gray-100 dark:border-white/5 shadow-lg">
+                <div class="p-6 grid grid-cols-[35%_1fr] gap-y-6">
+                    <div class="contents">
+                        <p class="text-slate-500 dark:text-[#cb9090] text-sm font-medium">Director</p>
+                        <p class="text-slate-900 dark:text-white text-sm font-medium">Christopher Nolan</p>
+                    </div>
+                    <div class="col-span-2 h-px bg-gray-100 dark:bg-[#492222]"></div>
+                    <div class="contents">
+                        <p class="text-slate-500 dark:text-[#cb9090] text-sm font-medium">Writers</p>
+                        <p class="text-slate-900 dark:text-white text-sm font-medium">Christopher Nolan</p>
+                    </div>
+                    <div class="col-span-2 h-px bg-gray-100 dark:bg-[#492222]"></div>
+                    <div class="contents">
+                        <p class="text-slate-500 dark:text-[#cb9090] text-sm font-medium">Release Date</p>
+                        <p class="text-slate-900 dark:text-white text-sm font-medium">July 16, 2010</p>
+                    </div>
+                    <div class="col-span-2 h-px bg-gray-100 dark:bg-[#492222]"></div>
+                    <div class="contents">
+                        <p class="text-slate-500 dark:text-[#cb9090] text-sm font-medium">Budget</p>
+                        <p class="text-slate-900 dark:text-white text-sm font-medium">$160,000,000</p>
+                    </div>
+                    <div class="col-span-2 h-px bg-gray-100 dark:bg-[#492222]"></div>
+                    <div class="contents">
+                        <p class="text-slate-500 dark:text-[#cb9090] text-sm font-medium">Revenue</p>
+                        <p class="text-slate-900 dark:text-white text-sm font-medium">$829,895,144</p>
+                    </div>
+                    <div class="col-span-2 h-px bg-gray-100 dark:bg-[#492222]"></div>
+                    <div class="contents">
+                        <p class="text-slate-500 dark:text-[#cb9090] text-sm font-medium">Production</p>
+                        <div class="flex gap-2">
+                            <div class="h-6 w-10 bg-gray-200 dark:bg-white rounded bg-contain bg-center bg-no-repeat"
+                                data-alt="Warner Bros logo"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD4XQrSO6nARRB71vJFoicpDqL42EOt1elRc5PIBnB9KOaDmIHv8Ak7Tz6QU6GL4KaKwuMyEzMyvAjzWkWwOcfQkCiWE8_9oHKkMKOCwLq9JsiYX2Ku0oCHu1N0QXD0s70ra3KyFbYvnEpfyyO-cyk6T_3lTBL0HGbhIHWLodbl5BoGQwsdKJ4bCunjSJDhhIvKoEXAGgD5xIWbbmJEMVwWpVSNwWxp3BjomyWUZ__pI7re_NEdj2gjb31k_l7TIJNH5fefEU-SO7g");'>
+                            </div>
+                            <div class="h-6 w-10 bg-gray-200 dark:bg-white rounded bg-contain bg-center bg-no-repeat"
+                                data-alt="Syncopy logo"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCn1nLYX7bc5sX_Yw38xZvat5tpmKbCfqzZ4Ca3NMxLOE4uVpiDrlwnhkq6po4F3KbLmOGoI4_-A5GWgjL9bIgglKLqZyQEIHs0WLe3l_lFSKiObzoSbYcznRkVKPE_df8vPbXncGxCqQvGRMx8ev5DXRJMIYEMTGnXyOU30t6wGaH6wf5PueLQsKBU8Kk_1Pb4yls2rkiHHXEHzX8oKQVmXBwrFJWFx0B15oI50ZvSH0Lp9jAwoMHvfyq0ajVwhcm-TKcdY7fmuko");'>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
 <main class="min-h-screen bg-gradient-to-br from-black via-red-950 to-black">
 
     <section class="relative pt-16">
@@ -20,7 +346,7 @@
                         class="pb-2 text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-red-300">
                         {{ movie()?.title }}
                     </h1>
-                    
+
 
                     <p class="text-xl text-red-200 mb-4">{{ movie()?.original_title }}</p>
 
@@ -30,7 +356,8 @@
                                 <path
                                     d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                             </svg>
-                            <span class="font-semibold">{{ movie()?.vote_average | number:'1.1-1' :'en-US' }}</span>
+                            <span class="font-semibold">{{ movie()?.vote_average | number:'1.1-1' :'en-US'
+                                }}</span>
                         </div>
 
                         <div class="flex items-center gap-2">
@@ -164,7 +491,8 @@
                         <swiper-slide class="flex-col rounded-xl w-36">
                             <div class="relative">
                                 <figure class="w-36 h-36 rounded-full  relative text-white">
-                                    <img [ngSrc]="crew.profile_path | autoImage : 'square'" alt="Imagen no disponible" fill
+                                    <img [ngSrc]="crew.profile_path | autoImage : 'square'" alt="Imagen no disponible"
+                                        fill
                                         class="object-contain rounded-full  flex items-center justify-center  bg-white">
                                 </figure>
                             </div>

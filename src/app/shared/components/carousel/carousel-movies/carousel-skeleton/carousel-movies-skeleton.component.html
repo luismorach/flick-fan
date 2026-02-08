@@ -1,0 +1,58 @@
+@if(!insideCarousel()){
+    <main role="status" aria-live="assertive" class=" w-full overflow-x-hidden" >
+        @if(hasHeader()){
+            <header class="mb-6" [style.padding-left.px]="peek()" >
+                <div class="h-6 w-64 bg-zinc-700 rounded mb-1 animate-pulse"></div>
+                <div class="h-1 bg-zinc-700 rounded-full w-32 animate-pulse"></div>
+            </header>
+        }
+
+        <section 
+            class="flex grow-0  h-full" 
+            role="status"
+            aria-label="Cargando películas"
+            aria-live="polite"
+            [style.padding-left.px]="peek()" 
+            [style.padding-right.px]="peek()" 
+            [style.gap.px]="slidesInfo.layout().spaceBetween" #container>
+
+            @for(_ of skeletons(); track $index) {
+                <div class="h-full flex-shrink-0" [style.width.px]="slidesInfo.layout().slideMainAxisSize">
+                <ng-container *ngTemplateOutlet="skeletonCard" class=""></ng-container>
+                </div>
+            } 
+
+        </section>
+
+    </main>
+    
+}@else{
+        <div class="h-full w-full flex-shrink-0 ">
+            <ng-container *ngTemplateOutlet="skeletonCard"></ng-container>
+        </div>
+}
+
+<ng-template #skeletonCard>
+    <section class="relative shadow-lg flex-none flex flex-col rounded-2xl animate-pulse h-full w-full">
+
+                <figure class="relative w-full aspect-video bg-zinc-700 rounded-t-2xl"></figure>
+
+                <div class="absolute top-4 right-4 bg-black/80 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1 border border-red-900/30">
+                    <div class="w-4 h-4 bg-zinc-600 rounded-full"></div>
+                    <div class="w-8 h-4 bg-zinc-600 rounded"></div>
+                </div>
+
+                <section class="p-4 space-y-2 bg-black rounded-b-2xl">
+                    <div class="h-4 w-3/4 bg-zinc-600 rounded"></div>
+
+                    <div class=" py-0.5">
+                        <div class="h-3 w-20 bg-zinc-600 rounded mb-2"></div>
+
+                        <div class="flex items-center gap-4 text-gray-400 text-sm">
+                            <div class="h-3 w-32 bg-zinc-600 rounded"></div>
+                            <div class="h-3 w-16 bg-zinc-600 rounded"></div>
+                        </div>
+                    </div>
+                </section>
+    </section>
+</ng-template>

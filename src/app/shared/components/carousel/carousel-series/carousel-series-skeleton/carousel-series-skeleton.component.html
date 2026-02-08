@@ -1,28 +1,44 @@
-<main role="status" aria-live="assertive" class="w-full mb-8 relative overflow-x-hidden" #container>
-    @if(hasHeader()){
-        <header class="mb-2" [style.padding.px]="spaceBetween()">
-            <div class="h-6 w-64 bg-zinc-700 rounded mb-1 animate-pulse"></div>
-            <div class="h-1 bg-zinc-700 rounded-full w-32 animate-pulse"></div>
-        </header>
-    }
+@if(!insideCarousel()){
+    <main role="status" aria-live="assertive" class="w-full mb-8 relative overflow-x-hidden" #container>
+        @if(hasHeader()){
+            <header class="mb-6" [style.padding-left.px]="peek()">
+                <div class="h-6 w-64 bg-zinc-700 rounded mb-1 animate-pulse"></div>
+                <div class="h-1 bg-zinc-700 rounded-full w-32 animate-pulse"></div>
+            </header>
+        }
 
-    <section 
-        role="status"
-        aria-label="Cargando series"
-        aria-live="polite"
-        class=" h-[29rem] flex grow-0 overflow-hidden"
-        [style.padding-left.px]="spaceBetween()" 
-        [style.padding-right.px]="spaceBetween()" 
-        [style.gap.px]="slidesInfo().spaceBetween()">
-       
-        @for(_ of skeletons(); track $index) { 
-            <section class="w-72 flex-none bg-zinc-700 animate-pulse rounded-xl relative ">
+        <section 
+            role="status"
+            aria-label="Cargando series"
+            aria-live="polite"
+            class="flex grow-0 overflow-hidden"
+            [style.padding-left.px]="peek()" 
+            [style.padding-right.px]="peek()" 
+            [style.gap.px]="slidesInfo.layout().spaceBetween">
+        
+            @for(_ of skeletons(); track $index) { 
+                <div class="flex-shrink-0"
+                    [style.width.px]="slidesInfo.layout().slideMainAxisSize"
+                    [style.height.px]=" slidesInfo.layout().slideMainAxisSize * 1.5" >
+                    <ng-container *ngTemplateOutlet="skeletonCard"></ng-container>
+                </div>
+                
+            }
+        </section>
+    </main>
+}
+@else{
+    <div class="h-full w-full flex-shrink-0 ">
+            <ng-container *ngTemplateOutlet="skeletonCard"></ng-container>
+    </div>   
+}
+
+<ng-template #skeletonCard>
+    <section class="flex-none bg-zinc-700 animate-pulse rounded-xl relative h-full">
                 <div
                     class="absolute top-4 right-4 flex items-center gap-2 bg-black/60 px-3 py-1 rounded-full border border-red-900/30">
                     <div class="w-5 h-5 bg-zinc-600 rounded-full"></div>
                     <div class="w-8 h-4 bg-zinc-600 rounded"></div>
                 </div>
             </section>
-        }
-    </section>
-</main>
+</ng-template>
