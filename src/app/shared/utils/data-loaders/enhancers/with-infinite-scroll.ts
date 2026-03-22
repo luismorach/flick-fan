@@ -1,10 +1,10 @@
-import { effect, ElementRef, Signal} from "@angular/core";
+import { effect, ElementRef, Signal } from "@angular/core";
 import { PaginatedMetaData } from "../../../../core/interfaces/shared/generic.interface";
-import { ArrayKey, AnyEnhancedLoader, LoaderCore, INFINITE_SCROLL, LoaderWithPagination, LoaderWithInfiniteScroll } from "../types";
+import { ArrayKey, AnyEnhancedLoader, LoaderCore, INFINITE_SCROLL, LoaderWithPagination, LoaderWithInfiniteScroll, PAGINATION } from "../types";
 import { withPagination } from "./with-pagination";
 
 export function withInfiniteScroll<T extends PaginatedMetaData, R extends ArrayKey<T>>
-    (loader: AnyEnhancedLoader<T, R>): LoaderWithInfiniteScroll<T, R> {
+    (loader: AnyEnhancedLoader<T, R>): LoaderWithInfiniteScroll<T, R> & LoaderWithPagination<T, R> {
 
     const pagination = withPagination(loader)
 
@@ -41,6 +41,7 @@ export function withInfiniteScroll<T extends PaginatedMetaData, R extends ArrayK
     }
 
     pagination.capabilities.add(INFINITE_SCROLL);
+    pagination.capabilities.add(PAGINATION);
 
     return {
         ...pagination,

@@ -4,6 +4,7 @@ import { Serie } from '../../../core/interfaces/serie/serie.interface';
 import { emptyState } from '../../animations/animations';
 import { ArrayKey, LoaderCore } from '../../utils/data-loaders/types';
 import { canFilter } from '../../utils/data-loaders/enhancers/with-filter';
+import { hasPagination } from '../../utils/data-loaders/enhancers/with-pagination';
 
 @Component({
   selector: 'app-empty',
@@ -21,8 +22,11 @@ export class EmptyComponent<T extends Object, R extends ArrayKey<T>> {
   readonly isEmpty = computed(() => {
     const loaders = this.loaders();
     const isInitialized= loaders.some((loader) => loader.isInitialized())
+    const canLoadMore = loaders.some((loader)=>  hasPagination(loader) && loader.canLoadMore())
+    const isFetching = loaders.some((loader)=>  hasPagination(loader) && loader.isFetchingMoreData())
 
-    if (!isInitialized) return false
+    console.log('canLoadMore',canLoadMore)
+    if (!isInitialized || canLoadMore || isFetching) return false
 
     console.log('loadders', loaders.length)
     // Verificar que todos existan Y estén vacíos

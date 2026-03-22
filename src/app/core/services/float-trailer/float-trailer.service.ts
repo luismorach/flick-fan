@@ -1,8 +1,10 @@
-import { DestroyRef, inject, Injectable, signal} from '@angular/core';
+import { ComponentRef, DestroyRef, effect, EffectRef, inject, Injectable, INJECTOR, runInInjectionContext, Signal, signal, untracked } from '@angular/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { CdkPortalOutlet, ComponentPortal } from '@angular/cdk/portal';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import TrailerComponent from '../../../shared/components/trailer/trailer.component';
+import { getKeyTrailer } from '../../../shared/utils/helpers';
+import { Videos } from '../../interfaces/media/videos.interface';
 
 const OVERLAY_CONFIG = {
   CLASSES: {
@@ -46,9 +48,13 @@ export class FloatTrailerService {
 
   private readonly overlay = inject(Overlay);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly injector = inject(INJECTOR)
   private overlayRef?: OverlayRef;
+  private attachedRef?: ComponentRef<TrailerComponent>
   private activeOutlet?: CdkPortalOutlet;
   private readonly portal: ComponentPortal<TrailerComponent>
+  private currentEffect?: EffectRef
+  private currentOwner?: object;
 
   /** Signal containing the current video key */
   private readonly videoKey = signal('')
@@ -59,6 +65,7 @@ export class FloatTrailerService {
 
   constructor() {
     this.portal = new ComponentPortal(TrailerComponent);
+
   }
 
   /**
@@ -75,7 +82,7 @@ export class FloatTrailerService {
    * floatTrailerService.showTrailer('dQw4w9WgXcQ');
    * ```
    */
-  showFloatTrailer(videoKey: string | undefined) {
+  playFloatTrailer(videoKey: string | undefined) {
     if (!videoKey?.trim()) return;
     if (this.overlayRef) return;
 
@@ -85,6 +92,41 @@ export class FloatTrailerService {
     attachedRef.instance.videoKey = this.videoKey
     attachedRef.instance.mode.set('float')
     this.setupBackdropInteraction()
+  }
+
+  register<T extends { videos: Videos }>(owner: object, media: Signal<T | undefined>) {
+    if (this.currentOwner === owner) return
+
+    this.currentEffect?.destroy();
+
+    this.currentOwner = owner;
+
+    runInInjectionContext(this.injector, () => {
+      this.currentEffect = effect(() => {
+        const mediaRef = media()
+        if (!mediaRef) return
+        const videos = mediaRef.videos
+        console.log('videos', videos)
+        untracked(() => {
+          const keyTrailer = getKeyTrailer(videos)
+          if (!this.overlayRef || !this.attachedRef) {
+            this.overlayRef = this.createOverlay()
+            this.attachedRef = this.overlayRef.attach(this.portal);
+          }
+
+          if (!keyTrailer) {
+            console.log('trailer key', keyTrailer)
+            this.attachedRef?.instance.hasError.set(true)
+          } else {
+            this.attachedRef?.instance.hasError.set(false)
+            this.setVideoKey(keyTrailer)
+            this.attachedRef.instance.videoKey = this.videoKey
+            this.attachedRef.instance.mode.set('float')
+            this.setupBackdropInteraction()
+          }
+        })
+      })
+    })
   }
 
   /**
@@ -103,7 +145,7 @@ export class FloatTrailerService {
    * floatTrailerService.showTrailerEmbed('dQw4w9WgXcQ', this.portalOutlet);
    * ```
    */
-  showTrailerEmbed(videoKey: string | undefined, outlet: CdkPortalOutlet) {
+  playTrailerEmbed(videoKey: string | undefined, outlet: CdkPortalOutlet) {
     if (!videoKey?.trim()) return;
 
     this.activeOutlet = outlet;
@@ -127,22 +169,22 @@ export class FloatTrailerService {
       .pipe(
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(() =>this.minimizeFloatTrailer());
+      .subscribe(() => this.minimizeFloatTrailer());
   }
 
-   /**
-   * Detaches the embedded trailer from its portal outlet
-   * 
-   * Removes the trailer component from the active outlet and clears the reference.
-   * Safe to call even if no trailer is currently embedded.
-   * 
-   * @returns void
-   * 
-   * @example
-   * ```typescript
-   * floatTrailerService.detachTrailerEmbed();
-   * ```
-   */
+  /**
+  * Detaches the embedded trailer from its portal outlet
+  * 
+  * Removes the trailer component from the active outlet and clears the reference.
+  * Safe to call even if no trailer is currently embedded.
+  * 
+  * @returns void
+  * 
+  * @example
+  * ```typescript
+  * floatTrailerService.detachTrailerEmbed();
+  * ```
+  */
   detachTrailerEmbed() {
     if (!this.activeOutlet) return
     this.activeOutlet.detach();
@@ -168,11 +210,11 @@ export class FloatTrailerService {
     this.hideBackdrop(false)
   }
 
-  private hideBackdrop(isMinimized:boolean){
-     if (!this.overlayRef?.backdropElement) return;
+  private hideBackdrop(isMinimized: boolean) {
+    if (!this.overlayRef?.backdropElement) return;
 
     const backdrop = this.overlayRef.backdropElement;
-    const {BACKDROP_HIDDEN } = OVERLAY_CONFIG.CLASSES;
+    const { BACKDROP_HIDDEN } = OVERLAY_CONFIG.CLASSES;
     backdrop.classList.toggle(BACKDROP_HIDDEN, isMinimized);
   }
 
@@ -188,5 +230,7 @@ export class FloatTrailerService {
     this.overlayRef = undefined;
     this._isMinimized.set(false);
     this.videoKey.set('');
+    this.currentEffect?.destroy()
+    this.currentOwner=undefined
   }
 }

@@ -1,27 +1,41 @@
-<div class="w-full hidden lg:block h-full bg-black/50 rounded-tl-xl overflow-hidden relative">
+<div class="w-full h-full bg-black/50 rounded-tl-xl overflow-hidden relative">
+    @let item = selectedItem();
+      @if(item){
        <section class="px-10 py-7 relative z-10 flex flex-col h-full">
           <header class="w-full flex flex-col flex-1 overflow-y-auto  my-scroll">
-              <figure class="h-24">
-                <img  [src]="selectedMovie()?.imdb_id | autoImage:'logo'" [alt]="selectedMovie()?.title"
-                class="h-24 w-full object-contain">
+              <figure class="h-24 flex justify-center">
+                @if(isMovie(item)){
+                  <img  [src]="item.imdb_id | autoImage:'logo'" [alt]="item.title"
+                  class="w-full object-contain text-white text-3xl 
+                  flex items-center justify-center h-24 before:text-center before:line-clamp-2">
+                }@else {
+                  <img  [src]="item.external_ids?.imdb_id| autoImage:'logo'" [alt]="item.name"
+                  class="w-full object-contain text-white text-3xl 
+                  flex items-center justify-center h-24 before:text-center before:line-clamp-2">
+                }
               </figure>
 
               <div class="flex justify-between text-white/90 text-lg font-semibold mt-4">
-                <p class="my-4 mx-2">{{selectedMovie()?.runtime | minutesToTime}}</p>
-                <p class="my-4 mx-2"> {{selectedMovie()?.release_date | date:'yyyy'}}</p>
+                @if(isMovie(item)){
+                  <p class="my-4 mx-2">{{item.runtime | minutesToTime}}</p>
+                  <p class="my-4 mx-2"> {{item.release_date | date:'yyyy'}}</p>
+                }@else {
+                  <p class="my-4 mx-2"> {{item.first_air_date | date:'yyyy'}} - 
+                    {{item.last_air_date | date:'yyyy'}}</p>
+                }
 
                 <div class="flex gap-1 items-center my-4 mx-2">
                   <app-icon name="star" color="text-red-600" backgroundColor="fill-red-600" size="w-5 h-5"> </app-icon>
-                  <p> {{selectedMovie()?.vote_average| number:'1.1-1' :'en-US'}}</p> 
+                  <p> {{item.vote_average| number:'1.1-1' :'en-US'}}</p> 
                 </div>
               </div>
 
-              <p class="text-white/90 mt-4 leading-7 font-light ">{{selectedMovie()?.overview}}</p>
+              <p class="text-white/90 mt-4 leading-7 font-light ">{{item.overview}}</p>
 
               <div class="text-white/90 text-base  mt-4">
                 <h1 class="text-white/30">GENEROS</h1>
                 <div class="flex gap-2 mt-2 flex-wrap">
-                  @for(genre of selectedMovie()?.genres;track genre.id){
+                  @for(genre of selectedItem()?.genres;track genre.id){
                     <span class="backdrop-blur-sm bg-white/5 rounded-full px-5 py-1 cursor-pointer hover:bg-white/15"
                       (click)="selectGenre(genre)"> 
                       {{genre.name}} 
@@ -37,13 +51,13 @@
                 (click)="playTrailer()"
                 [disabled]="!currentTrailerKey()"
                 class="btn-primary h-full aspect-square" 
-                [attr.aria-label]="`Reproducir avance de  ${selectedMovie()?.title}`"
+                [attr.aria-label]="`Reproducir avance de  ${isMovie(item) ? item.title : item.name}`"
                 tabindex="0"
                 type="button">
                 <app-icon name="clapperboard" size="w-6 h-6"></app-icon>
             </button>
 
-            <a [routerLink]="['/details-movie',selectedMovie()?.id]" appTooltip="Más información" 
+            <a [routerLink]="['/details-movie',selectedItem()?.id]" appTooltip="Más información" 
               class="btn-primary h-full aspect-square">
                 <app-icon name="info" size="w-6 h-6"></app-icon>
             </a>
@@ -54,10 +68,10 @@
             </a>
           </section>
         </section>
-
+      }
         <figure class="absolute top-0 w-full aspect-[2/3] blur-[10px] opacity-30 z-0">
-              <img [ngSrc]="selectedMovie()?.backdrop_path | autoImage : 'tall'" alt=""
+              <img [ngSrc]="selectedItem()?.backdrop_path | autoImage : 'tall'" alt=""
                  class="aspect-[2/3] bg-cover bg-center" fill>
         </figure>
-
+      
     </div> 

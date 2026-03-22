@@ -1,4 +1,4 @@
-import { computed, effect, ElementRef, Signal, signal } from "@angular/core";
+import { computed, effect, ElementRef, Signal, signal, untracked } from "@angular/core";
 import { CarouselOptions } from "../../core/interfaces/shared/carousel-interface";
 import { SlidesInfoHook, useSlidesInfo } from "./use-slides-info";
 import { AnyEnhancedLoader } from "./data-loaders/types";
@@ -50,7 +50,8 @@ export function useCarouselcontroller<T extends Object, R extends keyof T>(
 
     const currentElement = computed(() => {
         const index = activeIndex();
-        return data()[index] ?? null;
+        const element = data()[index]
+        return element ?? null
     });
 
     const slidesPerGroup = computed(() => {

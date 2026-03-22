@@ -1,55 +1,39 @@
-import { Component, inject, signal, viewChild } from '@angular/core';
+import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { ApiService } from '../core/services/API/api.service';
-import { BannerSeriesComponent } from '../shared/components/banners/banner-series/banner-series.component';
-import { SkeletonComponent } from '../shared/components/banners/banner-series/skeleton/skeleton.component';
 import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Serie, SerieList } from '../core/interfaces/serie/serie.interface';
-import { forkJoin } from 'rxjs';
-import { EmptyComponent } from '../shared/components/empty/empty.component';
-import { SeriesGridComponent } from '../shared/components/cards-grid/series-grid/series-grid.component';
-import { LoaderCore } from '../shared/utils/data-loaders/types';
+import { Serie, SerieList, SeriesCategory } from '../core/interfaces/serie/serie.interface';
+import { Genre } from '../core/interfaces/shared/genre.interface';
+import { CustomSelectComponent } from "../shared/components/elements/custom-select/custom-select.component";
+import { IconComponent } from "../shared/icon/icon.component";
 
 @Component({
   selector: 'app-series',
   imports: [
-    BannerSeriesComponent,
     BackgroundNavScrollDirective,
-    EmptyComponent,
-    SeriesGridComponent,
-  ],
+    CustomSelectComponent,
+    IconComponent
+],
   templateUrl: './series.component.html',
   styleUrl: './series.component.css',
 })
 
 export default class SeriesComponent {
-  private readonly api = inject(ApiService);
-  readonly onTheAir = signal<SerieList | undefined>(undefined);
-  readonly popularSeries = signal<SerieList | undefined>(undefined);
+  readonly api = inject(ApiService);
+  readonly series = signal<SerieList | undefined>(undefined);
+  selectedSerie = signal<Serie| undefined>(undefined)
 
-  private readonly seriesGrid = viewChild.required<SeriesGridComponent>(SeriesGridComponent)
-  private readonly bannerSeries = viewChild.required<BannerSeriesComponent>(BannerSeriesComponent)
+  seriesCategories: SeriesCategory[] = [
+    { name: 'Emitiendo hoy', id: 0, value: 'airing_today_series' },
+    { name: 'En el aire', id: 1, value: 'on_the_air_series' },
+    { name: 'Populares', id: 2, value: 'popular_series' },
+    { name: 'Mejores valorados', id: 3, value: 'top_rated_series' },
+  ]
 
-  constructor() {
-    this.loadInitialData();
-  }
+  optionsGenre: Genre[] = [
+    { name: 'Todos los géneros', id: 0 },
+    ...this.api.seriesGenres()
+  ]
 
-  private loadInitialData(): void {
-    forkJoin({
-      onTheAir: this.api.getOnTheAirSeries({page:1}),
-      popularSeries: this.api.getPopularSeries({page:1})
-    }).pipe(
-      takeUntilDestroyed(),
-    ).subscribe(({ onTheAir, popularSeries }) => {
-      this.onTheAir.set(onTheAir);
-      this.popularSeries.set(popularSeries);
-    });
-  }
-  getDataLoaders() {
-      const loaders: LoaderCore<SerieList,'results'>[] = [];
-  
-      loaders.push(this.seriesGrid().loader);
-      //loaders.push(this.bannerSeries().swiperHelper.dataLoaderManager);
-      return loaders;
-    }
+  categorieSelected: WritableSignal<SeriesCategory> = signal(this.seriesCategories[0])
+  selectedGenre: WritableSignal<Genre> = signal(this.optionsGenre[0])
 }

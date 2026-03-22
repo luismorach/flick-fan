@@ -5,7 +5,7 @@ export const routes: Routes = [
         path: 'home', loadComponent: () => import('./inicio/inicio.component'),
     },
     {
-        path: 'movies', loadComponent: () => import('./movies/movies.component'),
+        path: 'discover', loadComponent: () => import('./discover/discover.component'),
     },
     {
         path: 'series', loadComponent: () => import('./series/series.component'),

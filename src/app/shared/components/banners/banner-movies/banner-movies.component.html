@@ -10,7 +10,8 @@
                         <app-banner-movie-details @fade
                             [movie]="movie" 
                             [cardIndex]="i"
-                            [activeIndex]="carouselService.state().activeIndex()">
+                            [activeIndex]="carouselService.state().activeIndex()"
+                            (onPlayTailer)="playTrailer()">
                         </app-banner-movie-details>
                     </div>
                 }

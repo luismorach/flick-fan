@@ -1,12 +1,12 @@
 import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import { ComunicatorService } from '../core/services/comunicator/comunicator.service';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule} from '@angular/forms';
 
 @Component({
     selector: 'app-nav-bar',
-    imports: [NgClass,RouterLink,FormsModule],
+    imports: [NgClass,RouterLink,FormsModule,RouterLinkActive],
     templateUrl: './nav-bar.component.html',
     styleUrl: './nav-bar.component.css'
 })

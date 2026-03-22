@@ -1,5 +1,6 @@
-import { Component, effect, ElementRef, HostListener, input, model, output, Signal, signal, untracked, ViewChild, WritableSignal } from '@angular/core';
-import { CdkOverlayOrigin, OverlayModule } from "@angular/cdk/overlay";
+import { afterNextRender, Component, effect, ElementRef, HostListener, input, model, output, Signal, signal, untracked, ViewChild, WritableSignal } from '@angular/core';
+import { CdkConnectedOverlay, CdkOverlayOrigin, OverlayModule } from "@angular/cdk/overlay";
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-custom-select',
@@ -13,7 +14,6 @@ export class CustomSelectComponent<T extends { name: string, id: number }> {
   selectedOption = model.required<T>()
   @ViewChild('panel') panel?: ElementRef<HTMLElement>;
   @ViewChild('origin', { read: ElementRef }) trigger?: ElementRef<HTMLElement>;
-
   isOpen = signal(false);
 
   @HostListener('document:click', ['$event'])
@@ -37,6 +37,18 @@ export class CustomSelectComponent<T extends { name: string, id: number }> {
   selectOption(option: T) {
     this.selectedOption.set(option)
     this.isOpen.set(false)
+  }
+
+  syncWidth() {
+    requestAnimationFrame(() => {
+      const width = this.trigger?.nativeElement
+        .getBoundingClientRect().width;
+
+      const pane = this.panel?.nativeElement
+      if (pane) {
+        pane.style.width = `${width}px`;
+      }
+    });
   }
 
 }

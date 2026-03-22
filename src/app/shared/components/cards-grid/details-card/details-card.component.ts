@@ -9,6 +9,8 @@ import { FloatTrailerService } from '../../../../core/services/float-trailer/flo
 import { getKeyTrailer } from '../../../utils/helpers';
 import { RouterLink } from '@angular/router';
 import { TooltipDirective } from '../../../../core/directives/tooltip/tooltip.directive';
+import { Serie } from '../../../../core/interfaces/serie/serie.interface';
+import { OptionCategory } from '../../../../core/interfaces/shared/option_category';
 
 @Component({
   selector: 'app-details-card',
@@ -26,16 +28,15 @@ import { TooltipDirective } from '../../../../core/directives/tooltip/tooltip.di
   styleUrl: './details-card.component.css'
 })
 export class DetailsCardComponent {
-  readonly selectedMovie = input.required<Movie | undefined>()
+  readonly selectedItem = input.required<Movie | Serie | undefined>()
   readonly selectedGenre = model.required<Genre>()
   private readonly floatTrailer = inject(FloatTrailerService);
 
   readonly currentTrailerKey = computed(() => {
-    const currentMovie = this.selectedMovie()
-    if (!currentMovie) return undefined
-    return getKeyTrailer(currentMovie.videos)
+    const currentItem = this.selectedItem()
+    if (!currentItem) return undefined
+    return getKeyTrailer(currentItem.videos)
   });
-
 
   selectGenre(genre: Genre) {
     if (genre.id === this.selectedGenre().id) return
@@ -43,6 +44,10 @@ export class DetailsCardComponent {
   }
 
   playTrailer(): void {
-    this.floatTrailer.showFloatTrailer(this.currentTrailerKey())
+    this.floatTrailer.register(this, this.selectedItem)
+  }
+
+  isMovie(item: any): item is Movie { 
+    return 'title' in item && 'runtime' in item
   }
 }

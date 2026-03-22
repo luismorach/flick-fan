@@ -6,8 +6,6 @@ import { fade } from '../shared/animations/animations';
 import { Genre } from '../core/interfaces/shared/genre.interface';
 import { Movie, MovieList } from '../core/interfaces/movie/movie.interface';
 import { Serie, SerieList } from '../core/interfaces/serie/serie.interface';
-import { MoviesGridComponent } from "../shared/components/cards-grid/movies-grid/movies-grid.component";
-import { SeriesGridComponent } from '../shared/components/cards-grid/series-grid/series-grid.component';
 import { IconComponent } from '../shared/icon/icon.component';
 import { EmptyComponent } from '../shared/components/empty/empty.component';
 import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
@@ -19,8 +17,6 @@ import { LoaderCore } from '../shared/utils/data-loaders/types';
   selector: 'app-search',
   imports: [
     CommonModule,
-    MoviesGridComponent,
-    SeriesGridComponent,
     IconComponent,
     EmptyComponent,
     BackgroundNavScrollDirective,
@@ -38,8 +34,6 @@ export default class SearchComponent {
   readonly series: WritableSignal<SerieList | undefined> = signal(undefined)
   readonly genres: WritableSignal<Genre[] | undefined> = signal(undefined)
 
-  private readonly moviesGrid = viewChild.required<MoviesGridComponent>(MoviesGridComponent)
-  private readonly seriesGrid = viewChild.required<SeriesGridComponent>(SeriesGridComponent)
   readonly selectedGenreId = signal(0)
 
   selectedType = signal<'movies' | 'all' | 'series'>('all')
@@ -89,8 +83,6 @@ export default class SearchComponent {
   getDataLoaders() {
     const loaders: LoaderCore<MovieList | SerieList, 'results'>[] = [];
 
-    if (this.selectedType() !== 'series') loaders.push(this.moviesGrid().loader);
-    if (this.selectedType() !== 'movies') loaders.push(this.seriesGrid().loader);
     return loaders;
   }
 

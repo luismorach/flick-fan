@@ -1,0 +1,37 @@
+<main appBackgroundNavScroll>
+  <!-- <app-empty 
+        title="No hay películas disponibles" 
+        subtitle="Vuelve más tarde para ver nuevas películas"
+        [loaders]="getDataLoaders()">
+    </app-empty> -->
+
+  <div class="flex h-screen pt-24 overflow-hidden ">
+    <div class="flex-1 flex flex-col h-full lg:pr-6">
+
+      <nav class="flex p-6 gap-8 justify-between sm:justify-normal">
+        <app-custom-select class="grow-0 shrink basis-60" [options]="mediaTypeOptions"
+          [(selectedOption)]="mediaTypeSelected"></app-custom-select>
+
+        <app-custom-select class="grow-0 shrink basis-60" [options]="currentCategories()"
+          [(selectedOption)]="selectedCategory"></app-custom-select>
+
+        <app-custom-select class="grow-0 shrink basis-60 hidden sm:block" [options]="optionsGenre()"
+          [(selectedOption)]="selectedGenre"></app-custom-select>
+
+        <app-icon class="rounded-lg bg-white/5 px-3 py-3 cursor-pointer block sm:hidden" name="filter"
+          color="text-white/90"></app-icon>
+      </nav>
+
+      <app-cards-grid class="overflow-hidden" [selectedGenre]="selectedGenre()" 
+        [mediaTypeSelected]="mediaTypeSelected()" [selectedCategory]="selectedCategory()" 
+        [(selectedItem)]="selectedItem">
+        
+      </app-cards-grid>
+    </div>
+
+    <app-details-card class="w-[26rem]  hidden lg:block" [selectedItem]="selectedItem()"
+      [(selectedGenre)]="selectedGenre"></app-details-card>
+
+  </div>
+
+</main>

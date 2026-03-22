@@ -1,0 +1,15 @@
+.active {
+    background: radial-gradient(50% 50% at 50% 0, 
+        rgba(var(--action-background-color, 255, 255, 255), .8) 0, transparent 100%),
+        hsla(0, 0%, 100%, .2);
+    background-origin: border-box;
+    border-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 10%, hsla(0, 0%, 100%, .3) 50%, hsla(0, 0%, 100%, 0) 90%) 1/2px;
+    border-image-width: 2px;
+    border-image-width: 2px 0 0 0;
+    box-shadow: 0 -4px 16px 0 rgba(var(--action-background-color, 255, 255, 255), .2); 
+}
+
+.option{
+    @apply  font-semibold text-sm;
+}
+

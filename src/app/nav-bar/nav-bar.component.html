@@ -1,7 +1,7 @@
-<nav class='flex items-center justify-between p-8 fixed text-white  h-12 w-full z-50 transition-all ease-in ' [ngClass]="{'bg-[rgba(22,22,23,.8)] border-b border-[hsla(0,0%,100%,.4)] backdrop-blur-xl 
+<nav class='flex items-center justify-start p-8 fixed text-white  h-12 w-full z-50 transition-all ease-in ' [ngClass]="{'bg-[rgba(22,22,23,.8)] border-b border-[hsla(0,0%,100%,.4)] backdrop-blur-xl 
     backdrop-saturate-[180%] ':comunicatorService.getBackgroundNav()()}">
 
-    <h1 class="w-72 font-racing font-bold text-xl text-[#e50914]">Flick fan</h1>
+    <h1 class="font-racing font-bold text-xl text-[#e50914]">Flick fan</h1>
     <button aria-label="Abrir menú" class="fa fa-bars visible md:invisible hover:text-[#e50914] 
         hover:cursor-pointer" (click)="isMenuOpen=true"></button>
 
@@ -11,19 +11,19 @@
     md:static md:flex-row md:bg-transparent md:h-auto transition-all ease-in-out duration-500"
         [ngClass]="{'right-0':isMenuOpen}">
 
-        <ul class='flex flex-col md:flex-row justify-start md:items-center md:justify-center md:grow text-base'>
+        <ul class='flex flex-col md:flex-row justify-start md:items-center md:justify-center 
+        md:grow text-bas'>
             <li class="md:invisible m-2 self-end">
                 <button aria-label="Cerrar menú" class="fa fa-xmark hover:text-[#e50914] 
                  hover:cursor-pointer z-10" (click)="isMenuOpen=false"></button>
             </li>
-            <li class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
-                <a [routerLink]="['/home']">Inicio</a>
+            <li class="option group">
+                <a [routerLink]="['/home']" routerLinkActive="active" 
+                class="px-4 py-2 rounded-lg group-hover:bg-white group-hover:text-black">Inicio</a>
             </li>
-            <li class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
-                <a [routerLink]="['/movies']">Peliculas</a>
-            </li>
-            <li class="mx-4 my-2 hover:text-[#e50914] hover:cursor-pointer">
-                <a [routerLink]="['/series']">Series</a>
+            <li class="option group">
+                <a [routerLink]="['/discover']" routerLinkActive="active" 
+                class="px-4 py-2 rounded-lg group-hover:bg-white  group-hover:text-black">Descubrir</a>
             </li>
         </ul>
 

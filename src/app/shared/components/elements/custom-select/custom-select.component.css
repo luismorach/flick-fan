@@ -11,7 +11,7 @@
 }
 
 .select-options {
-    @apply bg-[#181111] rounded-lg min-w-56 overflow-hidden text-sm overflow-y-scroll max-h-[21rem]; 
+    @apply bg-[#181111] rounded-lg  overflow-hidden text-sm overflow-y-scroll w-full max-h-[21rem] mt-1; 
     box-shadow: 0 0px 15px rgba(105, 0, 0, .37);
 }
 

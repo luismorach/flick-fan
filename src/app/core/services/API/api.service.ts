@@ -28,6 +28,7 @@ export class ApiService {
     now_playing_movies: this.getNowPlaying.bind(this),
     upcoming_movies: this.getUpcoming.bind(this),
     popular_movies: this.getPopular.bind(this),
+    top_rated_movies:this.getTopRatedMovies.bind(this),
     similar_movies: this.getSimilarMovies.bind(this),
     recomended_movies: this.getRecomendedMovies.bind(this),
     details_movie: this.getDetailsMovie.bind(this),
@@ -37,6 +38,7 @@ export class ApiService {
     popular_series: this.getPopularSeries.bind(this),
     airing_today_series: this.getAiringTodaySeries.bind(this),
     on_the_air_series: this.getOnTheAirSeries.bind(this),
+    top_rated_series:this.getTopRatedSeries.bind(this),
     similar_series: this.getSimilarSeries.bind(this),
     recomended_series: this.getRecomendedSeries.bind(this),
     details_serie: this.getDetailsSerie.bind(this),
@@ -68,6 +70,12 @@ export class ApiService {
     return this.getMediaDetails<MovieList>(endpoint, params, type)
   }
 
+  /*  @Cacheable() */
+  getTopRatedMovies(params: ParamsApi) {
+    const endpoint = `movie/top_rated`
+    const type = 'top_rated_movies'
+    return this.getMediaDetails<MovieList>(endpoint, params, type)
+  }
   /* @Cacheable() */
   getDetailsMovie(params: ParamsApi): Observable<Movie> {
     return this.http
@@ -159,13 +167,18 @@ export class ApiService {
   getOnTheAirSeries(params: ParamsApi) {
     const type = 'on_the_air_series'
     return this.getMediaDetails<SerieList>('tv/on_the_air', params, type)
-    /* params.type = 'on_the_air_series'
-    return this.getSeriesWithDetails('tv/on_the_air', params); */
   }
   /*  @Cacheable() */
   getPopularSeries(params: ParamsApi) {
-    params.type = 'popular_series'
-    return this.getSeriesWithDetails('tv/popular', params);
+    const type = 'popular_series'
+    return this.getMediaDetails<SerieList>('tv/popular', params, type)
+  }
+
+   /*  @Cacheable() */
+  getTopRatedSeries(params: ParamsApi) {
+    const endpoint = 'tv/top_rated'
+    const type = 'top_rated_series'
+    return this.getMediaDetails<SerieList>(endpoint, params, type)
   }
 
   getDetailsSerie(params: ParamsApi): Observable<Serie> {

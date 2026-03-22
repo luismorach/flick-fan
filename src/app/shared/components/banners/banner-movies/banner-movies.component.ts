@@ -43,7 +43,7 @@ export default class BannerMoviesComponent {
     WithDetails,
   )
 
-  readonly currentTrailerKey = computed(() => {
+ /*  readonly currentTrailerKey = computed(() => {
     if (!this.carouselService.state().currentElement()) return undefined
     return getKeyTrailer(this.carouselService.state().currentElement().videos)
   });
@@ -51,7 +51,7 @@ export default class BannerMoviesComponent {
   updateVideoKey = effect(() => {
     this.floatTrailer.setVideoKey(this.currentTrailerKey())
   })
-
+ */
 
   private carouselOptions: CarouselOptions = {
     requiresEnrichment: true,
@@ -64,10 +64,18 @@ export default class BannerMoviesComponent {
   constructor() {
     this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.loader)
   }
+  playTrailer(){
+    this.floatTrailer.register(this,this.carouselService.state().currentElement)
+    //this.floatTrailer.playTest(this.carouselService.state().currentElement)
+  }
 
   canLoadMore() {
     return hasPagination(this.loader) && this.loader.canLoadMore()
   }
+
+  /* ngOnDestroy(){
+    this.floatTrailer.hideFloatTrailer()
+  } */
 }
 
 

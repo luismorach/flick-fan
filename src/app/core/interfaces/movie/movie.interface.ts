@@ -9,11 +9,7 @@ export interface MovieList extends PaginatedMetaData {
     results: Movie[]
 }
 
-export interface OptionMovie{
-    name:string
-    id:number
-    value:string
-}
+
 
 export interface Movie {
     adult: boolean

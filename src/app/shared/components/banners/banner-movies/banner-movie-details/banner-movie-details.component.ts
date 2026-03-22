@@ -21,6 +21,7 @@ export class BannerDetailComponent {
   readonly movie = input.required<Movie>()
   readonly activeIndex = input.required<number>()
   readonly cardIndex = input<number>()
+  readonly onPlayTailer = output<void>()
 
   private readonly floatTrailer = inject(FloatTrailerService);
   private readonly builder = inject(AnimationBuilder);
@@ -38,8 +39,13 @@ export class BannerDetailComponent {
       this.animateIn()
   })
 
+  constructor(){
+   // this.floatTrailer.setupVideo(this.movie)
+  }
   playTrailer(): void {
-    this.floatTrailer.showFloatTrailer(this.currentTrailerKey())
+    this.onPlayTailer.emit()
+    //this.floatTrailer.playTest(this.movie)
+    //this.floatTrailer.playFloatTrailer(this.currentTrailerKey())
   }
 
   private animateIn() {

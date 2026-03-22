@@ -8,7 +8,11 @@ import { CreatedBy, ProductionCompany, ProductionCountry } from "../shared/produ
 export interface SerieList extends PaginatedMetaData {
     results: Serie[]
 }
-
+export interface SeriesCategory{
+    name:string
+    id:number
+    value:string
+}
 export interface Serie {
     adult: boolean
     backdrop_path: string

@@ -1,5 +1,5 @@
 import {
-  ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject,
+  ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, effect, ElementRef, inject,
   input,
   viewChild,
   viewChildren,
@@ -45,6 +45,11 @@ export class CarouselMoviesComponent {
     WithDetails,
     withFilter
   )
+
+  x = effect(() => {
+    console.log('current element', this.carouselService.state().currentElement())
+
+  })
 
   readonly carouselService = inject(CarouselService<MovieList, 'results'>);
 

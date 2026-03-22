@@ -26,7 +26,7 @@ export function useIntersectionObserver(rootInput: ElementRef<HTMLElement>, call
         {
             root: root,
             threshold: 0.1,
-            rootMargin: '100px 0px'
+            rootMargin: '200px 200px'
         }
     );
 

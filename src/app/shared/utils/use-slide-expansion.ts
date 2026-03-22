@@ -17,7 +17,7 @@ export function useSlideExpansion() {
     */
     const adjustTranslateForExpandedSlide = (slide: HTMLElement, slidesInfo: SlidesInfoHook, position: number) => {
         const containerEl = slide.parentElement as HTMLElement ?? undefined
-        if (!containerEl || !isScrollableContainer(containerEl)) return
+        if (!containerEl) return
 
         container = containerEl
         currentPosition = position

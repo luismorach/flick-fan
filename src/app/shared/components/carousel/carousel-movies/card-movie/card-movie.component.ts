@@ -37,7 +37,7 @@ export class CardMovieComponent {
     this.videosRequest = this.api.getMovieVideos({ dataId: this.movie().id }).subscribe((videos: Videos) => {
       const videoId = getKeyTrailer(videos)
         if (videoId)
-          this.floatTrailer.showTrailerEmbed(videoId, this.portalHost())
+          this.floatTrailer.playTrailerEmbed(videoId, this.portalHost())
     })
   }
 

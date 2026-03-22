@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, effect, ElementRef, inject, input, untracked, viewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, input, output, untracked, viewChild } from '@angular/core';
 import { Serie } from '../../../../../core/interfaces/serie/serie.interface';
 import { AutoImagePipe } from '../../../../pipes/autoimage/auto-image.pipe';
 import { RatingComponent } from '../../../rating/rating.component';
@@ -30,7 +30,7 @@ export class BannerDetailsComponent {
 
   changeSerie = effect(() => {
     const serie = this.serie()
-    this.floatTrailer.setVideoKey(this.currentTrailerKey())
+    //this.floatTrailer.setVideoKey(this.currentTrailerKey())
     requestAnimationFrame(() => this.animateIn());
   })
 
@@ -58,7 +58,12 @@ export class BannerDetailsComponent {
 
   }
 
+  constructor() {
+    ///this.floatTrailer.setupVideo(this.serie)
+  }
   playTrailer(): void {
-    this.floatTrailer.showFloatTrailer(this.currentTrailerKey())
+    this.floatTrailer.register(this,this.serie)
+    //this.floatTrailer.playTest(this.serie)
+    //this.floatTrailer.playFloatTrailer(this.currentTrailerKey())
   }
 }

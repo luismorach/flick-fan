@@ -68,6 +68,8 @@ export class CarouselSeriesComponent {
 
   onSlideExpandHover(index: number) {
     const slide = this.carouselContainer()?.nativeElement.children[index] as HTMLElement
+    console.log('expaddiennddo',slide)
+
     if (!slide) return
 
     this.slideExpansion.adjustTranslateForExpandedSlide(

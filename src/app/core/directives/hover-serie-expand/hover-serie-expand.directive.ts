@@ -88,7 +88,7 @@ export class HoverSerieExpandDirective {
 
   attachTrailer() {
     const key = getKeyTrailer(this.serie().videos)
-    this.floatTrailer.showTrailerEmbed(key, this.portalHost());
+    this.floatTrailer.playTrailerEmbed(key, this.portalHost());
   }
 
   @HostListener('mouseleave') onMouseLeave() {
