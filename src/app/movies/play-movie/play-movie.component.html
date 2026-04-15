@@ -42,7 +42,7 @@ min-h-screen pt-16 overflow-x-hidden">
                         class="bg-gradient-to-br from-neutral-900 to-[#2d0000] p-8 rounded-xl border border-red-500/20">
                         <h1
                             class="tracking-tight  mb-4 bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent">
-                            {{movie()?.title}}
+                            {{movie()?.title}} 
                         </h1>
                         <!-- <h3 class="text-red-600 text-xl font-semibold mb-4">{{movie()?.title}}</h3> -->
 
@@ -55,6 +55,7 @@ min-h-screen pt-16 overflow-x-hidden">
 
                         <p class="text-gray-300 leading-relaxed text-base mt-4 line-clamp-[7]">
                             {{movie()?.overview}}
+                            
                         </p>
                     </div>
                     <!-- <div
@@ -74,7 +75,7 @@ min-h-screen pt-16 overflow-x-hidden">
                ">
                     <h1
                         class="tracking-tight mb-4 bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent">
-                        {{movie()?.title}}
+                        {{movie()?.title}} {{url_movie()}}
                     </h1>
 
                     <div class="relative h-[92%] rounded-[15px] overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.8)] 

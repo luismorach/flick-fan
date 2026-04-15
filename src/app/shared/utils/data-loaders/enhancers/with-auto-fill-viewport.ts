@@ -7,8 +7,8 @@ import { canFilter } from "./with-filter"
 export function withAutoFillViewport<T extends PaginatedMetaData, R extends ArrayKey<T>>
     (loader: AnyEnhancedLoader<T, R>): LoaderWithAutoFill<T, R> {
 
-    const setupAutoFill = (container: Signal<ElementRef<HTMLElement> | undefined>,
-        sentinel: Signal<ElementRef<HTMLElement> | undefined>) => {
+    const setupAutoFill = (sentinel: Signal<ElementRef<HTMLElement> | undefined>,
+        container?: Signal<ElementRef<HTMLElement> | undefined>) => {
 
         if (!hasPagination(loader)) return () => { }
 
@@ -21,14 +21,13 @@ export function withAutoFillViewport<T extends PaginatedMetaData, R extends Arra
         // to fill the viewport (autofill behavior)
         const cleanupRef = effect(() => {
             data()  // Explicit dependency on data to trigger the effect
-            const containerEl = container()?.nativeElement
+            const containerEl = container ? container()?.nativeElement : document.scrollingElement
             const sentinelEl = sentinel()?.nativeElement
             if (!containerEl || !sentinelEl) return
 
             untracked(() => {
                 requestAnimationFrame(() => {
                     if (!pagination.canLoadMore() || pagination.isFetchingMoreData()) return;
-
                     const sentinelTop = sentinelEl.offsetTop;
                     const viewportBottom = containerEl.scrollTop + containerEl.clientHeight;
 

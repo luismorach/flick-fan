@@ -5,14 +5,6 @@
           to-100% 
 }
  
-.embla__slide.is-selected .metadata-movie{
-  @apply translate-x-0 !important
-} 
-
-.swiper-slide-active .overview-movie,.swiper-slide-active .buttons-movie{
-  @apply translate-y-0 opacity-100 !important
-} 
-
 .title{
   @apply font-racing uppercase text-3xl text-left sm:text-4xl lg:text-5xl relative 
           w-full max-h-48 object-contain object-center line-clamp-2;

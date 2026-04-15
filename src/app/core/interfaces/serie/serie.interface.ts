@@ -1,19 +1,16 @@
 import { Images } from "../media/images.interface"
 import { Videos } from "../media/videos.interface"
 import { Crew } from "../people/credits.interface"
-import { PaginatedMetaData } from "../shared/generic.interface"
+import { MediaItem, PaginatedMetaData } from "../shared/generic.interface"
 import { Genre } from "../shared/genre.interface"
 import { CreatedBy, ProductionCompany, ProductionCountry } from "../shared/production.interface"
+import { ListReleaseDates } from "../shared/release-dates.interface"
 
 export interface SerieList extends PaginatedMetaData {
     results: Serie[]
 }
-export interface SeriesCategory{
-    name:string
-    id:number
-    value:string
-}
-export interface Serie {
+
+export interface Serie extends MediaItem{
     adult: boolean
     backdrop_path: string
     created_by: CreatedBy[]
@@ -48,6 +45,7 @@ export interface Serie {
     images: Images
     videos: Videos
     external_ids: External_ids | undefined
+    release_dates: ListReleaseDates
 }
 
 

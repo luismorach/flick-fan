@@ -1,8 +1,9 @@
 import { computed, effect, signal, Signal, WritableSignal } from "@angular/core";
 import { AnyEnhancedLoader, LoaderCore, ArrayKey, LoaderEnhancer, PipeMethod } from "./types";
+import { ParamsApi } from "../../../core/interfaces/shared/params-http.interface";
 
 export function useDataLoader<T extends object, K extends ArrayKey<T>>
-    (dataKey: K, dataSource: Signal<T | undefined>): AnyEnhancedLoader<T, K> & { pipe: PipeMethod<T, K> } {
+    (dataKey: K, dataSource: Signal<T | undefined>, extraArgs?: ParamsApi): AnyEnhancedLoader<T, K> & { pipe: PipeMethod<T, K> } {
 
     const mutableData: WritableSignal<T | undefined> = signal(undefined)
 
@@ -23,6 +24,7 @@ export function useDataLoader<T extends object, K extends ArrayKey<T>>
         hasData: computed(() => data().length > 0),
         dataLength: computed(() => data().length),
         dataKey,
+        extraArgs,
         capabilities: new Set()
     }
 

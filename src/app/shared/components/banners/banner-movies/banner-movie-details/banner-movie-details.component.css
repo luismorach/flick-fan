@@ -1,7 +1,7 @@
 
 .overlay{
-   @apply w-full h-full absolute top-0  bg-gradient-to-r from-[#181111] 
-          from-15% via-[rgba(15,15,15,.9)] via-50% to-[rgba(83,200,141,0)] 
+   @apply w-full h-full absolute top-0  bg-gradient-to-r from-[#0a0a0a] 
+          from-15% via-[rgba(15,15,15,.9)] via-40% to-[rgba(83,200,141,0)] 
           to-100% 
 }
  

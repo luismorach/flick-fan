@@ -31,7 +31,8 @@ export class CarouselService<T extends Object, R extends keyof T> {
     // ==========================================
     readonly navigation: CarouselNavigationAPI = {
         next: () => this.controller.next(),
-        prev: () => this.controller.prev()
+        prev: () => this.controller.prev(),
+        resetPosition: () => this.controller.resetPosition()
     }
 
     readonly state: Signal<CarouselStateAPI> = computed(() => {
@@ -39,9 +40,9 @@ export class CarouselService<T extends Object, R extends keyof T> {
             activeIndex: this.controller.activeIndex,
             isAtStart: this.controller.isAtStart,
             isAtEnd: this.controller.isAtEnd,
-            isAtSkeleton:this.controller.isAtSkeleton,
+            isAtSkeleton: this.controller.isAtSkeleton,
             currentElement: this.controller.currentElement,
-            currentPosition:this.controller.currentPosition
+            currentPosition: this.controller.currentPosition
         }
     })
 
@@ -49,7 +50,7 @@ export class CarouselService<T extends Object, R extends keyof T> {
     initialize(
         carouselContainer: Signal<ElementRef<HTMLElement> | undefined>,
         carouselOptions: CarouselOptions,
-        loader: AnyEnhancedLoader<T, R>
+        loader?: AnyEnhancedLoader<T, R>
     ): void {
         this.loader = loader
         this.controller = useCarouselcontroller(carouselContainer, carouselOptions, loader)
@@ -114,10 +115,11 @@ export class CarouselService<T extends Object, R extends keyof T> {
 
     private setupScrollListener(carouselContainer: HTMLElement): void {
         fromEvent(carouselContainer, 'scrollend').pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(() => this.handleScroll());
+            .subscribe(() => this.handleScroll(carouselContainer));
     }
 
-    private handleScroll(): void {
+    private handleScroll(carouselContainer: HTMLElement): void {
+        console.log('posicion antes de adjustscroll',carouselContainer.scrollLeft)
         this.controller?.adjustScrollToNearestIndex()
 
         console.log('isAtEnd', this.controller?.isAtEnd(), this.state().activeIndex())

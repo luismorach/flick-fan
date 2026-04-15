@@ -17,10 +17,11 @@ export interface CarouselController {
     snapBackIfOverscrolled: () => void
     next: () => void
     prev: () => void
+    resetPosition: () => void
 }
 
 export type CarouselNavigationAPI =
-    Pick<CarouselController, 'next' | 'prev'>
+    Pick<CarouselController, 'next' | 'prev' | 'resetPosition'>
 
 export type CarouselStateAPI =
     Pick<CarouselController, 'activeIndex' | 'isAtEnd' | 'isAtStart' | 'currentElement' | 'isAtSkeleton' | 'currentPosition'>
@@ -121,6 +122,7 @@ export function useCarouselcontroller<T extends Object, R extends keyof T>(
 
     const next = () => {
         if (isAtEnd()) return;
+        console.log('avanxzando')
 
         const maxIndex = totalVisibleItems() - slidesPerGroup();
         const nextIndex = Math.min(activeIndex() + slidesPerGroup(), maxIndex);
@@ -134,18 +136,22 @@ export function useCarouselcontroller<T extends Object, R extends keyof T>(
         activeIndex.set(prevIndex);
     }
 
-    const scrollToCurrentPosition = (behavior: ScrollBehavior = 'smooth') => {
+    const scrollToCurrentPosition = (behavior: ScrollBehavior = 'smooth', newPosition: number = currentPosition()) => {
         const containerEl = containerRef()
         if (!containerEl) return;
 
         console.log('distancia a desplazar ', currentPosition(), slidesInfo.direction(), activeIndex())
-        const newPosition = currentPosition()
 
         if (slidesInfo.direction() === 'vertical') {
             containerEl.scrollTo({ top: newPosition, behavior });
         } else {
             containerEl.scrollTo({ left: newPosition, behavior });
         }
+    }
+
+    const resetPosition = () => {
+        console.log('reseteando posicion')
+        scrollToCurrentPosition('instant', 0)
     }
 
     return {
@@ -160,6 +166,7 @@ export function useCarouselcontroller<T extends Object, R extends keyof T>(
         next,
         prev,
         adjustScrollToNearestIndex,
-        snapBackIfOverscrolled
+        snapBackIfOverscrolled,
+        resetPosition
     }
 }

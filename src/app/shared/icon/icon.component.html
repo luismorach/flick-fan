@@ -100,44 +100,70 @@
 
 
     <svg *ngSwitchCase="'maximize'" class="{{ size }} {{ color }} {{backgroundColor}}"
-    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="150" height="150" fill="none" 
-    stroke="currentColor" stroke-width="40" stroke-linecap="round" stroke-linejoin="round">
-  <!-- Flecha superior izquierda -->
-  <path d="
+        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="150" height="150" fill="none"
+        stroke="currentColor" stroke-width="40" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Flecha superior izquierda -->
+        <path d="
     M200 120
     L140 120
     A25 25 0 0 0 130 130
     L130 200 Z" fill="white" />
 
-  <!-- Flecha superior derecha -->
-  <path d="
+        <!-- Flecha superior derecha -->
+        <path d="
     M332 120
     L392 120
     A20 20 0 0 1 412 140
-    L412 200 z" fill="white"/>
+    L412 200 z" fill="white" />
 
-  <!-- Flecha inferior izquierda -->
-  <path d="
+        <!-- Flecha inferior izquierda -->
+        <path d="
     M180 392
     L120 392
     A20 20 0 0 1 100 372
-    L100 312 Z " fill="white"/>
+    L100 312 Z " fill="white" />
 
-  <!-- Flecha inferior derecha -->
-  <path d="
+        <!-- Flecha inferior derecha -->
+        <path d="
     M332 392
     L392 392
     A20 20 0 0 0 412 372
-    L412 312 Z " fill="white"/>
+    L412 312 Z " fill="white" />
 
-  <!-- Cruz central -->
-  <path d="
+        <!-- Cruz central -->
+        <path d="
     M160 160
     L352 352
     M352 160
-    L160 352" stroke-width="60"/>
-</svg>
+    L160 352" stroke-width="60" />
+    </svg>
 
+
+
+    <svg *ngSwitchCase="'arrow-left'" class="{{ size }} {{ color }} {{backgroundColor}}" width="48" height="48"
+        viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M30 24H18M18 24L24 18M18 24L24 30" stroke="white" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round" />
+    </svg>
+
+    <svg *ngSwitchCase="'arrow-right'" class="{{ size }} {{ color }} {{backgroundColor}}" width="48" height="48"
+        viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 24H30M30 24L24 18M30 24L24 30" stroke="white" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round" />
+    </svg>
+
+    <svg *ngSwitchCase="'arrow-up'" class="{{ size }} {{ color }} {{backgroundColor}}" width="48" height="48"
+        viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="23" stroke="white" stroke-opacity="0.2" fill="none" />
+        <path d="M24 30V18M24 18L18 24M24 18L30 24" stroke="white" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round" />
+    </svg>
+
+    <svg *ngSwitchCase="'arrow-down'" class="{{ size }} {{ color }} {{backgroundColor}}" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="23" stroke="white" stroke-opacity="0.2" fill="none" />
+        <path d="M24 18V30M24 30L18 24M24 30L30 24" stroke="white" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round" />
+    </svg>
 
 
 

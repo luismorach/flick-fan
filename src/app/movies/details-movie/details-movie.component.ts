@@ -1,15 +1,13 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, Renderer2, signal, viewChild, ViewChild, viewChildren, WritableSignal } from '@angular/core';
-import { ActivatedRoute, Params, RouterLink } from '@angular/router';
-import { concatAll, map } from 'rxjs/operators';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, effect, ElementRef, inject, Renderer2, Signal, signal, viewChild, ViewChild, viewChildren, WritableSignal } from '@angular/core';
+import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
+import { concatAll, map, switchMap, tap } from 'rxjs/operators';
 import { CurrencyPipe, DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
 //import { SwiperOptions } from 'swiper';
 import { MinutesToTimePipe } from '../../shared/pipes/minutes-to-time/minutes-to-time.pipe';
 import { ApiService } from '../../core/services/API/api.service';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
-import { Credits } from '../../core/interfaces/people/credits.interface';
-import { Movie } from '../../core/interfaces/movie/movie.interface';
-import { CarouselSeriesComponent } from '../../shared/components/carousel/carousel-series/carousel-series.component';
-import { SlidesInfoHook, useSlidesInfo } from '../../shared/utils/use-slides-info';
+import { Credits, Crew } from '../../core/interfaces/people/credits.interface';
+import { Movie, MovieList } from '../../core/interfaces/movie/movie.interface';
 import { AutoImagePipe } from '../../shared/pipes/autoimage/auto-image.pipe';
 import { IconComponent } from "../../shared/icon/icon.component";
 import { CdkScrollable } from "@angular/cdk/scrolling";
@@ -17,115 +15,102 @@ import { CarouselOptions } from '../../core/interfaces/shared/carousel-interface
 import { CarouselService } from '../../core/services/carousel/carousel-service';
 import { useDataLoader } from '../../shared/utils/data-loaders/use-data-loader';
 import { CarouselNavigationComponent } from "../../shared/components/carousel/carousel-navigation/carousel-navigation.component";
+import { withPagination } from '../../shared/utils/data-loaders/enhancers/with-pagination';
+import { routes } from '../../app.routes';
+import { BackgroundNavScrollDirective } from "../../core/directives/background-nav-scroll.directive";
+import { getHeightContainer, getReleaseDate } from '../../shared/utils/helpers';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-details-movie',
-  imports: [DatePipe, NgOptimizedImage, DecimalPipe, RouterLink, MinutesToTimePipe, AutoImagePipe, IconComponent, CdkScrollable, CarouselNavigationComponent],
+  imports: [DatePipe, NgOptimizedImage, DecimalPipe, RouterLink, MinutesToTimePipe, AutoImagePipe,
+     IconComponent, CdkScrollable, CarouselNavigationComponent, BackgroundNavScrollDirective],
   providers: [CarouselService],
   templateUrl: './details-movie.component.html',
   styleUrl: './details-movie.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export default class DetailsMovieComponent {
-  movie: WritableSignal<Movie | undefined> = signal(undefined)
-  credits: WritableSignal<Credits | undefined> = signal(undefined)
-  @ViewChild('containerCast') containerCast!: ElementRef<HTMLElement>
-  @ViewChild('containerCrew') containerCrew!: ElementRef<HTMLElement>
 
-  private readonly slides = viewChildren<ElementRef<HTMLElement>>('slide')
-  private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carousel')
+  private activeRoute = inject(ActivatedRoute)
+  private router = inject(Router)
+  private api = inject(ApiService)
+
+  private id_movie = toSignal(
+    this.activeRoute.params.pipe(
+      map(params => params['id_movie'])),
+    { initialValue: undefined }
+  );
+
+  movie = toSignal(
+    toObservable(this.id_movie).pipe(
+      switchMap(id => this.api.getDetailsMovie({ dataId: id }))),
+    { initialValue: undefined }
+  );
+
+  credits = toSignal(
+    toObservable(this.id_movie).pipe(
+      switchMap(id => this.api.getCreditsMovie({ dataId: id }))
+    ),
+    { initialValue: undefined }
+  );
+
+   recomended: Signal<MovieList | undefined> = toSignal(
+    toObservable(this.id_movie).pipe(
+      switchMap(id => this.api.getRecomendedMovies({ dataId: id }))
+    ),
+    { initialValue: undefined }
+  );
+
+  readonly similarMoviesLoader = useDataLoader<MovieList, 'results'>('results', this.recomended, 
+    { dataId: this.id_movie() }).pipe(
+    withPagination
+  )
+
+  private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carouselSimilarMovies')
+  private readonly sinopsysContainer = viewChild<ElementRef<HTMLElement>>('sinopsysContainer')
   readonly carouselService = inject(CarouselService<Credits, 'cast'>);
-  readonly loader = useDataLoader<Credits, 'cast'>('cast', this.credits)
+
+  director = computed(() => {
+    return this.credits()?.crew.find((person: Crew) => person.job === 'Director')
+  })
+  producer = computed(() => {
+    return this.credits()?.crew.find((person: Crew) => person.job === 'Producer')
+  })
+  production = computed(() => {
+    return this.movie()?.production_companies[0]
+  })
+  height = getHeightContainer(this.sinopsysContainer)
 
   readonly carouselOptions: CarouselOptions = {
     requiresEnrichment: false,
     orientation: 'horizontal',
-    requireSnapMandatory: false,
+    requireSnapMandatory: true,
     slidesConfig: {
-      slidesPerView: 2,
+      slidesPerView: 1,
+      peek: 32,
       peekSkeletonOffset: 0,
       spaceBetween: 24,
       breakpoints: {
-        748: { slidesPerView: 4 },
-        988: { slidesPerView: 5 },
-        1388: { slidesPerView: 5 }
+        420: { slidesPerView: 1.5 },
+        480: { slidesPerView: 2 },
+        640: { slidesPerView: 3 },
+        768: { slidesPerView: 4, peek: 96 },
+        988: { slidesPerView: 5, peek: 96 }
       }
     }
   }
 
-
-  isLiked = false;
-  isBookmarked = false;
-  slideWidth = 144
-  numSlidesCrew = 1
-  isSwiperHover = [false, false]
-  isEnd = [false, false]
-  isBeginning = [true, true]
-  /* private swiperHelperCast: SwiperHelper<Movie>
-  private swiperHelperCrew: SwiperHelper<Movie> */
-  private static readonly SLIDE_CONFIG = {
-    width: 144,
-    isCarousel: true
-  } as const;
-  slidesInfo: SlidesInfoHook = useSlidesInfo(signal(undefined), {});
-
-  constructor(private activeRoute: ActivatedRoute,
-    private api: ApiService, private comunicatorService: ComunicatorService, private renderer: Renderer2) {
-    this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.loader)
-    this.comunicatorService.setBackgroundNav(true)
-    this.getDetailsMovie()
-    this.getCreditsMovie()
-  }
-
-  getDetailsMovie() {
-    let detailsMovie$ = this.activeRoute.params.pipe(
-      map((params: Params) => this.api.getDetailsMovie({ dataId: params['id_movie'] })), concatAll())
-
-    detailsMovie$.subscribe((movie: Movie) => {
-      document.scrollingElement?.scrollTo(0, 0)
-      this.movie.set(movie)
-    })
-
+  constructor() {
+    this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.similarMoviesLoader)
   }
 
   getReleaseDate() {
-    const movie = this.movie()
-    if (!movie) return
-    const list = movie.release_dates.results.filter((element) => element.iso_3166_1 === 'US')
-    const release_dates = list[0].release_dates.filter((element) => element.certification !== '')
-    console.log(release_dates[0])
-    return release_dates[0]
+    return getReleaseDate(this.movie())
   }
 
-  getCreditsMovie() {
-    let creditsMovie$ = this.activeRoute.params.pipe(
-      map((params: Params) => this.api.getCreditsMovie({ dataId: params['id_movie'] })), concatAll())
-    creditsMovie$.subscribe((credits: Credits) => this.credits.set(credits))
-
-  }
-  getBackgroundImage(): string {
-    return `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url(http://image.tmdb.org/t/p/original${this.movie()?.backdrop_path})`;
+  redirect(id: number) {
+    this.router.navigate(['/details-movie/', id])
   }
 
-  toggleLike(): void {
-    this.isLiked = !this.isLiked;
-  }
-
-  toggleBookmark(): void {
-    this.isBookmarked = !this.isBookmarked;
-  }
-
-  getLikeButtonClass(): string {
-    return `p-3 rounded-full border-2 transition-all transform hover:scale-110 ${this.isLiked
-      ? 'bg-red-500 border-red-500 text-white'
-      : 'border-white/30 text-white hover:border-red-500 hover:text-red-500'
-      }`;
-  }
-
-  getBookmarkButtonClass(): string {
-    return `p-3 rounded-full border-2 transition-all transform hover:scale-110 ${this.isBookmarked
-      ? 'bg-red-500 border-red-500 text-white'
-      : 'border-white/30 text-white hover:border-red-500 hover:text-red-500'
-      }`;
-  }
 }

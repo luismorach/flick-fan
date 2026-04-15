@@ -1,582 +1,219 @@
-<main class="py-16">
-    <div class="relative w-full h-[60vh] md:h-[70vh] lg:h-[85vh] ">
-        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" [style.background-image]="getBackgroundImage()">
-            <div class="absolute inset-0 bg-gradient-to-t from-[#181111]  via-[#181111]/80 to-transparent"></div>
-            <div class="absolute inset-0 bg-gradient-to-r from-[#181111] via-[#181111]/40 to-transparent"></div>
-        </div>
+<main appBackgroundNavScroll>
 
-        <div class="relative h-full container mx-auto px-4 md:px-10 flex flex-col justify-end ">
+    <div class="relative w-full h-screen">
+
+        <img [ngSrc]="movie()?.backdrop_path | autoImage : 'backdrop-square'" fill loading="lazy"
+            class="object-cover object-center gradient opacity-30">
+        <div class="relative h-full container  px-4 md:px-24 flex flex-col justify-end pb-8">
             <div class="flex flex-col md:flex-row gap-8 items-end">
                 <!-- Poster (Hidden on mobile, visible on tablet+) -->
                 <figure
-                    class="hidden md:block w-[240px] shrink-0 rounded-xl overflow-hidden shadow-2xl shadow-primary/20 border border-white/10 transform  z-10">
-                    <img [ngSrc]="movie()?.poster_path | autoImage : 'tall'"  class="aspect-[2/3] bg-cover bg-center">
+                    class="hidden md:block w-[240px] shrink-0 rounded-xl overflow-hidden shadow-2xl shadow-[#e50914]/20 border border-white/10 transform  z-10">
+                    <img [ngSrc]="movie()?.poster_path | autoImage : 'tall'" class="aspect-[2/3] bg-cover bg-center">
                 </figure>
 
                 <!-- Text Content -->
                 <div class="flex flex-col gap-4  z-10">
-                    <!-- Breadcrumb/Tagline -->
-                    <div
-                        class="flex items-center gap-2 text-[#f20d0d] font-bold tracking-widest uppercase text-xs md:text-sm animate-pulse">
-                        <span>#1 in Movies Today</span>
-                    </div>
-                    <!-- Title -->
-                    <h1
-                        class="text-slate-900 dark:text-white text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-[-0.033em] drop-shadow-lg">
-                        {{movie()?.title}}
-                    </h1>
+
                     <!-- Meta Info Row -->
-                    <div
-                        class="flex flex-wrap items-center gap-4 text-slate-700 dark:text-gray-300 text-sm md:text-base font-medium">
-                        <span class="text-green-600 font-bold">98% Match</span>
-                        <span>{{getReleaseDate()?.release_date|date:'yyyy'}}</span>
+                    <span class="flex flex-wrap items-center gap-2 text-[#e50914] font-normal text-sm  tracking-wider">
+
+                        <span class="w-1 h-1 bg-white/30 rounded-full"></span>
+                        {{movie()?.release_date|date:'yyyy'}}
+
+                        <span class="w-1 h-1 bg-white/30 rounded-full"></span>
+                        {{movie()?.runtime | minutesToTime}}
+
+                        @if(getReleaseDate()){
                         <span
                             class="border border-slate-300 dark:border-gray-600 px-2 py-0.5 rounded text-xs uppercase">
                             {{getReleaseDate()?.certification}}
                         </span>
-                        <span>{{movie()?.runtime | minutesToTime}}</span>
-                        <span
-                            class="bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded text-xs uppercase flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[14px]">hd</span> HD
-                        </span>
-                    </div>
-                    <!-- Genre Chips -->
-                    <div class="flex gap-2 flex-wrap my-2">
-                        <div class="flex gap-2 flex-wrap my-2">
-                            @for(genre of movie()?.genres;track genre.id){
-                            <div
-                                class="flex h-8 items-center justify-center px-4 rounded-full bg-slate-200 dark:bg-[#492222] hover:bg-slate-300 dark:hover:bg-[#5e2b2b] transition cursor-pointer">
-                                <span class="text-slate-900 dark:text-white text-xs font-bold uppercase tracking-wide">
-                                    {{ genre.name }}
-                                </span>
-                            </div>
-                            }
-                        </div>
-                    </div>
-                    <!-- Description -->
-                    <p
-                        class="text-gray-300 text-base md:text-lg leading-relaxed line-clamp-3 md:line-clamp-none max-w-3xl drop-shadow-md">
-                        {{movie()?.overview}}
-                    </p>
-                    <!-- Buttons -->
-                    <div class="flex flex-wrap gap-4 mt-4">
-                        <button
-                            class="flex items-center justify-center gap-2 rounded-lg h-12 px-8 bg-[#f20d0d] hover:bg-red-700 text-white text-base font-bold transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-primary/30">
-                            <app-icon name="play" size="w-6 h-6"></app-icon>
-                            <span>Ver ahora</span>
-                        </button>
-                        <button
-                            class="flex items-center justify-center gap-2 rounded-lg h-12 px-8 bg-slate-200 dark:bg-[#492222] hover:bg-slate-300 dark:hover:bg-[#5e2b2b] text-slate-900 dark:text-white text-base font-bold transition-transform hover:scale-105 active:scale-95">
-                            <app-icon name="film" size="w-4 h-4"></app-icon>
-                            <span>Trailer</span>
-                        </button>
-                        <button
-                            class="flex items-center justify-center rounded-lg size-12 border border-slate-300 dark:border-gray-600 bg-transparent hover:bg-slate-200 dark:hover:bg-white/10 text-slate-900 dark:text-white transition-colors ml-auto md:ml-0"
-                            title="Add to My List">
-                            <app-icon name="plus" size="w-6 h-6"></app-icon>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Content Body -->
-    <div class="container mx-auto px-4 md:px-10 py-12 md:py-20 flex flex-col lg:flex-row gap-12">
-        <!-- Left Column (Main Details) -->
-        <div class="flex-1 space-y-12">
-            <!-- Cast Section -->
-            <section>
-                <h3 class="text-slate-900 dark:text-white text-2xl font-bold mb-6 flex items-center gap-2">
-                    <span class="w-1 h-6 bg-[#f20d0d] rounded-full"></span> Top Cast
-                </h3>
-                <div class="overflow-hidden grid grid-cols-1 relative">
-                    <app-carousel-navigation [carouselService]="carouselService"></app-carousel-navigation>
-                    <div cdkScrollable class="carousel-container" #carousel 
-                         [style.gap.px]="carouselService.slidesInfo.layout().spaceBetween">
-                        @for(cast of loader.data();track cast){
-                        
-                        <div class="flex flex-col items-center gap-3 group cursor-pointer">
-                            <div class="relative" [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize">
-                                <figure
-                                    class="w-full aspect-square rounded-full overflow-hidden border-2 border-transparent group-hover:border-[#f20d0d] transition-all">
-                                    <img [ngSrc]="cast.profile_path| autoImage : 'square'" fill
-                                        class="rounded-full bg-cover object-cover bg-center">
-                                </figure>
-                            </div>
-                           <div class="text-center">
-                                <h1 class="text-slate-900 dark:text-white font-bold text-sm">{{cast.name}}</h1>
-                                <h2 class="text-slate-500 dark:text-gray-400 text-xs">{{cast.character}}</h2>
-                            </div>
-                        </div>
                         }
-                    </div>
-                </div>
 
-                <!-- <div class="grid grid-cols-2 grid-rows-1 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                    @for(cast of credits()?.cast;track cast){
-                    <div class="flex flex-col items-center gap-3 group cursor-pointer">
-                        <div class="relative">
-                            <figure
-                                class="size-24 md:size-28 rounded-full overflow-hidden border-2 border-transparent group-hover:border-[#f20d0d] transition-all">
-                                <img [ngSrc]="cast.profile_path| autoImage : 'square'" fill
-                                    class="rounded-full bg-cover bg-center">
-                            </figure>
-                        </div>
-                        <div class="text-center">
-                            <h1 class="text-slate-900 dark:text-white font-bold text-sm">{{cast.name}}</h1>
-                            <h2 class="text-slate-500 dark:text-gray-400 text-xs">{{cast.character}}</h2>
-                        </div>
-                    </div>
-                    }
-
-                </div> -->
-            </section>
-
-            <section>
-                <h3 class="text-slate-900 dark:text-white text-2xl font-bold mb-6 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <span class="w-1 h-6 bg-primary rounded-full"></span> More Like This
-                    </div>
-                    <a class="text-primary text-sm font-semibold hover:underline" href="#">See All</a>
-                </h3>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                    <!-- Movie Card 1 -->
-                    <div class="group relative rounded-lg overflow-hidden cursor-pointer aspect-[2/3] bg-gray-800">
-                        <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                            data-alt="Interstellar movie poster"
-                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBgeE-WckN1U0GmHQ5rUSmbqBWXaC0zRatrxWZHiY-HE6QYW5SjgUzcPs0eI1J9aKnpmLz464GBHRAmWecUbcPOLKdsnCsQMir-Uvrkd889mpbWQupHto8-6S5ovrcuuhiJfMFmGhXesRDiw3OxDowlF70Lh9v32BQl5mCGAC9sE042RzQHOszNE6i2pAGWu7pSjy-ERW_Si_Pt__v9k2O9y2dzYUCPVKW8R5EPYnAazcb0I45dflItEpCuF0uzHTUW9GzbTQ5Pd1Q");'>
-                        </div>
-                        <div
-                            class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity">
-                        </div>
-                        <div class="absolute bottom-0 left-0 p-4 w-full">
-                            <h4 class="text-white font-bold text-lg truncate">Interstellar</h4>
-                            <div class="flex items-center gap-2 text-xs text-gray-300">
-                                <span class="text-green-400 font-bold">96%</span>
-                                <span>2014</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Movie Card 2 -->
-                    <div class="group relative rounded-lg overflow-hidden cursor-pointer aspect-[2/3] bg-gray-800">
-                        <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                            data-alt="The Prestige movie poster"
-                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJvJQkNTDeMHV4eJ1fWj7PTQrCuembZpPmQskMXfF_-1nAsCjU4BT3R1CxgE0NMA7aCXEzZkEySt4ozJL60LtEkMDUgsegpPhJW2jp3JIrkYLW0YeCaK6TaG9bh6UIwCWkWhU5pl_nsbVBmZeLZnSB2Qpn-i09IAj1GRFEKo6TU8saShu68j8gAC68J8GR81JKaxE59k5cDyzZ7fVFla2-SEkC0Q50oGITnSALcC0_Op2AtKvW32DgP9VH_lI5sCtWvnnf_2JrI1Q");'>
-                        </div>
-                        <div
-                            class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity">
-                        </div>
-                        <div class="absolute bottom-0 left-0 p-4 w-full">
-                            <h4 class="text-white font-bold text-lg truncate">The Prestige</h4>
-                            <div class="flex items-center gap-2 text-xs text-gray-300">
-                                <span class="text-green-400 font-bold">92%</span>
-                                <span>2006</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Movie Card 3 -->
-                    <div class="group relative rounded-lg overflow-hidden cursor-pointer aspect-[2/3] bg-gray-800">
-                        <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                            data-alt="Tenet movie poster"
-                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC13Ck10UfkOet3vOHxCPQEsAPGqwdgB-r5OniWQ_5wYbfMYWTtFq27m0XN0vEips4mKAwaoiPhVFc5tXUrYteJFPvJGc0RXi4nx7LqnVofRQRYRlIS5Ru_IIdmc8bjUKRJNd4Y_sCilVFMue7JwC3FcHQ7CZX-qAKxqnCVN2XBGuhbhhoJzKKXh3ji5YAh2tEV4LeDD6EeTc3aBONAgy4n3Bq8Rj8lwyQg77YMe1CJxypmvO1n7w7v4fdZ_poG67LW5Bf1b2Z_ISY");'>
-                        </div>
-                        <div
-                            class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity">
-                        </div>
-                        <div class="absolute bottom-0 left-0 p-4 w-full">
-                            <h4 class="text-white font-bold text-lg truncate">Tenet</h4>
-                            <div class="flex items-center gap-2 text-xs text-gray-300">
-                                <span class="text-green-400 font-bold">85%</span>
-                                <span>2020</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Movie Card 4 -->
-                    <div class="group relative rounded-lg overflow-hidden cursor-pointer aspect-[2/3] bg-gray-800">
-                        <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                            data-alt="Shutter Island movie poster"
-                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB5sMV6F7ZoJbFr4Vs5kZWYkANYoYW3n9NPFaAIE6lIAJ8p0p_0Y6fWvq4blFqTELJoZ2IPXKm9aXDzhJMU61UfG7qUgPn4G3Td52wsAEmtQ8pJQK6VPuWTdS8or2Dk5pV6QPNIgxyGzuPYGFqrkFBCm743-n5KrDA--9vi-gkNf9xzdvnEhYw466e_Xsf2qgYcXIbZZYUEVhlI-eI711B5Zu-JnKeTOLsuxwl7irJk9alrTb-4bbUC56HOluwH5pGuqrx20C-xz8E");'>
-                        </div>
-                        <div
-                            class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity">
-                        </div>
-                        <div class="absolute bottom-0 left-0 p-4 w-full">
-                            <h4 class="text-white font-bold text-lg truncate">Shutter Island</h4>
-                            <div class="flex items-center gap-2 text-xs text-gray-300">
-                                <span class="text-green-400 font-bold">90%</span>
-                                <span>2010</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- Right Sidebar (Stats & Info) -->
-        <div class="w-full lg:w-1/3 flex flex-col gap-8">
-            <!-- Ratings Card -->
-            <div class="bg-white dark:bg-[#2c1616] rounded-xl p-6 border border-gray-100 dark:border-white/5 shadow-lg">
-                <h4 class="text-slate-900 dark:text-white font-bold text-lg mb-4">Audience Rating</h4>
-                <div class="flex flex-col gap-4">
-                    <div class="flex items-end gap-3">
-                        <p class="text-slate-900 dark:text-white text-5xl font-black leading-none tracking-tight">4.8
-                        </p>
-                        <div class="flex flex-col mb-1">
-                            <div class="flex gap-0.5 text-primary">
-                                <span class="material-symbols-outlined text-[20px] fill-current">star</span>
-                                <span class="material-symbols-outlined text-[20px] fill-current">star</span>
-                                <span class="material-symbols-outlined text-[20px] fill-current">star</span>
-                                <span class="material-symbols-outlined text-[20px] fill-current">star</span>
-                                <span class="material-symbols-outlined text-[20px] fill-current">star_half</span>
-                            </div>
-                            <p class="text-slate-500 dark:text-gray-400 text-xs font-medium">12k verified reviews</p>
-                        </div>
-                    </div>
-                    <!-- Rating Bars -->
-                    <div class="space-y-2 mt-2">
-                        <div class="grid grid-cols-[20px_1fr_40px] items-center gap-2">
-                            <span class="text-xs font-bold text-slate-500 dark:text-gray-400">5</span>
-                            <div class="h-1.5 w-full bg-gray-200 dark:bg-[#492222] rounded-full overflow-hidden">
-                                <div class="h-full bg-primary w-[75%] rounded-full"></div>
-                            </div>
-                            <span class="text-xs text-right text-slate-500 dark:text-gray-400">75%</span>
-                        </div>
-                        <div class="grid grid-cols-[20px_1fr_40px] items-center gap-2">
-                            <span class="text-xs font-bold text-slate-500 dark:text-gray-400">4</span>
-                            <div class="h-1.5 w-full bg-gray-200 dark:bg-[#492222] rounded-full overflow-hidden">
-                                <div class="h-full bg-primary w-[15%] rounded-full"></div>
-                            </div>
-                            <span class="text-xs text-right text-slate-500 dark:text-gray-400">15%</span>
-                        </div>
-                        <div class="grid grid-cols-[20px_1fr_40px] items-center gap-2">
-                            <span class="text-xs font-bold text-slate-500 dark:text-gray-400">3</span>
-                            <div class="h-1.5 w-full bg-gray-200 dark:bg-[#492222] rounded-full overflow-hidden">
-                                <div class="h-full bg-primary w-[5%] rounded-full"></div>
-                            </div>
-                            <span class="text-xs text-right text-slate-500 dark:text-gray-400">5%</span>
-                        </div>
-                        <div class="grid grid-cols-[20px_1fr_40px] items-center gap-2">
-                            <span class="text-xs font-bold text-slate-500 dark:text-gray-400">2</span>
-                            <div class="h-1.5 w-full bg-gray-200 dark:bg-[#492222] rounded-full overflow-hidden">
-                                <div class="h-full bg-primary w-[3%] rounded-full"></div>
-                            </div>
-                            <span class="text-xs text-right text-slate-500 dark:text-gray-400">3%</span>
-                        </div>
-                        <div class="grid grid-cols-[20px_1fr_40px] items-center gap-2">
-                            <span class="text-xs font-bold text-slate-500 dark:text-gray-400">1</span>
-                            <div class="h-1.5 w-full bg-gray-200 dark:bg-[#492222] rounded-full overflow-hidden">
-                                <div class="h-full bg-primary w-[2%] rounded-full"></div>
-                            </div>
-                            <span class="text-xs text-right text-slate-500 dark:text-gray-400">2%</span>
-                        </div>
-                    </div>
-                    <button
-                        class="w-full py-2 mt-2 text-sm text-primary font-bold hover:bg-primary/5 rounded border border-transparent hover:border-primary/20 transition-colors">See
-                        all reviews</button>
-                </div>
-            </div>
-            <!-- Movie Info List -->
-            <div
-                class="bg-white dark:bg-[#2c1616] rounded-xl overflow-hidden border border-gray-100 dark:border-white/5 shadow-lg">
-                <div class="p-6 grid grid-cols-[35%_1fr] gap-y-6">
-                    <div class="contents">
-                        <p class="text-slate-500 dark:text-[#cb9090] text-sm font-medium">Director</p>
-                        <p class="text-slate-900 dark:text-white text-sm font-medium">Christopher Nolan</p>
-                    </div>
-                    <div class="col-span-2 h-px bg-gray-100 dark:bg-[#492222]"></div>
-                    <div class="contents">
-                        <p class="text-slate-500 dark:text-[#cb9090] text-sm font-medium">Writers</p>
-                        <p class="text-slate-900 dark:text-white text-sm font-medium">Christopher Nolan</p>
-                    </div>
-                    <div class="col-span-2 h-px bg-gray-100 dark:bg-[#492222]"></div>
-                    <div class="contents">
-                        <p class="text-slate-500 dark:text-[#cb9090] text-sm font-medium">Release Date</p>
-                        <p class="text-slate-900 dark:text-white text-sm font-medium">July 16, 2010</p>
-                    </div>
-                    <div class="col-span-2 h-px bg-gray-100 dark:bg-[#492222]"></div>
-                    <div class="contents">
-                        <p class="text-slate-500 dark:text-[#cb9090] text-sm font-medium">Budget</p>
-                        <p class="text-slate-900 dark:text-white text-sm font-medium">$160,000,000</p>
-                    </div>
-                    <div class="col-span-2 h-px bg-gray-100 dark:bg-[#492222]"></div>
-                    <div class="contents">
-                        <p class="text-slate-500 dark:text-[#cb9090] text-sm font-medium">Revenue</p>
-                        <p class="text-slate-900 dark:text-white text-sm font-medium">$829,895,144</p>
-                    </div>
-                    <div class="col-span-2 h-px bg-gray-100 dark:bg-[#492222]"></div>
-                    <div class="contents">
-                        <p class="text-slate-500 dark:text-[#cb9090] text-sm font-medium">Production</p>
-                        <div class="flex gap-2">
-                            <div class="h-6 w-10 bg-gray-200 dark:bg-white rounded bg-contain bg-center bg-no-repeat"
-                                data-alt="Warner Bros logo"
-                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD4XQrSO6nARRB71vJFoicpDqL42EOt1elRc5PIBnB9KOaDmIHv8Ak7Tz6QU6GL4KaKwuMyEzMyvAjzWkWwOcfQkCiWE8_9oHKkMKOCwLq9JsiYX2Ku0oCHu1N0QXD0s70ra3KyFbYvnEpfyyO-cyk6T_3lTBL0HGbhIHWLodbl5BoGQwsdKJ4bCunjSJDhhIvKoEXAGgD5xIWbbmJEMVwWpVSNwWxp3BjomyWUZ__pI7re_NEdj2gjb31k_l7TIJNH5fefEU-SO7g");'>
-                            </div>
-                            <div class="h-6 w-10 bg-gray-200 dark:bg-white rounded bg-contain bg-center bg-no-repeat"
-                                data-alt="Syncopy logo"
-                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCn1nLYX7bc5sX_Yw38xZvat5tpmKbCfqzZ4Ca3NMxLOE4uVpiDrlwnhkq6po4F3KbLmOGoI4_-A5GWgjL9bIgglKLqZyQEIHs0WLe3l_lFSKiObzoSbYcznRkVKPE_df8vPbXncGxCqQvGRMx8ev5DXRJMIYEMTGnXyOU30t6wGaH6wf5PueLQsKBU8Kk_1Pb4yls2rkiHHXEHzX8oKQVmXBwrFJWFx0B15oI50ZvSH0Lp9jAwoMHvfyq0ajVwhcm-TKcdY7fmuko");'>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</main>
-
-<main class="min-h-screen bg-gradient-to-br from-black via-red-950 to-black">
-
-    <section class="relative pt-16">
-        <div class="h-96 bg-cover bg-center relative" [style.background-image]="getBackgroundImage()">
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-        </div>
-
-        <!-- Content Overlay -->
-        <section class="absolute top-0 left-0 right-0 bottom-0 flex items-end">
-            <div class="flex flex-col lg:flex-row gap-8 items-end px-16 mx-1 pb-8">
-                <!-- Poster -->
-                <figure class="flex-shrink-0">
-                    <img [ngSrc]="movie()?.poster_path | autoImage : 'tall'"
-                        class="w-64 h-96 object-cover rounded-2xl shadow-2xl ring-4 ring-red-500/30 transform hover:scale-105 transition-transform duration-300" />
-                </figure>
-
-                <!-- Title and Basic Info -->
-                <header class="flex-1 text-white">
+                    </span>
+                    <!-- Title -->
                     <h1
-                        class="pb-2 text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-red-300">
-                        {{ movie()?.title }}
+                        class="text-white text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-[-0.033em] drop-shadow-lg">
+                        {{movie()?.title}}
                     </h1>
 
+                    <p
+                        class="text-gray-300 text-base md:text-lg leading-relaxed line-clamp-3 md:line-clamp-none max-w-3xl drop-shadow-md">
+                        {{movie()?.tagline}}
+                    </p>
 
-                    <p class="text-xl text-red-200 mb-4">{{ movie()?.original_title }}</p>
-
-                    <div class="flex flex-wrap items-center gap-6 mb-6">
-                        <div class="flex items-center gap-2 bg-yellow-500/20 px-3 py-1 rounded-full">
-                            <svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                                <path
-                                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                            </svg>
-                            <span class="font-semibold">{{ movie()?.vote_average | number:'1.1-1' :'en-US'
-                                }}</span>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-red-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                            <span>{{ movie()?.release_date | date:'longDate' }}</span>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-red-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12,6 12,12 16,14"></polyline>
-                            </svg>
-                            <span>{{movie()?.runtime | minutesToTime}}</span>
-                        </div>
-
-                        <!--  <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-red-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                            </svg>
-                            <span>{{ movie()?.number_of_seasons }} temporadas, {{ movie()?.number_of_episodes }}
-                                episodios</span>
-                        </div> -->
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex gap-4 mb-6">
-                        <a routerLink="/watch-movie/{{movie()?.id}}"
-                            class="flex items-center gap-2 bg-red-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-red-700 transition-colors transform hover:scale-105">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                            Ver Ahora
-                        </a>
-                        <button (click)="toggleLike()" [class]="getLikeButtonClass()">
-                            <svg class="w-6 h-6" [class.fill-current]="isLiked" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2">
-                                <path
-                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                                </path>
-                            </svg>
-                        </button>
-                        <button (click)="toggleBookmark()" [class]="getBookmarkButtonClass()">
-                            <svg class="w-6 h-6" [class.fill-current]="isBookmarked" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2">
-                                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
-                            </svg>
-                        </button>
-                        <button
-                            class="p-3 rounded-full border-2 border-white/30 text-white hover:border-white hover:bg-white/10 transition-all transform hover:scale-110">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-                                <polyline points="16,6 12,2 8,6"></polyline>
-                                <line x1="12" y1="2" x2="12" y2="15"></line>
-                            </svg>
-                        </button>
-                    </div>
-                </header>
-            </div>
-        </section>
-    </section>
-
-    <section class="grid lg:grid-cols-3 gap-12 px-16 py-12">
-        <section class="lg:col-span-2 space-y-8">
-            <!-- Description -->
-            @if(movie()?.overview!==''){
-            <div class="bg-black/40 backdrop-blur-sm rounded-2xl p-8 border border-red-500/20">
-                <h2 class="text-2xl font-bold text-white mb-4">Sinopsis</h2>
-                <p class="text-red-100 leading-relaxed text-lg">{{ movie()?.overview }}</p>
-            </div>
-            }
-
-            <div class="bg-black/40 backdrop-blur-sm rounded-2xl p-8 border border-red-500/20">
-                <h2 class="text-2xl font-bold text-white mb-6">Reparto</h2>
-                <div #containerCast>
-                    <swiper-container init="false" class="py-4" #swiperCast (mouseenter)="isSwiperHover[0]=true"
-                        (mouseleave)="isSwiperHover[0]=false">
-
-                        @for(cast of credits()?.cast;track cast){
-                        <swiper-slide class="flex-col rounded-xl w-36">
-                            <div class="relative">
-                                <figure class="w-36 h-36 rounded-full  relative text-white">
-                                    <img [ngSrc]="cast.profile_path| autoImage : 'square'" fill
-                                        class="object-contain rounded-full  flex items-center justify-center bg-white">
-                                </figure>
-                            </div>
-                            <div
-                                class="w-full text-sm text-white pb-1 flex flex-col items-center justify-center flex-wrap">
-                                <h1 class="font-roboto font-extrabold text-base px-2">{{cast.name}}</h1>
-                                <h2 class="font-roboto text-sm px-2 text-red-300 ">{{cast.character}}</h2>
-                            </div>
-                        </swiper-slide>
-                        }
-                    </swiper-container>
-                    <div class="swiper-prev-cast  z-10 absolute left-2 top-1/2 w-12 h-12 flex justify-center items-center 
-        hover:cursor-pointer ease-in hover:scale-110 text-center text-sm  bg-black/80
-        backdrop-blur-sm text-white rounded-full transition-all duration-300 
-        cursor-pointer border border-red-900/50" [class.opacity-0]="isBeginning[0] || !isSwiperHover[0]"
-                        (mouseenter)="isSwiperHover[0]=true" (mouseleave)="isSwiperHover[0]=false">
-                        <i class="fa-solid fa-chevron-left "></i>
-                    </div>
-                    <div class="swiper-next-cast z-10 absolute right-2 top-1/2 w-12 h-12
-        flex justify-center items-center hover:cursor-pointer ease-in 
-        hover:scale-110 text-center text-sm  bg-black/80
-            backdrop-blur-sm text-white rounded-full transition-all duration-300 cursor-pointer border border-red-900/50"
-                        [class.opacity-0]="isEnd[0] || !isSwiperHover[0]" (mouseenter)="isSwiperHover [0]=true"
-                        (mouseleave)="isSwiperHover[0]=false">
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-black/40 backdrop-blur-sm rounded-2xl p-8 border border-red-500/20">
-                <h2 class="text-2xl font-bold text-white mb-6">Equipo</h2>
-
-                <div #containerCrew>
-                    <swiper-container init="false" class="py-4" #swiperCrew (mouseenter)="isSwiperHover [1]=true"
-                        (mouseleave)="isSwiperHover[1]=false">
-
-                        @for(crew of credits()?.crew;track crew.id){
-                        <swiper-slide class="flex-col rounded-xl w-36">
-                            <div class="relative">
-                                <figure class="w-36 h-36 rounded-full  relative text-white">
-                                    <img [ngSrc]="crew.profile_path | autoImage : 'square'" alt="Imagen no disponible"
-                                        fill
-                                        class="object-contain rounded-full  flex items-center justify-center  bg-white">
-                                </figure>
-                            </div>
-                            <div class="w-full text-sm text-white pb-1 flex flex-col items-center">
-                                <h1 class="font-roboto font-extrabold text-base px-2">{{crew.name}}</h1>
-                                <h2 class="font-roboto text-sm px-2 text-red-300 ">{{crew.job}}</h2>
-                            </div>
-                        </swiper-slide>
-                        }
-                    </swiper-container>
-
-                    <div class="swiper-prev-crew  z-10 absolute left-2 top-1/2 w-12 h-12 flex justify-center items-center 
-        hover:cursor-pointer ease-in hover:scale-110 text-center text-sm  bg-black/80
-        backdrop-blur-sm text-white rounded-full transition-all duration-300 
-        cursor-pointer border border-red-900/50" [class.opacity-0]="isBeginning[1] || !isSwiperHover[1]"
-                        (mouseenter)="isSwiperHover[1]=true" (mouseleave)="isSwiperHover[1]=false">
-                        <i class="fa-solid fa-chevron-left "></i>
-                    </div>
-                    <div class="swiper-next-crew z-10 absolute right-2 top-1/2 w-12 h-12
-        flex justify-center items-center hover:cursor-pointer ease-in 
-        hover:scale-110 text-center text-sm  bg-black/80
-            backdrop-blur-sm text-white rounded-full transition-all duration-300 cursor-pointer border border-red-900/50"
-                        [class.opacity-0]="isEnd[1] || !isSwiperHover[1]" (mouseenter)="isSwiperHover [1]=true"
-                        (mouseleave)="isSwiperHover[1]=false">
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Sidebar -->
-        <aside class="space-y-6">
-            <!-- Info Card -->
-            <section class="bg-black/40 backdrop-blur-sm rounded-2xl p-6 border border-red-500/20">
-                <h3 class="text-xl font-bold text-white mb-4">Información</h3>
-                <div class="space-y-3">
-                    @if(movie()?.status){
-                    <div>
-                        <span class="text-red-300 font-medium">Estado:</span>
-                        <span class="text-white ml-2">{{ movie()?.status }}</span>
-                    </div>
-                    }
-
-                    <!--  <div>
-                        <span class="text-red-300 font-medium">Creador:</span>
-                        @for(creator of movie()?.created_by;track creator.id){
-                        <span class="text-white ml-2">{{ creator.name }}</span>
-                        }
-                    </div> -->
-
-                    <div>
-                        <span class="text-red-300 font-medium">Géneros:</span>
-                        <div class="flex flex-wrap gap-2 mt-2">
-                            @for(genre of movie()?.genres;track genre.id){
-                            <span class="bg-red-600/30 text-red-200 px-3 py-1 rounded-full text-sm">
+                    <!-- Genre Chips -->
+                    <div class="flex gap-2 flex-wrap my-2">
+                        @for(genre of movie()?.genres;track genre.id){
+                        <div class="flex h-6 items-center justify-center px-4 rounded-full border border-white/15">
+                            <span class="text-[#e5e2e1]/60 text-[10px] font-bold tracking-[0.2em] uppercase ">
                                 {{ genre.name }}
                             </span>
-                            }
+                        </div>
+                        }
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-6 ">
+                        <button class="btn-glossy text-white flex items-center gap-3 px-10
+                             py-4 rounded-xl font-extrabold tracking-widest text-sm transition-all 
+                             duration-300 hover:scale-105 active:scale-95 shadow-2xl shadow-[#e50914]/40 group">
+                            <app-icon name="play" size="w-6 h-6"></app-icon>
+                            VER AHORA
+                        </button>
+                        <button class="glass-panel border-white/20 text-[#e5e2e1] flex items-center gap-3 
+                            px-10 py-4 rounded-xl font-extrabold tracking-widest text-sm transition-all 
+                            duration-300 hover:!bg-white/10 active:scale-95">
+                            ADD TO LIST
+                        </button>
+                        <div class="flex flex-col ml-6 border-l border-white/10 pl-8">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <app-icon name="star" color="text-[#e50914]" backgroundColor="fill-[#e50914]">
+                                </app-icon>
+                                <span class="text-[#e5e2e1] text-xl font-black tracking-tighter">
+                                    {{movie()?.vote_average | number:'1.1-1' :'en-US'}}</span>
+                            </div>
+                            <span class="text-[#e5e2e1]/40 text-[10px] font-bold uppercase tracking-[0.2em]">Critic
+                                Rating</span>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </div>
+    </div>
 
-            <section class="bg-black/40 backdrop-blur-sm rounded-2xl p-6 border border-red-500/20">
-                <h3 class="text-xl font-bold text-white mb-4">producción</h3>
-                <div class="space-y-3">
-
-                    <div class="text-red-300 font-medium">
-                        <span class="">Compañias:</span>
-                        @for(company of movie()?.production_companies;track company){
-                        <div class="text-white text-sm">{{ company.name }}</div>
-                        }
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 px-8 md:px-24 mt-32 relative z-20 
+    pb-32 max-w-[1600px] mx-auto">
+        <!-- Glass Synopsis Card -->
+        <div class="lg:col-span-8">
+            <div class="glass-panel rounded-[2rem] p-10 md:p-14 " #sinopsysContainer>
+                <div class="flex items-center gap-4 mb-10">
+                    <div class="w-12 h-1 bg-[#e50914] rounded-full"></div>
+                    <h3 class="font-headline text-3xl font-extrabold text-[#e5e2e1] tracking-tight uppercase">
+                        Synopsis</h3>
+                </div>
+                <p class="text-[#e5e2e1]/70 font-body leading-relaxed text-xl mb-12 font-light">
+                    {{movie()?.overview}}
+                </p>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-10 border-t border-white/5 pt-12">
+                    <div class="group">
+                        <span class="block text-[10px] font-black text-[#e50914] uppercase tracking-[0.3em] 
+                            mb-2">
+                            Director
+                        </span>
+                        <span class="text-[#e5e2e1] text-lg font-bold group-hover:text-[#e50914] 
+                            transition-colors cursor-default">
+                            {{director()?.name}}
+                        </span>
                     </div>
-
+                    <div class="group">
+                        <span class="block text-[10px] font-black text-[#e50914] uppercase tracking-[0.3em]
+                         mb-2">
+                            Productor
+                        </span>
+                        <span class="text-[#e5e2e1] text-lg font-bold group-hover:text-[#e50914] 
+                            transition-colors cursor-default">
+                            {{producer()?.name}}
+                        </span>
+                    </div>
+                    <div class="group">
+                        <span
+                            class="block text-[10px] font-black text-[#e50914] uppercase tracking-[0.3em] mb-2">Production</span>
+                        <span class="text-[#e5e2e1] text-lg font-bold group-hover:text-[#e50914] 
+                            transition-colors cursor-default">
+                            {{production()?.name}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Glass Cast Card -->
+        <div class="lg:col-span-4 glass-panel p-10 rounded-[2rem] flex flex-col" [style.height.px]="height()">
+            <h3 class="font-headline text-2xl font-extrabold mb-10 text-[#e5e2e1] tracking-tight uppercase">
+                Featured Cast</h3>
+            <div class="space-y-8 overflow-y-auto ">
+                @for(cast of credits()?.cast;track cast){
+                <div class="flex items-center gap-5 group cursor-pointer">
+                    <figure
+                        class="w-16 h-16 rounded-2xl overflow-hidden ring-1 relative ring-white/10 group-hover:ring-[#e50914]/50 transition-all duration-500">
+                        <img [ngSrc]="cast.profile_path| autoImage : 'square'" fill class="w-full h-full object-cover group-hover:scale-110 transition-transform 
+                         duration-700" />
+                    </figure>
                     <div>
-                        <span class="text-red-300 font-medium">Paises:</span>
-                        @for(country of movie()?.production_countries;track country){
-                        <div class="text-white text-sm">{{ country.name }}</div>
-                        }
+                        <span
+                            class="block text-[#e5e2e1] font-black text-base group-hover:text-[#e50914] transition-colors">
+                            {{cast.name}}</span>
+                        <span class="block text-[#e5e2e1]/40 text-xs font-bold tracking-wider uppercase mt-0.5">
+                            {{cast.character}}</span>
                     </div>
+                </div>
+                }
+
+            </div>
+            <!--  <button
+                class="w-full mt-12 py-4 bg-white/5 border border-white/10 rounded-xl text-xs font-black uppercase tracking-[0.25em] hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+                Full Credits
+            </button> -->
+        </div>
+    </div>
+
+    <!-- Sophisticated Similar Movies Section -->
+    <section class="pb-32  max-w-[1600px] mx-auto overflow-hidden">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 px-8 md:px-24">
+            <div>
+                <span class="text-[#e50914] font-black tracking-[0.4em] uppercase text-[8px] lg:text-[10px] mb-4 block">
+                    Experiencia Recomendada</span>
+                <h2
+                    class="font-headline text-3xl md:text-4xl lg:text-5xl font-black text-[#e5e2e1] tracking-tighter uppercase">
+                    Ecos cinematográficos</h2>
+            </div>
+        </div>
+
+        <section class="relative">
+            <app-carousel-navigation [carouselService]="carouselService"></app-carousel-navigation>
+            <div class="carousel-container" cdkScrollable #carouselSimilarMovies
+                [style.gap.px]="carouselService.slidesInfo.layout().spaceBetween"
+                [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize"
+                [style.padding-right.px]="carouselService.slidesInfo.layout().peekSize">
+
+                @for(similarMovie of similarMoviesLoader.data();track similarMovie.id){
+                <div class="group cursor-pointer carousel-item " (click)="redirect(similarMovie.id)"
+                    [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize">
+                    <div
+                        class="relative aspect-[3/4.5] rounded-3xl overflow-hidden mb-6 ring-1 ring-white/5 group-hover:ring-[#e50914]/40 transition-all duration-700">
+                        <img [ngSrc]="similarMovie.poster_path | autoImage : 'wide'" fill
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80">
+                        </div>
+                    </div>
+                    <h4 class="text-[#e5e2e1] font-black text-lg tracking-tight group-hover:text-[#e50914] 
+                    transition-colors"> {{similarMovie.title}}</h4>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-[#e5e2e1]/40 text-[11px] font-black uppercase tracking-widest">
+                            {{similarMovie.genres[0].name}}
+                        </span>
+                        <span class="w-1 h-1 bg-white/20 rounded-full"></span>
+                        <span class="text-[#e5e2e1]/40 text-[11px] font-black uppercase tracking-widest">
+                            {{similarMovie.release_date | date :'yyyy'}}
+                        </span>
+                    </div>
+                </div>
+                }
+
+
+                <!-- @if(canLoadMore()){ -->
+                @for(_ of carouselService.slidesInfo.skeletonSlideIndexes(); track $index) {
+                <div class="carousel-item aspect-[3/4.5] rounded-3xl bg-gray-700 animate-pulse"
+                    [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize">
 
                 </div>
-            </section>
+                }
+                <!-- } -->
+            </div>
+        </section>
 
-        </aside>
     </section>
+
 </main>

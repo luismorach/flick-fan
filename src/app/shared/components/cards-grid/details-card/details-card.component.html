@@ -1,7 +1,8 @@
-<div class="w-full h-full bg-black/50 rounded-tl-xl overflow-hidden relative">
+
+<div class="w-[26rem] h-[29.8rem] bg-black/50 rounded-tl-xl overflow-hidden sticky top-36 ">
     @let item = selectedItem();
       @if(item){
-       <section class="px-10 py-7 relative z-10 flex flex-col h-full">
+       <section class="px-10 pt-7 pb-4 relative z-10 flex flex-col h-full">
           <header class="w-full flex flex-col flex-1 overflow-y-auto  my-scroll">
               <figure class="h-24 flex justify-center">
                 @if(isMovie(item)){
@@ -45,7 +46,7 @@
               </div>
           </header>
 
-          <section class="flex text-white/90 gap-6 mt-4 h-14">
+          <section class="flex text-white/90 gap-6 mt-2 h-14">
             
             <button appTooltip="Tráiler"
                 (click)="playTrailer()"
@@ -57,7 +58,7 @@
                 <app-icon name="clapperboard" size="w-6 h-6"></app-icon>
             </button>
 
-            <a [routerLink]="['/details-movie',selectedItem()?.id]" appTooltip="Más información" 
+            <a [routerLink]="[link(),selectedItem()?.id]" appTooltip="Más información" 
               class="btn-primary h-full aspect-square">
                 <app-icon name="info" size="w-6 h-6"></app-icon>
             </a>

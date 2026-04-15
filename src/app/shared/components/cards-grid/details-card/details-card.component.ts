@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, model } from '@angular/core';
+import { Component, computed, ElementRef, HostListener, inject, input, model, signal, viewChild, WritableSignal } from '@angular/core';
 import { Movie } from '../../../../core/interfaces/movie/movie.interface';
 import { IconComponent } from '../../../icon/icon.component';
 import { AutoImagePipe } from '../../../pipes/autoimage/auto-image.pipe';
@@ -38,6 +38,11 @@ export class DetailsCardComponent {
     return getKeyTrailer(currentItem.videos)
   });
 
+  link = computed(() => {
+    const type: string = (this.isMovie(this.selectedItem())) ? 'movie' : 'serie';
+    return `/details-${type}`
+  })
+
   selectGenre(genre: Genre) {
     if (genre.id === this.selectedGenre().id) return
     this.selectedGenre.set(genre)
@@ -47,7 +52,9 @@ export class DetailsCardComponent {
     this.floatTrailer.register(this, this.selectedItem)
   }
 
-  isMovie(item: any): item is Movie { 
+  isMovie(item: any): item is Movie {
     return 'title' in item && 'runtime' in item
   }
+
+
 }

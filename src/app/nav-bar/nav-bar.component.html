@@ -1,39 +1,38 @@
-<nav class='flex items-center justify-start p-8 fixed text-white  h-12 w-full z-50 transition-all ease-in ' [ngClass]="{'bg-[rgba(22,22,23,.8)] border-b border-[hsla(0,0%,100%,.4)] backdrop-blur-xl 
-    backdrop-saturate-[180%] ':comunicatorService.getBackgroundNav()()}">
+<main class='flex items-center justify-start p-10 fixed text-white  h-12 w-full z-50 transition-all ease-in 
+    bg-transparent duration-500  backdrop-blur-xl hover:bg-neutral-950/70 border-b border-white/5' 
+[ngClass]="{'!bg-neutral-950/70':comunicatorService.getBackgroundNav()()}">
 
-    <h1 class="font-racing font-bold text-xl text-[#e50914]">Flick fan</h1>
+    <h1 class="pr-10 font-racing font-bold text-xl text-[#e50914]">Flick fan </h1>
     <button aria-label="Abrir menú" class="fa fa-bars visible md:invisible hover:text-[#e50914] 
         hover:cursor-pointer" (click)="isMenuOpen=true"></button>
 
-
-
     <section class="flex grow flex-col bg-black absolute -right-72 top-0 h-screen md:visible 
-    md:static md:flex-row md:bg-transparent md:h-auto transition-all ease-in-out duration-500"
+    md:static md:flex-row md:items-center md:bg-transparent md:h-auto transition-all ease-in-out duration-500"
         [ngClass]="{'right-0':isMenuOpen}">
 
-        <ul class='flex flex-col md:flex-row justify-start md:items-center md:justify-center 
-        md:grow text-bas'>
-            <li class="md:invisible m-2 self-end">
-                <button aria-label="Cerrar menú" class="fa fa-xmark hover:text-[#e50914] 
-                 hover:cursor-pointer z-10" (click)="isMenuOpen=false"></button>
-            </li>
-            <li class="option group">
-                <a [routerLink]="['/home']" routerLinkActive="active" 
-                class="px-4 py-2 rounded-lg group-hover:bg-white group-hover:text-black">Inicio</a>
-            </li>
-            <li class="option group">
-                <a [routerLink]="['/discover']" routerLinkActive="active" 
-                class="px-4 py-2 rounded-lg group-hover:bg-white  group-hover:text-black">Descubrir</a>
-            </li>
-        </ul>
+        <nav class='flex flex-col md:flex-row justify-start md:items-center gap-10
+        md:grow text-base'>
+            <a class="option" [routerLink]="['/home']" routerLinkActive="active">Home</a>
+            <a class="option" [routerLink]="['/discover']" routerLinkActive="active">Discover</a>
+            <a class="option" href="#" routerLinkActive="active">My List</a>
+        </nav>
 
-        <form role="search" (ngSubmit)="onSearch()" class="h-10 m-4 max-w-72 lg:w-72 flex bg-neutral-900 justify-center
+        <form role="search" (ngSubmit)="onSearch()" class="flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-1.5 h-10 justify-center
+            focus-within:border-[#e50914]/50 transition-all">
+            <i class="fas fa-search text-neutral-300 pr-4 text-sm"></i>
+            <input
+                class="bg-transparent border-none outline-none focus:ring-0 text-sm w-32 md:w-48 placeholder:text-[#e5e2e1]/30"
+                name="search" placeholder="¿Qué estas buscando?" aria-label="buscar contenido" type="text"
+                [(ngModel)]="searchQuery" />
+        </form>
+
+        <!-- <form role="search" (ngSubmit)="onSearch()" class="h-10 m-4 max-w-72 lg:w-72 flex bg-neutral-900 justify-center
         items-center rounded-lg focus-within:bg-neutral-800 shadow-md shadow-[#e50914]">
             <i class="fas fa-search text-neutral-300 px-4 text-sm"></i>
             <input name="search" placeholder="¿Qué estas buscando?" aria-label="buscar contenido" type="text"
                 [(ngModel)]="searchQuery" class="text-neutral-300 bg-transparent grow text-sm h-10 outline-hidden
              placeholder-neutral-300">
-             
-        </form>
+
+        </form> -->
     </section>
-</nav>
+</main>

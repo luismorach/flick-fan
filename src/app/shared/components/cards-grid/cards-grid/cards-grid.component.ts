@@ -19,6 +19,7 @@ import { slidesConfig } from '../../../../core/interfaces/shared/carousel-interf
 import { hasPagination } from '../../../utils/data-loaders/enhancers/with-pagination';
 import { Serie, SerieList } from '../../../../core/interfaces/serie/serie.interface';
 import { OptionCategory } from '../../../../core/interfaces/shared/option_category';
+import { ParamsApi } from '../../../../core/interfaces/shared/params-http.interface';
 
 @Component({
   selector: 'app-cards-grid',
@@ -31,7 +32,7 @@ import { OptionCategory } from '../../../../core/interfaces/shared/option_catego
 })
 export class CardsGridComponent {
 
-  readonly mediaTypeSelected = input<OptionCategory>()
+  readonly mediaTypeSelected = input<String>()
   readonly selectedCategory = input<OptionCategory>()
   readonly selectedGenre = input<Genre>()
   readonly selectedItem = model.required<Movie | Serie | undefined>()
@@ -51,13 +52,10 @@ export class CardsGridComponent {
     withAutoFillViewport
   )
 
-
   changeGenreFilter = effect(() => {
     const filter = this.selectedGenre()
     if (!filter) return
     untracked(() => {
-      console.log(this.currentData())
-      if (this.currentData().length === 0) return
       this.filterByGenre(filter)
       this.selectedItem.set(undefined)
     })
@@ -98,10 +96,10 @@ export class CardsGridComponent {
 
   constructor() {
     if (hasAutoFill(this.loader)) {
-      this.loader.setupAutoFill(this.viewport, this.sentinel)
+      this.loader.setupAutoFill(this.sentinel)
     }
     if (hasInfiniteScroll(this.loader)) {
-      this.loader.setupInfiniteScroll(this.viewport, this.sentinel)
+      this.loader.setupInfiniteScroll(this.sentinel)
     }
   }
 
@@ -116,7 +114,8 @@ export class CardsGridComponent {
     const apiMethod = this.api.methodMap[option.value]
     if (!apiMethod) throw new Error(`Unknown data type: ${option.value}`);
 
-    apiMethod().subscribe((data: MovieList | SerieList) => {
+    const params = this.selectedCategory()?.params
+    apiMethod(params).subscribe((data: MovieList | SerieList) => {
       this.data.set(data)
       requestAnimationFrame(() => this.selectItem(this.currentData()[0], 0))
     })

@@ -8,10 +8,7 @@ export const routes: Routes = [
         path: 'discover', loadComponent: () => import('./discover/discover.component'),
     },
     {
-        path: 'series', loadComponent: () => import('./series/series.component'),
-    },
-    {
-        path: 'search/:query', loadComponent: () => import('./search/search.component'),
+        path: 'search/:query', loadComponent: () => import('./discover/discover.component'),
     },
     {
         path: 'watch-movie/:id_movie', loadComponent: () => import('./movies/play-movie/play-movie.component'),

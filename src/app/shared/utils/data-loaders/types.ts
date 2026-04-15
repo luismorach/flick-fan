@@ -28,6 +28,7 @@ export interface LoaderCore<T extends object, K extends keyof T> {
     hasData: Signal<boolean>;
     dataLength: Signal<number>;
     dataKey: K;
+    extraArgs?: ParamsApi;
     readonly capabilities: Set<symbol>;
 };
 
@@ -43,19 +44,19 @@ export interface LoaderWithDetails<T extends object, K extends keyof T> extends 
 
 export interface LoaderWithFilter<T extends object, K extends ArrayKey<T>> extends LoaderCore<T, K> {
     setFilterPredicate: (predicate: ((item: ItemType<T, K>) => boolean) | null) => void,
-    filteredData : Signal<T[K] & any[]>;
+    filteredData: Signal<T[K] & any[]>;
 };
 
 export interface LoaderWithInfiniteScroll<T extends object, K extends ArrayKey<T>> extends LoaderCore<T, K> {
     setupInfiniteScroll: (
-        container: Signal<ElementRef<HTMLElement> | undefined>,
-        sentinel: Signal<ElementRef<HTMLElement> | undefined>
+        sentinel: Signal<ElementRef<HTMLElement> | undefined>,
+        container?: Signal<ElementRef<HTMLElement> | undefined>,
     ) => () => void
 };
 
 export interface LoaderWithAutoFill<T extends object, K extends keyof T> extends LoaderCore<T, K> {
-    setupAutoFill: (container: Signal<ElementRef<HTMLElement> | undefined>,
-        sentinel: Signal<ElementRef<HTMLElement> | undefined>) => () => void
+    setupAutoFill: (sentinel: Signal<ElementRef<HTMLElement> | undefined>,
+        container?: Signal<ElementRef<HTMLElement> | undefined>) => () => void
 };
 
 export type AnyEnhancedLoader<T extends object, K extends keyof T> =

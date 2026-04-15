@@ -2,14 +2,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, WritableSignal, inject, signal } from '@angular/core';
 import { forkJoin, from, lastValueFrom, map, mergeMap, Observable, of, shareReplay, switchMap, toArray } from 'rxjs';
 import { Credits } from '../../interfaces/people/credits.interface';
-import { MovieList, Movie } from '../../interfaces/movie/movie.interface';
-import { Serie, SerieList } from '../../interfaces/serie/serie.interface';
+import { Movie } from '../../interfaces/movie/movie.interface';
+import { Season, Serie } from '../../interfaces/serie/serie.interface';
 import { environment } from '../../environment/environment';
 import { Genre } from '../../interfaces/shared/genre.interface';
 import { ParamsApi } from '../../interfaces/shared/params-http.interface';
 import { Cacheable } from 'ngx-cacheable';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Videos } from '../../interfaces/media/videos.interface';
+import { MediaItem, MediaList } from '../../interfaces/shared/generic.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -28,22 +29,21 @@ export class ApiService {
     now_playing_movies: this.getNowPlaying.bind(this),
     upcoming_movies: this.getUpcoming.bind(this),
     popular_movies: this.getPopular.bind(this),
-    top_rated_movies:this.getTopRatedMovies.bind(this),
+    top_rated_movies: this.getTopRatedMovies.bind(this),
     similar_movies: this.getSimilarMovies.bind(this),
     recomended_movies: this.getRecomendedMovies.bind(this),
     details_movie: this.getDetailsMovie.bind(this),
     movies_by_genre: this.getMoviesByGenre.bind(this),
-    search_movie: this.searchMovie.bind(this),
+    search_movies: this.searchMovie.bind(this),
 
     popular_series: this.getPopularSeries.bind(this),
     airing_today_series: this.getAiringTodaySeries.bind(this),
     on_the_air_series: this.getOnTheAirSeries.bind(this),
-    top_rated_series:this.getTopRatedSeries.bind(this),
+    top_rated_series: this.getTopRatedSeries.bind(this),
     similar_series: this.getSimilarSeries.bind(this),
     recomended_series: this.getRecomendedSeries.bind(this),
     details_serie: this.getDetailsSerie.bind(this),
-    series_by_genre: this.getSeriesByGenre.bind(this),
-    search_serie: this.searchSerie.bind(this),
+    search_series: this.searchSerie.bind(this),
 
   };
 
@@ -53,28 +53,28 @@ export class ApiService {
   getNowPlaying(params: ParamsApi) {
     const endpoint = `movie/now_playing`
     const type = 'now_playing_movies'
-    return this.getMediaDetails<MovieList>(endpoint, params, type)
+    return this.getMediaDetails<Movie>(endpoint, params, type)
   }
 
   /* @Cacheable() */
   getPopular(params: ParamsApi) {
     const endpoint = `movie/popular`
     const type = 'popular_movies'
-    return this.getMediaDetails<MovieList>(endpoint, params, type)
+    return this.getMediaDetails<Movie>(endpoint, params, type)
   }
 
   @Cacheable()
   getUpcoming(params: ParamsApi) {
     const endpoint = `movie/upcoming`
     const type = 'upcoming_movies'
-    return this.getMediaDetails<MovieList>(endpoint, params, type)
+    return this.getMediaDetails<Movie>(endpoint, params, type)
   }
 
   /*  @Cacheable() */
   getTopRatedMovies(params: ParamsApi) {
     const endpoint = `movie/top_rated`
     const type = 'top_rated_movies'
-    return this.getMediaDetails<MovieList>(endpoint, params, type)
+    return this.getMediaDetails<Movie>(endpoint, params, type)
   }
   /* @Cacheable() */
   getDetailsMovie(params: ParamsApi): Observable<Movie> {
@@ -101,15 +101,15 @@ export class ApiService {
       })
   }
 
-  getMediaDetails<T extends MovieList | SerieList>(endpoint: string, params: ParamsApi, type: string) {
-    return this.http.get<T>(`${this.API_BASE}/${endpoint}`, {
+  getMediaDetails<T extends MediaItem>(endpoint: string, params: ParamsApi, type: string) {
+    return this.http.get<MediaList<T>>(`${this.API_BASE}/${endpoint}`, {
       params: this.buildParams(params),
     }).pipe(map((list) => ({
       ...list,
       type: type,
-      results: list.results.map(movie => ({
-        ...movie,
-        genres: this.mapGenreIdsToGenres(movie.genre_ids)
+      results: list.results.map(data => ({
+        ...data,
+        genres: this.mapGenreIdsToGenres(data.genre_ids)
       }))
     })))
   }
@@ -122,27 +122,29 @@ export class ApiService {
   getSimilarMovies(params: ParamsApi) {
     const endpoint = `movie/${params.dataId}/similar`
     const type = 'upcoming_movies'
-    return this.getMediaDetails<MovieList>(endpoint, params, type)
+    return this.getMediaDetails<Movie>(endpoint, params, type)
   }
 
   getRecomendedMovies(params: ParamsApi) {
     const endpoint = `movie/${params.dataId}/recommendations`
     const type = 'recomended_movies'
-    return this.getMediaDetails<MovieList>(endpoint, params, type)
+    return this.getMediaDetails<Movie>(endpoint, params, type)
   }
 
   searchMovie(params: ParamsApi) {
-    return this.getMediaDetails<MovieList>(`/search/movie`, params, 'search_movie')
+    const endpoint = `/search/movie`
+    const type = 'search_movies'
+    return this.getMediaDetails<Movie>(endpoint, params, type)
   }
 
   getMoviesByGenre(params: ParamsApi) {
     return this.http
-      .get<MovieList>(`${this.API_BASE}/search/movie`, {
+      .get<Movie>(`${this.API_BASE}/search/movie`, {
         params: this.buildParams(params),
       })
     //https://api.themoviedb.org/3/search/movie?api_key=TU_API_KEY&query=superman&with_genres=28&language=es-MX
     /* return this.http
-      .get<MovieList>(`${this.API_BASE}/discover/movie`, {
+      .get<Movie>(`${this.API_BASE}/discover/movie`, {
         params: this.buildParams({
           page,
           sort_by: 'popularity.desc',
@@ -160,35 +162,32 @@ export class ApiService {
   /* @Cacheable() */
   getAiringTodaySeries(params: ParamsApi) {
     const type = 'airing_today_series'
-    return this.getMediaDetails<SerieList>('tv/airing_today', params, type)
+    return this.getMediaDetails<Serie>('tv/airing_today', params, type)
   }
 
   /* @Cacheable() */
   getOnTheAirSeries(params: ParamsApi) {
     const type = 'on_the_air_series'
-    return this.getMediaDetails<SerieList>('tv/on_the_air', params, type)
+    return this.getMediaDetails<Serie>('tv/on_the_air', params, type)
   }
   /*  @Cacheable() */
   getPopularSeries(params: ParamsApi) {
     const type = 'popular_series'
-    return this.getMediaDetails<SerieList>('tv/popular', params, type)
+    return this.getMediaDetails<Serie>('tv/popular', params, type)
   }
 
-   /*  @Cacheable() */
+  /*  @Cacheable() */
   getTopRatedSeries(params: ParamsApi) {
     const endpoint = 'tv/top_rated'
     const type = 'top_rated_series'
-    return this.getMediaDetails<SerieList>(endpoint, params, type)
+    return this.getMediaDetails<Serie>(endpoint, params, type)
   }
 
   getDetailsSerie(params: ParamsApi): Observable<Serie> {
-
     return this.http
       .get<Serie>(`${this.API_BASE}/tv/${params.dataId}`, {
-        params: this.buildParams({ append_to_response: 'videos,external_ids' }),
+        params: this.buildParams({ append_to_response: 'videos,external_ids,release_dates' }),
       })
-
-
   }
 
   getCreditsSerie(params: ParamsApi): Observable<Credits> {
@@ -199,54 +198,29 @@ export class ApiService {
   }
 
   getSimilarSeries(params: ParamsApi) {
-    params.type = 'similar_series'
-    return this.getSeriesWithDetails(`tv/${params.dataId}/similar`, params);
+    const endpoint = `tv/${params.dataId}/similar`
+    const type = 'similar_series'
+    return this.getMediaDetails<Serie>(endpoint, params, type);
   }
 
   getRecomendedSeries(params: ParamsApi) {
-    params.type = 'recomended_series'
-    return this.getSeriesWithDetails(`tv/${params.dataId}/recommendations`, params);
+    const endpoint = `tv/${params.dataId}/recommendations`
+    const type = 'recomended_series'
+    return this.getMediaDetails<Serie>(endpoint, params, type)
   }
 
   searchSerie(params: ParamsApi) {
-    return this.http
-      .get<SerieList>(`${this.API_BASE}/search/tv`, {
-        params: this.buildParams(params),
-      })
-      .pipe(
-        switchMap((response) => this.enrichSeriesWithDetails(response, 'search_serie'))
-      );
+    const endpoint = `search/tv`
+    const type = 'search_series'
+    return this.getMediaDetails<Serie>(endpoint, params, type)
   }
 
-  getSeriesByGenre(params: ParamsApi) {
-    return this.http
-      .get<SerieList>(`${this.API_BASE}/discover/tv`, {
-        params: this.buildParams({
-          page: params.page,
-          sort_by: 'popularity.desc',
-          with_genres: params.genreId,
-        }),
-      })
-      .pipe(
-        switchMap((response) => this.enrichSeriesWithDetails(response, 'series_by_genre'))
-      );
+  getSeason(params: ParamsApi, season_number: number) {
+    const endpoint = `${this.API_BASE}/tv/${params.dataId}/season/${season_number}`
+    return this.http.get<Season>(endpoint, {
+      params: this.buildParams(),
+    })
   }
-
-  private getSeriesWithDetails(endpoint: string, params: ParamsApi): Observable<SerieList> {
-    const type = params.type ?? ''
-    return this.http
-      .get<SerieList>(`${this.API_BASE}/${endpoint}`, {
-        params: this.buildParams(params),
-      })
-      .pipe(
-        switchMap((response) => this.enrichSeriesWithDetails(response, type))
-      );
-  }
-
-  private enrichSeriesWithDetails(serieList: SerieList, type: string): Observable<SerieList> {
-    return this.enrichMediaWithDetails(serieList, 'tv', type) as Observable<SerieList>;
-  }
-
   private enrichSerieWithSeasons(serie: Serie, serieId: number): Observable<Serie> {
     if (!serie.seasons || serie.seasons.length === 0) {
       return of(serie);
@@ -351,32 +325,6 @@ export class ApiService {
       apiMethod(params));
     return details as T
   }
-
-  private enrichMediaWithDetails(
-    mediaList: MovieList | SerieList,
-    mediaType: 'movie' | 'tv',
-    type: string
-  ): Observable<MovieList | SerieList> {
-
-    if (!mediaList.results || mediaList.results.length === 0) {
-      return of({ ...mediaList, type, results: [] });
-    }
-
-    return from(mediaList.results).pipe(
-      mergeMap(
-        (media) => this.http.get<Movie | Serie>(`${this.API_BASE}/${mediaType}/${media.id}`, {
-          params: this.buildParams({ append_to_response: 'videos,external_ids' }),
-        }), this.ENRICHMENT_CONCURRENCY
-      ),
-      toArray(),
-      map((enrichedMedia) => ({
-        ...mediaList,
-        results: enrichedMedia,
-        type,
-      } as MovieList | SerieList))
-    );
-  }
-
 
 
   private buildParams(params: Record<string, any> = {}): HttpParams {

@@ -1,109 +1,123 @@
 import { NgOptimizedImage, DatePipe, DecimalPipe } from '@angular/common';
-import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, Renderer2, signal, ViewChild, WritableSignal } from '@angular/core';
-import { ActivatedRoute, Params, RouterLink } from '@angular/router';
-import { map, concatAll } from 'rxjs';
+import {
+  Component, computed, CUSTOM_ELEMENTS_SCHEMA, effect, ElementRef, inject, Signal, untracked,
+  viewChild
+} from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map, switchMap } from 'rxjs';
 import { ApiService } from '../../core/services/API/api.service';
-import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
-import { Credits } from '../../core/interfaces/people/credits.interface';
-import { Serie } from '../../core/interfaces/serie/serie.interface';
+import { SerieList } from '../../core/interfaces/serie/serie.interface';
 import { AutoImagePipe } from '../../shared/pipes/autoimage/auto-image.pipe';
+import { CarouselService } from '../../core/services/carousel/carousel-service';
+import { withPagination } from '../../shared/utils/data-loaders/enhancers/with-pagination';
+import { useDataLoader } from '../../shared/utils/data-loaders/use-data-loader';
+import { IconComponent } from '../../shared/icon/icon.component';
+import { CarouselOptions } from '../../core/interfaces/shared/carousel-interface';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { BackgroundNavScrollDirective } from '../../core/directives/background-nav-scroll.directive';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { getHeightContainer, getReleaseDate } from '../../shared/utils/helpers';
+import { DetailsEpisodesComponent } from "../details-episodes/details-episodes.component";
+import { MovieList } from '../../core/interfaces/movie/movie.interface';
+import { CarouselNavigationComponent } from '../../shared/components/carousel/carousel-navigation/carousel-navigation.component';
 
 @Component({
   selector: 'app-details-serie',
-  imports: [RouterLink, NgOptimizedImage, DatePipe, DecimalPipe,AutoImagePipe],
+  imports: [NgOptimizedImage, DatePipe, DecimalPipe, AutoImagePipe, IconComponent, CdkScrollable,
+    BackgroundNavScrollDirective, DetailsEpisodesComponent, CarouselNavigationComponent],
+  providers: [CarouselService],
   templateUrl: './details-serie.component.html',
   styleUrl: './details-serie.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export default class DetailsSerieComponent {
-  serie: WritableSignal<Serie | undefined> = signal(undefined)
-  credits: WritableSignal<Credits | undefined> = signal(undefined)
-  isLiked = false;
-  isBookmarked = false;
 
-  constructor(private rutaActiva: ActivatedRoute, private API: ApiService,
-    private comunicatorService: ComunicatorService, private renderer: Renderer2) {
-    this.comunicatorService.setBackgroundNav(true)
-    this.getDetailsSerie()
-    this.getCreditsSerie()
-  }
+  private activeRoute = inject(ActivatedRoute)
+  private router = inject(Router)
+  private api = inject(ApiService)
 
-  ngAfterViewInit() {
-    const swiperEl = document.querySelector('swiper-container');
-  }
+  private id_serie = toSignal(
+    this.activeRoute.params.pipe(
+      map(params => params['id_serie'])),
+    { initialValue: undefined }
+  );
 
-  swiperInit(event: any) {
-    setTimeout(() => {
-      console.log('iniciado', event.detail[0].navigation.nextEl)
-      const button_next = event.detail[0].navigation.nextEl
-      const button_prev = event.detail[0].navigation.prevEl
-      this.renderer.setStyle(button_next, 'opacity', '0')
-      this.renderer.setStyle(button_prev, 'opacity', '0')
+  serie = toSignal(
+    toObservable(this.id_serie).pipe(
+      switchMap(id => this.api.getDetailsSerie({ dataId: id }))),
+    { initialValue: undefined }
+  );
+
+  credits = toSignal(
+    toObservable(this.id_serie).pipe(
+      switchMap(id => this.api.getCreditsSerie({ dataId: id }))
+    ),
+    { initialValue: undefined }
+  );
+
+  recomended: Signal<SerieList | undefined> = toSignal(
+    toObservable(this.id_serie).pipe(
+      switchMap(id => this.api.getRecomendedSeries({ dataId: id }))
+    ),
+    { initialValue: undefined }
+  );
+
+  readonly recomendedSeriesLoader = useDataLoader<SerieList, 'results'>('results', this.recomended, { dataId: this.id_serie() }).pipe(
+    withPagination
+  )
+
+  private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carouselRecomendedSeries')
+  private readonly sinopsysContainer = viewChild<ElementRef<HTMLElement>>('leftPanel')
+  private readonly creditsContainer = viewChild<ElementRef<HTMLElement>>('creditsContainer')
+  readonly carouselService = inject(CarouselService<MovieList, 'results'>);
+  height = getHeightContainer(this.sinopsysContainer)
+
+
+  resetScroll = effect(() => {
+    const id = this.id_serie();
+
+    if (!id) return;
+    untracked(() => {
+      this.carouselService.navigation.resetPosition()
+      requestAnimationFrame(() => {
+        document.scrollingElement?.scrollTo(0, 0)
+        this.creditsContainer()?.nativeElement.scrollTo({ top: 0 })
+      })
     })
+  })
+
+  readonly carouselOptions: CarouselOptions = {
+    requiresEnrichment: false,
+    orientation: 'horizontal',
+    requireSnapMandatory: true,
+    slidesConfig: {
+      slidesPerView: 1,
+      peek: 32,
+      peekSkeletonOffset: 0,
+      spaceBetween: 24,
+      breakpoints: {
+        420: { slidesPerView: 1.5 },
+        480: { slidesPerView: 2 },
+        640: { slidesPerView: 3 },
+        768: { slidesPerView: 4, peek: 96 },
+        988: { slidesPerView: 5, peek: 96 }
+      }
+    }
   }
 
-  swiperSlide(event: any) {
-    console.log('desplazando slide')
-    this.onSlideMouse(event, 1)
+
+  constructor() {
+    this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.recomendedSeriesLoader)
   }
 
-  onSlideMouse(event: any, opacity: number) {
-    const isBeginning = event.target.swiper.isBeginning
-    const isEnd = event.target.swiper.isEnd
-    console.log(isBeginning)
-    const button_next = event.target.swiper.navigation.nextEl
-    const button_prev = event.target.swiper.navigation.prevEl;
+  production = computed(() => {
+    return this.serie()?.production_companies[0]
+  })
 
-    (isBeginning) ? this.renderer.setStyle(button_prev, 'opacity', 0) :
-      this.renderer.setStyle(button_prev, 'opacity', opacity);
-
-    (isEnd) ? this.renderer.setStyle(button_next, 'opacity', 0) :
-      this.renderer.setStyle(button_next, 'opacity', opacity)
+  redirect(id: number) {
+    this.router.navigate(['/details-serie/', id])
   }
 
-  getDetailsSerie() {
-    let detailsserie$ = this.rutaActiva.params.pipe(
-      map((params: Params) => this.API.getDetailsSerie(params['id_serie'])), concatAll())
-
-    detailsserie$.subscribe((serie: Serie) => {
-      console.log(serie)
-      document.scrollingElement?.scrollTo(0, 0)
-      this.serie.set(serie)
-    })
-  }
-
-  getCreditsSerie() {
-    let creditsserie$ = this.rutaActiva.params.pipe(
-      map((params: Params) => this.API.getCreditsSerie(params['id_serie'])), concatAll())
-    creditsserie$.subscribe((credits: Credits) => this.credits.set(credits))
-
-  }
-
-  getBackgroundImage(): string {
-    return `linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url(http://image.tmdb.org/t/p/original${this.serie()?.backdrop_path})`;
-  }
-
-  toggleLike(): void {
-    this.isLiked = !this.isLiked;
-  }
-
-  toggleBookmark(): void {
-    this.isBookmarked = !this.isBookmarked;
-  }
-
-  getLikeButtonClass(): string {
-    return `p-3 rounded-full border-2 transition-all transform hover:scale-110 ${this.isLiked
-      ? 'bg-red-500 border-red-500 text-white'
-      : 'border-white/30 text-white hover:border-red-500 hover:text-red-500'
-      }`;
-  }
-
-  getBookmarkButtonClass(): string {
-    return `p-3 rounded-full border-2 transition-all transform hover:scale-110 ${this.isBookmarked
-      ? 'bg-red-500 border-red-500 text-white'
-      : 'border-white/30 text-white hover:border-red-500 hover:text-red-500'
-      }`;
-  }
 }
 
 

@@ -1,26 +1,25 @@
 import { NgClass } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ComunicatorService } from '../core/services/comunicator/comunicator.service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { FormsModule} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { BackgroundNavScrollDirective } from '../core/directives/background-nav-scroll.directive';
 
 @Component({
-    selector: 'app-nav-bar',
-    imports: [NgClass,RouterLink,FormsModule,RouterLinkActive],
-    templateUrl: './nav-bar.component.html',
-    styleUrl: './nav-bar.component.css'
+  selector: 'app-nav-bar',
+  imports: [NgClass, RouterLink, FormsModule, RouterLinkActive,BackgroundNavScrollDirective],
+  templateUrl: './nav-bar.component.html',
+  styleUrl: './nav-bar.component.css'
 })
 export class NavBarComponent {
-  isMenuOpen:boolean=false
-  searchQuery:string=''
+  isMenuOpen: boolean = false
+  searchQuery: string = ''
 
-  constructor(public comunicatorService: ComunicatorService,private router:Router) {
-    console.log(comunicatorService.getBackgroundNav()())
-  }
+  comunicatorService = inject(ComunicatorService)
+  private router = inject(Router)
 
-  onSearch(){
-    if(this.searchQuery!=='')
-       this.router.navigate(['/search/'+this.searchQuery])
-    console.log(this.searchQuery)
+  onSearch() {
+    if (this.searchQuery !== '')
+      this.router.navigate(['/search/' + this.searchQuery])
   }
 }

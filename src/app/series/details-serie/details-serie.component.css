@@ -1,29 +1,28 @@
-swiper-container::part(container) {
-    overflow-y: visible;
-    overflow-x: clip;
-}
+ .btn-glossy {
+     background: linear-gradient(135deg, rgba(229, 9, 20, 1) 0%, rgba(180, 0, 10, 1) 100%);
+     position: relative;
+     overflow: hidden;
+ }
 
-swiper-container::part(button-prev),
-swiper-container::part(button-next) {
-     z-index: 10;
-    position: absolute;
-    top: 50%;
-    width: .73rem;
-    height: .73rem;
-    color: white;
-    stroke: white;
-    stroke-width: .11rem;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 9999px;
-    backdrop-filter: blur(4px);
-    transition: all 0.3s ease-in;
-    cursor: pointer;
-    padding: 1.1rem;
-    border: solid 1px;
-     border-color: color-mix(in oklab, var(--color-red-900) /* oklch(39.6% 0.141 25.723) = #82181a */ 50%, transparent);
-}
+ .btn-glossy::after {
+     content: '';
+     position: absolute;
+     top: -50%;
+     left: -50%;
+     width: 200%;
+     height: 200%;
+     background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+     transform: rotate(45deg);
+     transition: 0.5s;
+ }
 
-swiper-container::part(button-prev):hover,
-swiper-container::part(button-next):hover {
-    transform: scale(1.10);
-}
+ .btn-glossy:hover::after {
+     left: 100%;
+ }
+
+ .glass-panel {
+     background: rgba(25, 25, 25, 0.4);
+     backdrop-filter: blur(24px) saturate(180%);
+     -webkit-backdrop-filter: blur(24px) saturate(180%);
+     border: 1px solid rgba(255, 255, 255, 0.08);
+ }

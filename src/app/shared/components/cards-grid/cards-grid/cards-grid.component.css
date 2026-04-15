@@ -1,6 +1,6 @@
 
 .viewport{
-  @apply flex flex-wrap items-center relative auto-rows-max py-1  overflow-y-auto h-full w-full;
+  @apply flex flex-wrap items-center relative auto-rows-max py-1   h-full w-full;
 }
 
 .card{

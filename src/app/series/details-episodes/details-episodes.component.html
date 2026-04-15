@@ -1,0 +1,53 @@
+<main>
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 px-8 md:px-24">
+        <div>
+            <span class="text-[#e50914] font-black tracking-[0.4em] uppercase text-[8px] lg:text-[10px] mb-4 block">
+                Continúa tu viaje hacia el oscuro corazón de {{serie()?.name}}
+            </span>
+
+            <h2
+                class="font-headline text-3xl md:text-4xl lg:text-5xl font-black text-[#e5e2e1] tracking-tighter uppercase">
+                Temporadas &amp;
+                Episodios</h2>
+
+        </div>
+        <app-custom-select class="grow-0 shrink basis-60" [options]="serie()?.seasons ?? []"
+            [(selectedOption)]="selectedSeason">
+        </app-custom-select>
+    </div>
+
+    <section class="relative">
+        <app-carousel-navigation [carouselService]="carousel"></app-carousel-navigation>
+        <div class="carousel-container" cdkScrollable #carouselEpisodes
+            [style.gap.px]="carousel.slidesInfo.layout().spaceBetween"
+            [style.padding-left.px]="carousel.slidesInfo.layout().peekSize"
+            [style.padding-right.px]="carousel.slidesInfo.layout().peekSize">
+
+            @for(episode of season()?.episodes;track episode.id){
+            <div class="group cursor-pointer  flex-shrink-0"
+                [style.width.px]="carousel.slidesInfo.layout().slideMainAxisSize">
+                <div class="relative aspect-video rounded-xl overflow-hidden mb-4 ghost-border">
+                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        [ngSrc]="episode.still_path | autoImage : 'backdrop-wide'" fill />
+                    <div
+                        class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all flex items-center justify-center">
+                        <div class=" opacity-0 group-hover:opacity-100 transition-opacity flex justify-center items-center
+                            translate-y-4 group-hover:translate-y-0 duration-300 rounded-full bg-white w-14 h-14">
+                            <app-icon name="play" color="text-black" size="w-10 h-10" class="">
+                            </app-icon>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-bold text-xl group-hover:text-[#e50914] transition-colors text-[#e5e2e1]">
+                        {{episode.episode_number}}. {{episode.name}}</h3>
+                    <span class="text-sm font-bold text-[#e9bcb6]">{{episode.runtime | minutesToTime}}</span>
+                </div>
+                <p class="text-sm text-[#e5e2e1]/60 line-clamp-2">{{episode.overview}}</p>
+            </div>
+            }
+
+        </div>
+    </section>
+
+</main>

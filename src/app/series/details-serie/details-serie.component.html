@@ -1,245 +1,222 @@
-<main class="min-h-screen bg-gradient-to-br from-black via-red-950 to-black">
-  <!-- Hero Section with Backdrop -->
-  <section class="relative pt-16">
-    <div class="h-96 bg-cover bg-center relative" [style.background-image]="getBackgroundImage()">
-      <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+<main appBackgroundNavScroll>
+
+    <div class="relative w-full h-screen">
+
+        <img [ngSrc]="serie()?.backdrop_path | autoImage : 'backdrop-square'" fill loading="lazy"
+            class="object-cover object-center gradient opacity-30">
+
+        <div class="relative h-full container  px-4 md:px-24 flex flex-col justify-end pb-8">
+            <div class="flex flex-col md:flex-row gap-8 items-end">
+                <!-- Poster (Hidden on mobile, visible on tablet+) -->
+                <figure class="hidden md:block w-[240px] shrink-0 rounded-xl overflow-hidden aspect-[2/3]
+                    shadow-2xl shadow-[#e50914]/20 border border-white/10 transform  z-10">
+                    <img [ngSrc]="serie()?.poster_path | autoImage : 'backdrop-square'" fill loading="lazy"
+                        class=" bg-cover bg-center">
+                </figure>
+
+                <!-- Text Content -->
+                <div class="flex flex-col gap-4  z-10">
+
+                    <!-- Meta Info Row -->
+                    <span class="flex flex-wrap items-center gap-2 text-[#e50914] font-normal text-sm  tracking-wider">
+
+                         <span class="w-1 h-1 bg-white/30 rounded-full"></span>
+                        {{serie()?.first_air_date|date:'yyyy'}} -  {{serie()?.last_air_date|date:'yyyy'}}
+
+                        <span class="w-1 h-1 bg-white/30 rounded-full"></span>
+                        {{serie()?.number_of_seasons}} Temporadas {{serie()?.number_of_episodes}} Episodios 
+
+                    </span>
+                    <!-- Title -->
+                    <h1
+                        class="text-white text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-[-0.033em] drop-shadow-lg">
+                        {{serie()?.name}}
+                    </h1>
+
+                    <p
+                        class="text-gray-300 text-base md:text-lg leading-relaxed line-clamp-3 md:line-clamp-none max-w-3xl drop-shadow-md">
+                        {{serie()?.tagline}}
+                    </p>
+
+                    <!-- Genre Chips -->
+                    <div class="flex gap-2 flex-wrap my-2">
+                        @for(genre of serie()?.genres;track genre.id){
+                        <div class="flex h-6 items-center justify-center px-4 rounded-full border border-white/15">
+                            <span class="text-[#e5e2e1]/60 text-[10px] font-bold tracking-[0.2em] uppercase ">
+                                {{ genre.name }}
+                            </span>
+                        </div>
+                        }
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-6 ">
+                        <button class="btn-glossy text-white flex items-center gap-3 px-10
+                             py-4 rounded-xl font-extrabold tracking-widest text-sm transition-all 
+                             duration-300 hover:scale-105 active:scale-95 shadow-2xl shadow-[#e50914]/40 group">
+                            <app-icon name="play" size="w-6 h-6"></app-icon>
+                            VER AHORA
+                        </button>
+                        <button class="glass-panel border-white/20 text-[#e5e2e1] flex items-center gap-3 
+                            px-10 py-4 rounded-xl font-extrabold tracking-widest text-sm transition-all 
+                            duration-300 hover:!bg-white/10 active:scale-95">
+                            ADD TO LIST
+                        </button>
+                        <div class="flex flex-col ml-6 border-l border-white/10 pl-8">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <app-icon name="star" color="text-[#e50914]" backgroundColor="fill-[#e50914]">
+                                </app-icon>
+                                <span class="text-[#e5e2e1] text-xl font-black tracking-tighter">
+                                    {{serie()?.vote_average | number:'1.1-1' :'en-US'}}</span>
+                            </div>
+                            <span class="text-[#e5e2e1]/40 text-[10px] font-bold uppercase tracking-[0.2em]">Critic
+                                Rating</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Content Overlay -->
-    <section class="absolute top-0 left-0 right-0 bottom-0 flex items-end">
-      <div class="flex flex-col lg:flex-row gap-8 items-end px-16 mx-1 pb-8">
-        <!-- Poster -->
-        <figure class="flex-shrink-0">
-          <img [ngSrc]="serie()?.poster_path | autoImage : 'tall'" 
-            class="w-64 h-96 object-cover rounded-2xl shadow-2xl ring-4 ring-red-500/30 transform hover:scale-105 transition-transform duration-300" />
-        </figure>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 px-8 md:px-24 mt-32 relative z-20 max-w-[1600px] mx-auto">
+        <!-- Glass Synopsis Card -->
+        <div class="lg:col-span-8">
+            <div class="glass-panel rounded-[2rem] p-10 md:p-14 " #leftPanel>
+                <div class="flex items-center gap-4 mb-10">
+                    <div class="w-12 h-1 bg-[#e50914] rounded-full"></div>
+                    <h3 class="font-headline text-3xl font-extrabold text-[#e5e2e1] tracking-tight uppercase">
+                        Synopsis</h3>
+                </div>
+                <p class="text-[#e5e2e1]/70 font-body leading-relaxed text-xl mb-12 font-light">
+                    {{serie()?.overview}}
+                </p>
+                <div class="grid grid-cols-2  gap-10 border-t border-white/5 pt-12">
+                    <div class="">
+                        <span class="block text-[10px] font-black text-[#e50914] uppercase tracking-[0.3em] 
+                            mb-2">
+                            Creado por
+                        </span>
+                        @for(creator of serie()?.created_by;track creator.id){
+                        <p class="text-[#e5e2e1] text-lg font-bold hover:text-[#e50914] 
+                                transition-colors cursor-default">
+                            {{creator.name}}
+                        </p>
+                        }
 
-        <!-- Title and Basic Info -->
-        <header class="flex-1 text-white">
-          <h1 class="text-5xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-red-300">
-            {{ serie()?.name }}
-          </h1>
-
-          <p class="text-xl text-red-200 mb-4">{{ serie()?.original_name }}</p>
-
-          <div class="flex flex-wrap items-center gap-6 mb-6">
-            <div class="flex items-center gap-2 bg-yellow-500/20 px-3 py-1 rounded-full">
-              <svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                <path
-                  d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-              </svg>
-              <span class="font-semibold">{{ serie()?.vote_average | number:'1.1-1' :'en-US' }}</span>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-red-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-              <span>{{ serie()?.first_air_date | date:'longDate' }}</span>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-red-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-              <span>{{ serie()?.number_of_seasons }} temporadas, {{ serie()?.number_of_episodes }} episodios</span>
-            </div>
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="flex gap-4 mb-6">
-            <button [routerLink]="['/watch-serie', serie()?.id]" 
-              class="flex items-center gap-2 bg-red-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-red-700 transition-colors transform hover:scale-105">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-              Ver Ahora
-            </button>
-            <button (click)="toggleLike()" [class]="getLikeButtonClass()">
-              <svg class="w-6 h-6" [class.fill-current]="isLiked" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2">
-                <path
-                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                </path>
-              </svg>
-            </button>
-            <button (click)="toggleBookmark()" [class]="getBookmarkButtonClass()">
-              <svg class="w-6 h-6" [class.fill-current]="isBookmarked" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
-              </svg>
-            </button>
-            <button
-              class="p-3 rounded-full border-2 border-white/30 text-white hover:border-white hover:bg-white/10 transition-all transform hover:scale-110">
-              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-                <polyline points="16,6 12,2 8,6"></polyline>
-                <line x1="12" y1="2" x2="12" y2="15"></line>
-              </svg>
-            </button>
-          </div>
-        </header>
-      </div>
-    </section>
-  </section>
-
-  <!-- Details Section -->
-  <section class="grid lg:grid-cols-3 gap-12 px-16 py-12">
-    <section class="lg:col-span-2 space-y-8">
-      <!-- Description -->
-      @if(serie()?.overview!==''){
-      <div class="bg-black/40 backdrop-blur-sm rounded-2xl p-8 border border-red-500/20">
-        <h2 class="text-2xl font-bold text-white mb-4">Sinopsis</h2>
-        <p class="text-red-100 leading-relaxed text-lg">{{ serie()?.overview }}</p>
-      </div>
-      }
-
-      <!-- Seasons -->
-      <div class="bg-black/40 backdrop-blur-sm rounded-2xl p-8 border border-red-500/20">
-        <h2 class="text-2xl font-bold text-white mb-6">Temporadas</h2>
-
-        <swiper-container slides-per-view="1" navigation="true" (mouseenter)="onSlideMouse($event,1)"
-                    (mouseleave)="onSlideMouse($event,0)" (swiperafterinit)="swiperInit($event)" 
-                      (swiperslidechange)="swiperSlide($event)">
-          @for (season of serie()?.seasons;track season.id){
-          <swiper-slide class="bg-black/50 rounded-xl p-6">
-            <header class="flex mb-6 gap-8">
-              <h3 class="text-xl font-semibold text-white ">{{ season.name}}</h3>
-              <p class="text-sm opacity-80 text-red-100 py-1">
-                {{ season.episodes.length }} episodios • {{season.air_date | date:'longDate'}}</p>
-            </header>
-
-            <article class="grid grid-cols-3">
-              <figure class="flex-shrink-0 relative w-48 h-72">
-                <img [ngSrc]="season.poster_path | autoImage : 'tall'"
-                  class="w-48 h-72 object-cover rounded-2xl shadow-2xl ring-4 ring-red-500/30 transform hover:scale-105 transition-transform duration-300"
-                  fill>
-              </figure>
-              <p class="text-red-100 line-clamp-[12] col-span-2"> {{ season.overview }} </p>
-            </article>
-
-            <h3 class="text-xl font-semibold text-white mb-6 mt-8">Episodios</h3>
-            <swiper-container navigation="true" slides-per-view="auto" space-between="18" 
-            (mouseenter)="onSlideMouse($event,1)" (mouseleave)="onSlideMouse($event,0)">
-
-              @for(episode of season.episodes;track episode.id){
-              <swiper-slide class="grid grid-cols-3 rounded-2xl border border-red-500/20">
-                <figure class="flex-shrink-0 relative w-56 h-40">
-                  <img [ngSrc]="episode.still_path | autoImage : 'wide'"
-                    class="object-cover rounded-2xl shadow-2xl text-red-300 text-center p-2" fill>
-                </figure>
-                <header class="col-span-2 text-red-100 pt-2 pr-2">
-                  <p class="text-red-100 text-lg font-bold"> {{episode.episode_number}} . &nbsp; {{ episode.name }} </p>
-
-                  <article class="flex flex-wrap items-center gap-6 mb-4 mt-2">
-                    <a [routerLink]="['/watch-serie', serie()?.id]" 
-                    [queryParams]="{ number_season:season.season_number, number_episode:episode.episode_number }"
-                    class="border border-white rounded-xl px-4 py-0.5 text-sm hover:scale-110  transition-all transform 
-                         hover:border-red-600 hover:text-red-600 cursor-pointer"> VER AHORA &nbsp;
-                      <i class="fa-solid fa-play text-sm"></i>
-                    </a>
-                    @if(episode.runtime){
-                    <div class="flex items-center gap-2">
-                      <svg class="w-5 h-5 text-red-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12,6 12,12 16,14"></polyline>
-                      </svg>
-                      <span>{{episode.runtime}} min</span>
                     </div>
-                    }
 
-                    @if(episode.air_date){
-                    <div class="flex items-center gap-2">
-                      <svg class="w-5 h-5 text-red-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                      </svg>
-                      <span>{{ episode.air_date }}</span>
+                    <div class="group">
+                        <span
+                            class="block text-[10px] font-black text-[#e50914] uppercase tracking-[0.3em] mb-2">Production</span>
+                        <span class="text-[#e5e2e1] text-lg font-bold group-hover:text-[#e50914] 
+                            transition-colors cursor-default">
+                            {{production()?.name}}
+                        </span>
                     </div>
-                    }
-                  </article>
+                </div>
+            </div>
+        </div>
+        <!-- Glass Cast Card -->
+        <div class="lg:col-span-4 glass-panel p-10 rounded-[2rem] flex flex-col" [style.height.px]="height()">
+            <h3 class="font-headline text-2xl font-extrabold mb-10 text-[#e5e2e1] tracking-tight uppercase">
+                Featured Cast</h3>
+            <div class="space-y-8 overflow-y-auto " #creditsContainer>
+                @for(cast of credits()?.cast;track cast){
+                <div class="flex items-center gap-5 group cursor-pointer">
+                    <figure
+                        class="w-16 h-16 rounded-2xl overflow-hidden ring-1 relative ring-white/10 group-hover:ring-[#e50914]/50 transition-all duration-500">
+                        <img [ngSrc]="cast.profile_path| autoImage : 'square'" fill class="w-full h-full object-cover group-hover:scale-110 transition-transform 
+                         duration-700" />
+                    </figure>
+                    <div>
+                        <span
+                            class="block text-[#e5e2e1] font-black text-base group-hover:text-[#e50914] transition-colors">
+                            {{cast.name}}</span>
+                        <span class="block text-[#e5e2e1]/40 text-xs font-bold tracking-wider uppercase mt-0.5">
+                            {{cast.character}}</span>
+                    </div>
+                </div>
+                }
 
-                  <p class="text-red-100 line-clamp-2 col-span-2"> {{ episode.overview }} </p>
-                </header>
-              </swiper-slide>
-              }
-            </swiper-container>
-          </swiper-slide>
-          }
-        </swiper-container>
+            </div>
+        </div>
+    </div>
 
-      </div>
+    <!-- Seasons & Episodes -->
+    <section class="pt-32 ">
+        <app-details-episodes [serie]="serie()"></app-details-episodes>
     </section>
 
-    <!-- Sidebar -->
-    <aside class="space-y-6">
-      <!-- Info Card -->
-      <section class="bg-black/40 backdrop-blur-sm rounded-2xl p-6 border border-red-500/20">
-        <h3 class="text-xl font-bold text-white mb-4">Información</h3>
-        <div class="space-y-3">
-          @if(serie()?.status){
-          <div>
-            <span class="text-red-300 font-medium">Estado:</span>
-            <span class="text-white ml-2">{{ serie()?.status }}</span>
-          </div>
-          }
-
-          <div>
-            <span class="text-red-300 font-medium">Creador:</span>
-            @for(creator of serie()?.created_by;track creator.id){
-            <span class="text-white ml-2">{{ creator.name }}</span>
-            }
-          </div>
-
-          <div>
-            <span class="text-red-300 font-medium">Géneros:</span>
-            <div class="flex flex-wrap gap-2 mt-2">
-              @for(genre of serie()?.genres;track genre.id){
-              <span class="bg-red-600/30 text-red-200 px-3 py-1 rounded-full text-sm">
-                {{ genre.name }}
-              </span>
-              }
+    <!-- Sophisticated Similar series Section -->
+    <section class="py-32  max-w-[1600px] mx-auto overflow-hidden ">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 px-8 md:px-24">
+            <div>
+                <span class="text-[#e50914] font-black tracking-[0.4em] uppercase text-[8px] lg:text-[10px] mb-4 block">
+                    Experiencia Recomendada</span>
+                <h2
+                    class="font-headline text-3xl md:text-4xl lg:text-5xl font-black text-[#e5e2e1] tracking-tighter uppercase">
+                    Ecos cinematográficos</h2>
             </div>
-          </div>
-        </div>
-      </section>
+            <!--  <div class="hidden gap-4 md:flex">
 
-      <!-- Cast -->
-      <div class="bg-black/40 backdrop-blur-sm rounded-2xl p-6 border border-red-500/20">
-        <h3 class="text-xl font-bold text-white mb-4">Reparto Principal</h3>
-        <div class="space-y-2">
-          @for(cast of credits()?.cast;track cast.id){
-          <div class="text-red-100 hover:text-white transition-colors cursor-pointer">
-            {{ cast.name }}
-          </div>
-          }
-        </div>
-      </div>
 
-      <!-- Awards -->
-      <!-- <div class="bg-black/40 backdrop-blur-sm rounded-2xl p-6 border border-red-500/20">
-        <h3 class="text-xl font-bold text-white mb-4">Reconocimientos</h3>
-        <div class="flex flex-wrap gap-2">
-          @for(award of seriesData.awards;track award){
-          <span
-            class="bg-gradient-to-r from-red-600/30 to-red-800/30 text-red-300 px-3 py-2 rounded-lg text-sm font-medium border border-red-500/30">
-            {{ award }}
-          </span>
-          }
+                <button class="w-14 h-14 rounded-full glass-panel flex items-center justify-center
+                     hover:!bg-[#e50914] hover:!border-[#e50914] transition-all duration-500 group"
+                    (click)="carouselService.navigation.prev()">
+                    <app-icon name="arrow-left" size="w-14 h-14"></app-icon>
+                </button>
+                <button class="w-14 h-14 rounded-full glass-panel flex items-center justify-center 
+                    hover:!bg-[#e50914] hover:!border-[#e50914] transition-all duration-500 group"
+                    (click)="carouselService.navigation.next()">
+                    <app-icon name="arrow-right" size="w-14 h-14"></app-icon>
+                </button>
+            </div> -->
         </div>
-      </div> -->
-    </aside>
-  </section>
 
+        <section class="relative">
+            <app-carousel-navigation [carouselService]="carouselService"></app-carousel-navigation>
+            <div class="carousel-container" cdkScrollable #carouselRecomendedSeries
+                [style.gap.px]="carouselService.slidesInfo.layout().spaceBetween"
+                [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize"
+                [style.padding-right.px]="carouselService.slidesInfo.layout().peekSize">
+
+                @for(serie of recomendedSeriesLoader.data();track serie.id){
+                <div class="group cursor-pointer carousel-item " (click)="redirect(serie.id)"
+                    [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize">
+                    <div
+                        class="relative aspect-[3/4.5] rounded-3xl overflow-hidden mb-6 ring-1 ring-white/5 group-hover:ring-[#e50914]/40 transition-all duration-700">
+                        <img [ngSrc]="serie.poster_path | autoImage : 'poster'" fill
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80">
+                        </div>
+                    </div>
+                    <h4 class="text-[#e5e2e1] font-black text-lg tracking-tight group-hover:text-[#e50914] 
+                    transition-colors"> {{serie.name}}</h4>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-[#e5e2e1]/40 text-[11px] font-black uppercase tracking-widest">
+                            {{serie.genres[0].name}}
+                        </span>
+                        <span class="w-1 h-1 bg-white/20 rounded-full"></span>
+                        <span class="text-[#e5e2e1]/40 text-[11px] font-black uppercase tracking-widest">
+                            {{serie.first_air_date | date :'yyyy'}}
+                        </span>
+                    </div>
+                </div>
+                }
+
+
+                <!-- @if(canLoadMore()){ -->
+                @for(_ of carouselService.slidesInfo.skeletonSlideIndexes(); track $index) {
+                <div class="carousel-item aspect-[3/4.5] rounded-3xl bg-gray-700 animate-pulse"
+                    [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize">
+
+                </div>
+                }
+                <!-- } -->
+            </div>
+        </section>
+
+    </section>
 
 </main>

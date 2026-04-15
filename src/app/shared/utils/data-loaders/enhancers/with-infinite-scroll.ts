@@ -8,16 +8,16 @@ export function withInfiniteScroll<T extends PaginatedMetaData, R extends ArrayK
 
     const pagination = withPagination(loader)
 
-    const setupInfiniteScroll = (container: Signal<ElementRef<HTMLElement> | undefined>,
-        sentinel: Signal<ElementRef<HTMLElement> | undefined>) => {
+    const setupInfiniteScroll = (sentinel: Signal<ElementRef<HTMLElement> | undefined>,
+        container?: Signal<ElementRef<HTMLElement> | undefined>) => {
 
         let io: IntersectionObserver | undefined = undefined
 
         const cleanupRef = effect((onCleanup) => {
-            const containerEl = container()?.nativeElement
+            const containerEl = container ? container()?.nativeElement : null
             const sentinelEl = sentinel()?.nativeElement
 
-            if (!containerEl || !sentinelEl) {
+            if (containerEl === undefined || !sentinelEl) {
                 io?.disconnect();
                 io = undefined;
                 return;
@@ -51,8 +51,7 @@ export function withInfiniteScroll<T extends PaginatedMetaData, R extends ArrayK
 }
 
 function createIntersectionObserver<T extends PaginatedMetaData, R extends ArrayKey<T>>
-    (root: HTMLElement, loader: LoaderWithPagination<T, R>) {
-
+    (root: HTMLElement | null, loader: LoaderWithPagination<T, R>) {
     return new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
         const entry = entries[0]
         if (!entry) return;
@@ -62,7 +61,7 @@ function createIntersectionObserver<T extends PaginatedMetaData, R extends Array
         loader.loadMoreData()
     },
         {
-            root: root,
+            root:root,
             threshold: 0.1,
             rootMargin: '0px 0px 0px 0px'
         }

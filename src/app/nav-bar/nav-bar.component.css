@@ -1,15 +1,9 @@
 .active {
-    background: radial-gradient(50% 50% at 50% 0, 
-        rgba(var(--action-background-color, 255, 255, 255), .8) 0, transparent 100%),
-        hsla(0, 0%, 100%, .2);
-    background-origin: border-box;
-    border-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 10%, hsla(0, 0%, 100%, .3) 50%, hsla(0, 0%, 100%, 0) 90%) 1/2px;
-    border-image-width: 2px;
-    border-image-width: 2px 0 0 0;
-    box-shadow: 0 -4px 16px 0 rgba(var(--action-background-color, 255, 255, 255), .2); 
+   @apply font-extrabold border-b-2 border-[#e50914] pb-1 !text-[#e5e2e1]
 }
 
 .option{
-    @apply  font-semibold text-sm;
+    @apply text-[#e5e2e1]/50 hover:text-[#e5e2e1] text-sm tracking-widest 
+    uppercase font-semibold transition-all duration-300
 }
 
