@@ -1,5 +1,5 @@
 import {
-  AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, Renderer2, signal,
+  AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, OnDestroy, Renderer2, signal,
   ViewChild, WritableSignal
 } from '@angular/core';
 import { ActivatedRoute, ParamMap, Params, RouterLink, } from '@angular/router';
@@ -23,18 +23,18 @@ import { AutoImagePipe } from '../../shared/pipes/autoimage/auto-image.pipe';
   animations: [fade],
 })
 
-export default class PlaySerieComponent implements AfterViewInit {
+export default class PlaySerieComponent implements AfterViewInit, OnDestroy {
   serie: WritableSignal<Serie | undefined> = signal(undefined)
   url_serie = signal('https://vidsrc.to/embed/tv/')
   similarSeries: WritableSignal<SerieList | undefined> = signal(undefined)
   recomendedSeries: WritableSignal<SerieList | undefined> = signal(undefined)
-  subscription: Subscription[] = []
-  doc = inject(DOCUMENT)
-  season_number = -1
-  episode_number = -1
-  id_serie = 0
-  episode!: Episode
-  season!: Season
+  private subscriptions: Subscription[] = []
+  private doc = inject(DOCUMENT)
+  protected season_number = -1
+  protected episode_number = -1
+  protected id_serie = 0
+  protected episode!: Episode
+  protected season!: Season
 
   constructor(private rutaActiva: ActivatedRoute, public API: ApiService,
     private comunicatorService: ComunicatorService, private renderer: Renderer2) {
@@ -80,7 +80,7 @@ export default class PlaySerieComponent implements AfterViewInit {
   getUrlSerie() {
 
     let params = combineLatest([this.rutaActiva.paramMap, this.rutaActiva.queryParamMap])
-    this.subscription.push(params.pipe(
+    this.subscriptions.push(params.pipe(
       map(([params, queryParams]) => {
         this.setUrlSerie(params, queryParams)
         return this.API.getDetailsSerie({dataId:this.id_serie})
@@ -134,7 +134,7 @@ export default class PlaySerieComponent implements AfterViewInit {
 
 
   getSimilarSeries() {
-    this.subscription.push(this.rutaActiva.params.pipe(
+    this.subscriptions.push(this.rutaActiva.params.pipe(
       map((params: Params) => this.API.getSimilarSeries({page:1, dataId:params['id_serie']})), concatAll())
       .subscribe((series: any) => {
         if (series.results.length > 0) {
@@ -144,7 +144,7 @@ export default class PlaySerieComponent implements AfterViewInit {
   }
 
   getRecomendedSeries() {
-    this.subscription.push(this.rutaActiva.params.pipe(
+    this.subscriptions.push(this.rutaActiva.params.pipe(
       map((params: Params) => this.API.getRecomendedSeries({page:1, dataId:params['id_serie']})), concatAll())
       .subscribe((series: any) => {
         if (series.results.length > 0) {
@@ -153,9 +153,8 @@ export default class PlaySerieComponent implements AfterViewInit {
       }))
   }
 
-  ngOndestroy() {
-    console.log('destroing')
-    this.subscription.forEach(subscription => {
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => {
       subscription.unsubscribe()
     })
   }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+/* import { Injectable } from '@angular/core';
 import { IStorageStrategy,  ICachePair } from 'ngx-cacheable';
 
 @Injectable()
@@ -35,3 +35,4 @@ export class LocalStorageStrategy implements IStorageStrategy {
     }
   }
 }
+ */

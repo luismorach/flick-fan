@@ -7,7 +7,7 @@ import { Season, Serie } from '../../interfaces/serie/serie.interface';
 import { environment } from '../../environment/environment';
 import { Genre } from '../../interfaces/shared/genre.interface';
 import { ParamsApi } from '../../interfaces/shared/params-http.interface';
-import { Cacheable } from 'ngx-cacheable';
+/* import { Cacheable } from 'ngx-cacheable'; */
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Videos } from '../../interfaces/media/videos.interface';
 import { MediaItem, MediaList } from '../../interfaces/shared/generic.interface';
@@ -63,7 +63,6 @@ export class ApiService {
     return this.getMediaDetails<Movie>(endpoint, params, type)
   }
 
-  @Cacheable()
   getUpcoming(params: ParamsApi) {
     const endpoint = `movie/upcoming`
     const type = 'upcoming_movies'
@@ -84,7 +83,6 @@ export class ApiService {
       })
   }
 
-  @Cacheable()
   getMovieVideos(params: ParamsApi) {
     console.log('🚀 getMovieVideos llamado para ID:', params.dataId);
     return this.http
@@ -93,7 +91,6 @@ export class ApiService {
       })
   }
 
-  @Cacheable()
   getCreditsMovie(params: ParamsApi): Observable<Credits> {
     return this.http
       .get<Credits>(`${this.API_BASE}/movie/${params.dataId}/credits`, {

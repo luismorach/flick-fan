@@ -49,14 +49,14 @@ export interface LoaderWithFilter<T extends object, K extends ArrayKey<T>> exten
 
 export interface LoaderWithInfiniteScroll<T extends object, K extends ArrayKey<T>> extends LoaderCore<T, K> {
     setupInfiniteScroll: (
-        sentinel: Signal<ElementRef<HTMLElement> | undefined>,
+        sentinel: Signal<readonly ElementRef<HTMLElement> [] | undefined>,
         container?: Signal<ElementRef<HTMLElement> | undefined>,
-    ) => () => void
+    ) => void
 };
 
 export interface LoaderWithAutoFill<T extends object, K extends keyof T> extends LoaderCore<T, K> {
-    setupAutoFill: (sentinel: Signal<ElementRef<HTMLElement> | undefined>,
-        container?: Signal<ElementRef<HTMLElement> | undefined>) => () => void
+    setupAutoFill: (sentinel: Signal<readonly ElementRef<HTMLElement>  [] | undefined>,
+        container?: Signal<ElementRef<HTMLElement> | undefined>) =>  void
 };
 
 export type AnyEnhancedLoader<T extends object, K extends keyof T> =

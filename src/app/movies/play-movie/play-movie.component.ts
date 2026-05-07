@@ -23,8 +23,8 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 export default class PlayMovieComponent {
   similarMovies: WritableSignal<MovieList | undefined> = signal(undefined)
   recomendedMovies: WritableSignal<MovieList | undefined> = signal(undefined)
-  subscription: Subscription[] = []
-  doc = inject(DOCUMENT)
+  private subscriptions: Subscription[] = []
+  private doc = inject(DOCUMENT)
   private activeRoute = inject(ActivatedRoute)
   private api = inject(ApiService)
 
@@ -87,9 +87,8 @@ export default class PlayMovieComponent {
 
 
 
-  ngOndestroy() {
-    console.log('destroing')
-    this.subscription.forEach(subscription => {
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => {
       subscription.unsubscribe()
     })
   }

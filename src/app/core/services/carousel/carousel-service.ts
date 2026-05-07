@@ -1,7 +1,6 @@
 import { computed, DestroyRef, effect, ElementRef, inject, Injectable, signal, Signal, untracked } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent } from 'rxjs';
-import { WindowService } from '../window/window.service';
 import { CarouselOptions } from '../../interfaces/shared/carousel-interface';
 import { SlidesInfoHook, useSlidesInfo } from '../../../shared/utils/use-slides-info';
 import { useIntersectionObserver } from '../../../shared/utils/use-intersection-observer';
@@ -119,12 +118,8 @@ export class CarouselService<T extends Object, R extends keyof T> {
     }
 
     private handleScroll(carouselContainer: HTMLElement): void {
-        console.log('posicion antes de adjustscroll',carouselContainer.scrollLeft)
+        console.log('posicion antes de adjustscroll',carouselContainer.scrollLeft) 
         this.controller?.adjustScrollToNearestIndex()
 
-        console.log('isAtEnd', this.controller?.isAtEnd(), this.state().activeIndex())
-        if (this.controller?.isAtEnd() && hasPagination(this.loader) && this.loader.canLoadMore()) {
-            this.loader.loadMoreData();
-        }
     }
 }

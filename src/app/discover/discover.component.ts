@@ -100,6 +100,5 @@ export default class DiscoverComponent {
     console.log('search query',query,this.selectedMediaType())
   })
 
-  changeCategoey = effect(()=> console.log('cambio ctegory',this.selectedCategory()))
 
 }

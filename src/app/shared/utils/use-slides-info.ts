@@ -12,6 +12,7 @@ export interface SlidesInfoLayout {
   slideMainAxisSize: number,
   slideMainAxisSizeWithGap: number,
   peekSize: number,
+  edgeOffset: number,
 }
 
 interface NormalizedSlidesConfig {
@@ -38,15 +39,19 @@ export function useSlidesInfo(container: Signal<ElementRef<HTMLElement> | undefi
     const isVertical = normalizedConfig.direction === 'vertical' ? true : false
     const viewportMainAxisSize = isVertical ? mainAxisMetricsRef.height : mainAxisMetricsRef.width
     const sizes = calculateSlideSizes(mainAxisMetricsRef, normalizedConfig);
+    const edgeOffset = normalizedConfig.peekSize + normalizedConfig.spaceBetween
+
     const spacing = calculateCenterSpacing(
       viewportMainAxisSize,
       sizes.slideMainAxisSize,
       config.centeredSlides
     );
+    
 
     return {
       ...normalizedConfig,
       ...sizes,
+      edgeOffset,
       spacingToCenterSlide: spacing,
     };
   });
@@ -115,10 +120,11 @@ function calculateSlideSizes(mainAxisMetrics: mainAxisMetrics, config: Normalize
   let slideMainAxisSize: number
 
   const availableSize = viewportSize
-    - ((config.slidesPerView - 1) * config.spaceBetween)
+    - ((config.slidesPerView + 1) * config.spaceBetween)
     - (config.peekSize * 2);
 
   const safeAvailableSize = Math.max(0, availableSize);
+  console.log('availableSize', availableSize, viewportSize, config.slidesPerView, config.spaceBetween, config.peekSize)
 
   if (aspectRatio && config.direction === 'vertical') {
     const safeWidth = Math.max(1, mainAxisMetrics.width);

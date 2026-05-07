@@ -1,4 +1,4 @@
-import { computed, effect, ElementRef, Signal, untracked } from "@angular/core"
+import { computed, DestroyRef, effect, ElementRef, inject, Signal, untracked } from "@angular/core"
 import { PaginatedMetaData } from "../../../../core/interfaces/shared/generic.interface"
 import { ArrayKey, AnyEnhancedLoader, LoaderWithPagination, LoaderCore, AUTO_FILL, LoaderWithAutoFill } from "../types"
 import { hasPagination} from "./with-pagination"
@@ -7,11 +7,12 @@ import { canFilter } from "./with-filter"
 export function withAutoFillViewport<T extends PaginatedMetaData, R extends ArrayKey<T>>
     (loader: AnyEnhancedLoader<T, R>): LoaderWithAutoFill<T, R> {
 
-    const setupAutoFill = (sentinel: Signal<ElementRef<HTMLElement> | undefined>,
+    const setupAutoFill = (sentinel: Signal<readonly ElementRef<HTMLElement>  [] | undefined>,
         container?: Signal<ElementRef<HTMLElement> | undefined>) => {
 
-        if (!hasPagination(loader)) return () => { }
+        if (!hasPagination(loader)) return 
 
+        const destroyRef = inject(DestroyRef);
         const pagination = loader as unknown as LoaderWithPagination<T, R>;
         const data = computed(() => {
             return canFilter(pagination) ? pagination.filteredData() : pagination.data();
@@ -22,9 +23,9 @@ export function withAutoFillViewport<T extends PaginatedMetaData, R extends Arra
         const cleanupRef = effect(() => {
             data()  // Explicit dependency on data to trigger the effect
             const containerEl = container ? container()?.nativeElement : document.scrollingElement
-            const sentinelEl = sentinel()?.nativeElement
+            const sentinelEl = sentinel()?.[0]?.nativeElement
             if (!containerEl || !sentinelEl) return
-
+ 
             untracked(() => {
                 requestAnimationFrame(() => {
                     if (!pagination.canLoadMore() || pagination.isFetchingMoreData()) return;
@@ -42,7 +43,7 @@ export function withAutoFillViewport<T extends PaginatedMetaData, R extends Arra
             })
         })
 
-        return () => cleanupRef.destroy()
+        destroyRef.onDestroy(() => cleanupRef.destroy())
     }
 
     loader.capabilities.add(AUTO_FILL);

@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy, Component, computed, effect, ElementRef, inject, input, model,
   signal, untracked, viewChild,
+  viewChildren,
   WritableSignal
 } from '@angular/core';
 import { Movie, MovieList } from '../../../../core/interfaces/movie/movie.interface';
@@ -44,7 +45,7 @@ export class CardsGridComponent {
   selectedIndex = signal(0)
 
   private readonly viewport = viewChild<ElementRef<HTMLElement>>('viewport')
-  private readonly sentinel = viewChild<ElementRef<HTMLElement>>('sentinel')
+  private readonly sentinels = viewChildren<ElementRef<HTMLElement>>('sentinels')
 
   readonly loader = useDataLoader<MovieList | SerieList, 'results'>('results', this.data).pipe(
     withFilter,
@@ -96,10 +97,10 @@ export class CardsGridComponent {
 
   constructor() {
     if (hasAutoFill(this.loader)) {
-      this.loader.setupAutoFill(this.sentinel)
+      this.loader.setupAutoFill(this.sentinels)
     }
     if (hasInfiniteScroll(this.loader)) {
-      this.loader.setupInfiniteScroll(this.sentinel)
+      this.loader.setupInfiniteScroll(this.sentinels)
     }
   }
 

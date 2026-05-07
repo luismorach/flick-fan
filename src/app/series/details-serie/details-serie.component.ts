@@ -42,20 +42,20 @@ export default class DetailsSerieComponent {
     { initialValue: undefined }
   );
 
-  serie = toSignal(
+  protected serie = toSignal(
     toObservable(this.id_serie).pipe(
       switchMap(id => this.api.getDetailsSerie({ dataId: id }))),
     { initialValue: undefined }
   );
 
-  credits = toSignal(
+  protected credits = toSignal(
     toObservable(this.id_serie).pipe(
       switchMap(id => this.api.getCreditsSerie({ dataId: id }))
     ),
     { initialValue: undefined }
   );
 
-  recomended: Signal<SerieList | undefined> = toSignal(
+  protected recomended: Signal<SerieList | undefined> = toSignal(
     toObservable(this.id_serie).pipe(
       switchMap(id => this.api.getRecomendedSeries({ dataId: id }))
     ),
@@ -70,7 +70,7 @@ export default class DetailsSerieComponent {
   private readonly sinopsysContainer = viewChild<ElementRef<HTMLElement>>('leftPanel')
   private readonly creditsContainer = viewChild<ElementRef<HTMLElement>>('creditsContainer')
   readonly carouselService = inject(CarouselService<MovieList, 'results'>);
-  height = getHeightContainer(this.sinopsysContainer)
+  protected height = getHeightContainer(this.sinopsysContainer)
 
 
   resetScroll = effect(() => {

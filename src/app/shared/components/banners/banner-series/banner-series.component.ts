@@ -13,6 +13,7 @@ import { CarouselService } from '../../../../core/services/carousel/carousel-ser
 import { useDataLoader } from '../../../utils/data-loaders/use-data-loader';
 import { hasPagination, withPagination } from '../../../utils/data-loaders/enhancers/with-pagination';
 import { WithDetails } from '../../../utils/data-loaders/enhancers/with-details';
+import { hasInfiniteScroll, withInfiniteScroll } from '../../../utils/data-loaders/enhancers/with-infinite-scroll';
 
 @Component({
   selector: 'app-banner-series',
@@ -40,12 +41,13 @@ export class BannerSeriesComponent {
   // Dependencies
   readonly carouselService = inject(CarouselService<SerieList, 'results'>);
   readonly loader = useDataLoader<SerieList, 'results'>('results', this.listSeries).pipe(
-    withPagination,
+    withInfiniteScroll,
     WithDetails,
   )
 
   // View Queries
   private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carousel')
+  private readonly sentinels = viewChildren<ElementRef<HTMLElement>>('sentinels')
 
   //computed
   readonly spacingToCenter = computed(() => {
@@ -116,6 +118,9 @@ export class BannerSeriesComponent {
   }
 
   constructor() {
+    if (hasInfiniteScroll(this.loader)) {
+      this.loader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
+    }
     this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.loader)
   }
 

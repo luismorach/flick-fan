@@ -30,7 +30,7 @@
                 }
 
                @if(canLoadMore()){ 
-                    <div appSlideStyle 
+                    <div appSlideStyle #sentinels
                         [index]="loader.data().length" 
                         [carousel]="carouselService"
                         [style.height]="slideHeight()"

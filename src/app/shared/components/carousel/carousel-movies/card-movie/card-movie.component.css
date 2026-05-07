@@ -1,14 +1,36 @@
-
 .card-base-movie {
-  @apply relative shadow-lg bg-black flex flex-col rounded-2xl h-full ;
+  @apply relative shadow-lg bg-[rgba(15,15,15,1)] flex flex-col rounded-2xl h-full;
 }
+.card-base-movie::after{
+  @apply absolute inset-0 pointer-events-none z-10  rounded-2xl hover:rounded-b-none;
+   content: "";
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); /* borde blanco */
+}
+ 
 
 .card-hover-overlay {
-  @apply transition-all duration-500 overflow-hidden absolute bg-black w-full rounded-b-2xl 
-  max-h-0 group-hover:max-h-48 group-hover:p-4 group-hover:pt-2
+  @apply transition-[max-height] duration-500 overflow-hidden absolute bg-[rgba(15,15,15,1)] w-full rounded-b-2xl max-h-0
+  group-hover:max-h-48 z-30  -translate-y-1
+  ;
+  
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
 }
+.card-base-movie:hover .card-hover-overlay {
+  box-shadow: 
+    inset 1px 0 0 rgba(255, 255, 255, 0.08),   /* izquierda */
+    inset -1px 0 0 rgba(255, 255, 255, 0.08),  /* derecha */
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08);  /* abajo */
+    transform: translateY(1px);
+}
+.card-hover-content {
+  @apply p-4 pt-2
+}
+
+
 
 .card-image {
   @apply w-full object-cover object-center;
 }
 
+.glass-panel {}

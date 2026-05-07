@@ -6,7 +6,7 @@
 }
  
 .title{
-  @apply font-racing uppercase text-2xl text-left sm:text-3xl md:text-4xl lg:text-5xl relative 
+  @apply uppercase text-2xl text-left sm:text-3xl md:text-4xl lg:text-5xl relative 
           w-full max-h-48 object-contain object-center line-clamp-2;
 }
 .metadata{
@@ -18,6 +18,6 @@
 }
 
 .buttons{
-  @apply flex justify-start gap-4 font-racing text-lg my-4 opacity-0  h-9 sm:h-10 ;
+  @apply flex justify-start gap-4 text-lg my-4 opacity-0  h-9 sm:h-10 ;
 }
 

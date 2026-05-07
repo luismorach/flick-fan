@@ -3,7 +3,7 @@
     @let item = selectedItem();
       @if(item){
        <section class="px-10 pt-7 pb-4 relative z-10 flex flex-col h-full">
-          <header class="w-full flex flex-col flex-1 overflow-y-auto  my-scroll">
+          <header class="w-full flex flex-col flex-1 overflow-y-auto ">
               <figure class="h-24 flex justify-center">
                 @if(isMovie(item)){
                   <img  [src]="item.imdb_id | autoImage:'logo'" [alt]="item.title"

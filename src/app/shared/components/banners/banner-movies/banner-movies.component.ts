@@ -5,16 +5,17 @@ import {
 } from '@angular/core';
 import { fade } from '../../../animations/animations';
 import { BannerSkeletonComponent } from './banner-skeleton/banner-skeleton.component';
-import { MovieList} from '../../../../core/interfaces/movie/movie.interface';
+import { MovieList } from '../../../../core/interfaces/movie/movie.interface';
 import { CarouselNavigationComponent } from "../../carousel/carousel-navigation/carousel-navigation.component";
 import { BannerDetailComponent } from "./banner-movie-details/banner-movie-details.component";
 import { getKeyTrailer } from '../../../utils/helpers';
 import { FloatTrailerService } from '../../../../core/services/float-trailer/float-trailer.service';
-import { CarouselOptions} from '../../../../core/interfaces/shared/carousel-interface';
+import { CarouselOptions } from '../../../../core/interfaces/shared/carousel-interface';
 import { CarouselService } from '../../../../core/services/carousel/carousel-service';
 import { WithDetails } from '../../../utils/data-loaders/enhancers/with-details';
 import { hasPagination, withPagination } from '../../../utils/data-loaders/enhancers/with-pagination';
 import { useDataLoader } from '../../../utils/data-loaders/use-data-loader';
+import { hasInfiniteScroll, withInfiniteScroll } from '../../../utils/data-loaders/enhancers/with-infinite-scroll';
 
 @Component({
   selector: 'app-banner-movies',
@@ -37,21 +38,13 @@ export default class BannerMoviesComponent {
 
   // View Queries
   private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carousel')
+  private readonly sentinels = viewChildren<ElementRef<HTMLElement>>('sentinels')
 
   readonly loader = useDataLoader<MovieList, 'results'>('results', this.movieList).pipe(
-    withPagination,
+    withInfiniteScroll,
     WithDetails,
   )
 
- /*  readonly currentTrailerKey = computed(() => {
-    if (!this.carouselService.state().currentElement()) return undefined
-    return getKeyTrailer(this.carouselService.state().currentElement().videos)
-  });
-
-  updateVideoKey = effect(() => {
-    this.floatTrailer.setVideoKey(this.currentTrailerKey())
-  })
- */
 
   private carouselOptions: CarouselOptions = {
     requiresEnrichment: true,
@@ -62,10 +55,13 @@ export default class BannerMoviesComponent {
 
 
   constructor() {
+    if (hasInfiniteScroll(this.loader)) {
+      this.loader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
+    }
     this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.loader)
   }
-  playTrailer(){
-    this.floatTrailer.register(this,this.carouselService.state().currentElement)
+  playTrailer() {
+    this.floatTrailer.register(this, this.carouselService.state().currentElement)
     //this.floatTrailer.playTest(this.carouselService.state().currentElement)
   }
 

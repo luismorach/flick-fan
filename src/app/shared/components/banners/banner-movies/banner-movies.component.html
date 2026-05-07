@@ -6,7 +6,7 @@
             
             <div #carousel class="carousel-container">
                 @for(movie of loader.data();track $index;let i=$index){
-                   <div class="carousel-item min-h-screen w-screen" [attr.data-id]="movie.id" #slide>
+                   <div class="carousel-item  min-h-screen w-full" [attr.data-id]="movie.id" #slide>
                         <app-banner-movie-details @fade
                             [movie]="movie" 
                             [cardIndex]="i"
@@ -17,7 +17,7 @@
                 }
 
                 @if(canLoadMore()){
-                    <div class="carousel-item w-screen h-full" @fade>
+                    <div class="carousel-item w-screen h-full" @fade #sentinels>
                         <app-banner-skeleton></app-banner-skeleton>
                     </div>
                 }

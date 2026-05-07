@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, input, viewChild,
+  viewChildren,
 } from '@angular/core';
 import { fade } from '../../../animations/animations';
 import { CardSerieComponent } from './card-serie/card-serie.component';
@@ -13,6 +14,7 @@ import { CarouselService } from '../../../../core/services/carousel/carousel-ser
 import { hasPagination, withPagination } from '../../../utils/data-loaders/enhancers/with-pagination';
 import { useDataLoader } from '../../../utils/data-loaders/use-data-loader';
 import { WithDetails } from '../../../utils/data-loaders/enhancers/with-details';
+import { hasInfiniteScroll, withInfiniteScroll } from '../../../utils/data-loaders/enhancers/with-infinite-scroll';
 
 @Component({
   selector: 'app-carousel-series',
@@ -35,12 +37,14 @@ export class CarouselSeriesComponent {
   readonly carouselService = inject(CarouselService<SerieList, 'results'>)
   readonly slideExpansion = useSlideExpansion()
   readonly loader = useDataLoader<SerieList, 'results'>('results', this.seriesList).pipe(
-    withPagination,
+    withInfiniteScroll,
     WithDetails,
   )
 
+
   // Configuration
   private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carousel')
+  private readonly sentinels = viewChildren<ElementRef<HTMLElement>>('sentinels')
 
   private carouselOptions: CarouselOptions = {
     requiresEnrichment: false,
@@ -63,12 +67,15 @@ export class CarouselSeriesComponent {
   }
 
   constructor() {
+    if (hasInfiniteScroll(this.loader)) {
+      this.loader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
+    }
     this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.loader)
   }
 
   onSlideExpandHover(index: number) {
     const slide = this.carouselContainer()?.nativeElement.children[index] as HTMLElement
-    console.log('expaddiennddo',slide)
+    console.log('expaddiennddo', slide)
 
     if (!slide) return
 

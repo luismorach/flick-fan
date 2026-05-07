@@ -5,3 +5,4 @@
 .show-overflow:not(.show-overflow:has(.card-base:hover)){
   @apply transition-all duration-300;
 }
+

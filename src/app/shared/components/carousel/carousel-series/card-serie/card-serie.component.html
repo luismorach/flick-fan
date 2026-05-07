@@ -15,8 +15,7 @@
             class="card-image" loading="lazy" [alt]="serie().name">
         
         <figcaption class="overlay-serie">
-            <img class="title" [src]="serie().external_ids?.imdb_id | autoImage:'logo'" 
-                        [alt]="serie().name">
+            <img class="title" [src]="serie().external_ids?.imdb_id | autoImage:'logo'"  [alt]="serie().name">
 
             <div class="text-lg font-racing py-4 pb-16 flex gap-6">
                 <a [routerLink]="['/details-serie/',serie().id]" class="btn-primary px-6" >
@@ -29,7 +28,7 @@
                 </div>
             </div>
         </figcaption>
-        <ng-template #portal cdkPortalOutlet ></ng-template>
+        <ng-template cdkPortalOutlet ></ng-template>
     </figure>
 
     @if(serie().vote_average){

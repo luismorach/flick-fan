@@ -18,6 +18,7 @@ import { CarouselService } from '../../../../core/services/carousel/carousel-ser
 import { hasPagination, withPagination } from '../../../utils/data-loaders/enhancers/with-pagination';
 import { canLoadDetails, WithDetails } from '../../../utils/data-loaders/enhancers/with-details';
 import { canFilter, withFilter } from '../../../utils/data-loaders/enhancers/with-filter';
+import { hasInfiniteScroll, withInfiniteScroll } from '../../../utils/data-loaders/enhancers/with-infinite-scroll';
 
 @Component({
   selector: 'app-carousel-movies',
@@ -38,24 +39,16 @@ export class CarouselMoviesComponent {
   readonly zIndex = input<number>(20)
 
   // Dependencies
-
   readonly slideExpansion = useSlideExpansion()
-  readonly loader = useDataLoader<MovieList, 'results'>('results', this.movieList).pipe(
-    withPagination,
-    WithDetails,
-    withFilter
-  )
-
-  x = effect(() => {
-    console.log('current element', this.carouselService.state().currentElement())
-
-  })
-
   readonly carouselService = inject(CarouselService<MovieList, 'results'>);
+  readonly loader = useDataLoader<MovieList, 'results'>('results', this.movieList).pipe(
+    withInfiniteScroll,
+    WithDetails,
+  )
 
   // View Queries
   private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carousel')
-  private readonly slides = viewChildren<ElementRef<HTMLElement>>('slide')
+  private readonly sentinels = viewChildren<ElementRef<HTMLElement>>('sentinels')
 
   // State
   readonly carouselOptions: CarouselOptions = {
@@ -70,7 +63,7 @@ export class CarouselMoviesComponent {
         398: { slidesPerView: 1.5 },
         508: { slidesPerView: 2, },
         748: { slidesPerView: 3, peek: 32 },
-        988: { slidesPerView: 4, peek: 44 },
+        988: { slidesPerView: 4, peek: 44 }, 
         1388: { slidesPerView: 5 }
       }
     }
@@ -84,30 +77,14 @@ export class CarouselMoviesComponent {
     return currentMovies.map((_, i) => this.slideExpansion.getCardOriginClass(i, slidesPerView));
   });
 
-  /* x = effect(() => {
-    this.loaderfiltrado.isInitialized()
-    untracked(() => {
-      const selectedGenreIds: number[] = []; // Acción y Aventura
-      let genrePredicate
-      if (selectedGenreIds.length === 0) {
-        genrePredicate = null
-      } else {
-        genrePredicate = (movie: Movie) => {
-          const genres = movie.genre_ids;
-          return selectedGenreIds.some(id => genres.includes(id));
-        };
-      }
-
-      this.loaderfiltrado.setFilterPredicate(genrePredicate)
-      console.log('filteredData', this.loaderfiltrado.filteredData())
-    })
-
-  }) */
-
   canLoadMore() {
     return hasPagination(this.loader) && this.loader.canLoadMore()
   }
+
   constructor() {
+    if (hasInfiniteScroll(this.loader)) {
+      this.loader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
+    }
     this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.loader)
   }
 

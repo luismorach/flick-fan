@@ -43,8 +43,10 @@ export function useCarouselcontroller<T extends Object, R extends keyof T>(
     const setupTraslate = () => {
         effect(() => {
             const position = currentPosition()
-            console.log('moviendo carrusel', position, activeIndex())
+            console.log('moviendo carrusel', position, activeIndex(), slidesInfo.layout().slideMainAxisSizeWithGap
+        ,slidesInfo.layout().slideMainAxisSize)
             scrollToCurrentPosition()
+            //smoothScrollTo()
         })
     }
     setupTraslate()
@@ -152,6 +154,30 @@ export function useCarouselcontroller<T extends Object, R extends keyof T>(
     const resetPosition = () => {
         console.log('reseteando posicion')
         scrollToCurrentPosition('instant', 0)
+
+    }
+
+    const smoothScrollTo = (duration = 400) => {
+        const startTime = performance.now();
+        const containerEl = containerRef();
+
+        function animate(currentTime: any) {
+            if (!containerEl) return;
+
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // easeInOut
+            const ease = 0.5 - Math.cos(progress * Math.PI) / 2;
+
+            containerEl.scrollLeft = currentPosition() * ease;
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        }
+
+        requestAnimationFrame(animate);
     }
 
     return {

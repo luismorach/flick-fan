@@ -5,25 +5,25 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class AutoImagePipe implements PipeTransform {
 
-  transform(path: string | undefined, type: String) {
+  transform(path: string | undefined, type: string, size: string = 'original'): string {
     switch (type) {
-      case 'backdrop-wide': return this.getWideImage(path);
-      case 'backdrop-square': return this.getSquareImage(path);
-      case 'poster': return this.getTallImage(path);
-      case 'logo':return this.getLogoTitle(path)
-      default: return this.getTallImage(path);
+      case 'backdrop-wide': return this.getWideImage(size, path);
+      case 'backdrop-square': return this.getSquareImage(size, path);
+      case 'poster': return this.getTallImage(size, path);
+      case 'logo': return this.getLogoTitle(path)
+      default: return this.getTallImage(size,path);
     }
   }
-  getWideImage(path: string | undefined) {
-    return (path?.trim) ? `http://image.tmdb.org/t/p/original${path}` : 'assets/default-horizontal.png'
+  getWideImage(size: string, path: string | undefined) {
+    return (path?.trim) ? `https://image.tmdb.org/t/p/${size}${path}` : 'assets/default-horizontal.png'
   }
 
-  getTallImage(path: string | undefined) {
-    return (path?.trim()) ? `http://image.tmdb.org/t/p/original${path}` : 'assets/default.png'
+  getTallImage(size: string, path: string | undefined) {
+    return (path?.trim()) ? `https://image.tmdb.org/t/p/${size}${path}` : 'assets/default.png'
   }
 
-  getSquareImage(path: string | undefined) {
-    return (path?.trim()) ? `http://image.tmdb.org/t/p/original${path}` : 'assets/default-cuadrada.png'
+  getSquareImage(size: string, path: string | undefined) {
+    return (path?.trim()) ? `https://image.tmdb.org/t/p/${size}${path}` : 'assets/default-cuadrada.png'
   }
 
   getLogoTitle(path: string | undefined) {

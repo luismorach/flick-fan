@@ -57,9 +57,11 @@ export function useResizeObserver(
             return;
         }
 
-        const containerStyle = getComputedStyle(containerEl)
+         const containerStyle = getComputedStyle(containerEl)
         const containerWidth = parseFloat(containerStyle.width) || 0
-        const containerHeight = parseFloat(containerStyle.height) || 0
+        const containerHeight = parseFloat(containerStyle.height) || 0 
+       /*   const containerWidth = containerEl.getBoundingClientRect().width || 0
+        const containerHeight = containerEl.getBoundingClientRect().height || 0 */
         const windowsWidth = window.innerWidth
 
         console.log('containerWidth',containerWidth)

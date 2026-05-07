@@ -1,6 +1,6 @@
 @if (loader.hasData()) {
     <main class=" w-full mb-16">
-        <header class="mb-6" [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize">
+        <header class="mb-6" [style.padding-left.px]="carouselService.slidesInfo.layout().edgeOffset">
              <h2 class="text-title-carousel">
                  <span class="w-1 h-6 bg-[#f20d0d] rounded-full"></span> 
                 {{title()}}</h2>
@@ -15,12 +15,12 @@
             
             <div cdkScrollable #carousel class="carousel-container"
                 [style.gap.px]="carouselService.slidesInfo.layout().spaceBetween"
-                [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize" 
-                [style.padding-right.px]="carouselService.slidesInfo.layout().peekSize ">
+                [style.padding-left.px]="carouselService.slidesInfo.layout().edgeOffset" 
+                [style.padding-right.px]="carouselService.slidesInfo.layout().edgeOffset ">
 
                 @for(serie of loader.data(); track serie.id; let i = $index){
-                    <div class="carousel-item" #slide>
-                        <app-card-serie @fade
+                    <div class="carousel-item" @fade>
+                        <app-card-serie 
                             [slideInfo]="carouselService.slidesInfo" 
                             [serie]="serie"
                             [activeIndex]="carouselService.state().activeIndex()"
@@ -33,7 +33,7 @@
                 
                 @if(canLoadMore()){
                     @for(_ of carouselService.slidesInfo.skeletonSlideIndexes(); track $index) {
-                        <div class="carousel-item w-full"  @fade
+                        <div class="carousel-item w-full"  @fade #sentinels
                         [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize"
                         [style.height.px]="carouselService.slidesInfo.layout().slideMainAxisSize * 1.5">
                             <app-carousel-series-skeleton 

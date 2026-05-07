@@ -1,4 +1,4 @@
-import { effect, ElementRef, Signal } from "@angular/core";
+import { DestroyRef, effect, ElementRef, inject, Signal } from "@angular/core";
 import { PaginatedMetaData } from "../../../../core/interfaces/shared/generic.interface";
 import { ArrayKey, AnyEnhancedLoader, LoaderCore, INFINITE_SCROLL, LoaderWithPagination, LoaderWithInfiniteScroll, PAGINATION } from "../types";
 import { withPagination } from "./with-pagination";
@@ -8,16 +8,18 @@ export function withInfiniteScroll<T extends PaginatedMetaData, R extends ArrayK
 
     const pagination = withPagination(loader)
 
-    const setupInfiniteScroll = (sentinel: Signal<ElementRef<HTMLElement> | undefined>,
+    const setupInfiniteScroll = (sentinel: Signal<readonly ElementRef<HTMLElement>[] | undefined>,
         container?: Signal<ElementRef<HTMLElement> | undefined>) => {
 
         let io: IntersectionObserver | undefined = undefined
+        const destroyRef = inject(DestroyRef);
 
         const cleanupRef = effect((onCleanup) => {
-            const containerEl = container ? container()?.nativeElement : null
-            const sentinelEl = sentinel()?.nativeElement
+            const containerSignal = container?.();
+            const containerEl = containerSignal?.nativeElement ?? null;
+            const sentinelEl = sentinel()?.[0]?.nativeElement
 
-            if (containerEl === undefined || !sentinelEl) {
+            if (!sentinelEl) {
                 io?.disconnect();
                 io = undefined;
                 return;
@@ -26,18 +28,18 @@ export function withInfiniteScroll<T extends PaginatedMetaData, R extends ArrayK
             io?.disconnect()
             io = createIntersectionObserver(containerEl, pagination)
             io.observe(sentinelEl)
-
+            
             onCleanup(() => {
                 io?.disconnect()
                 io = undefined
             })
         })
 
-        return () => {
+        destroyRef.onDestroy(() => {
             cleanupRef.destroy()
             io?.disconnect()
             io = undefined
-        }
+        })
     }
 
     pagination.capabilities.add(INFINITE_SCROLL);

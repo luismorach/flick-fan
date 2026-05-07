@@ -1,8 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Racing Sans One';
+  
+  src: url('../src/assets/fonts/racing-sans-one/racing-sans-one-.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 body,
 html {
@@ -10,24 +18,28 @@ html {
   background-color: #0f0f0f;
 }
 
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgb(255,255,255,.5) transparent;
+@supports selector(::-webkit-scrollbar ) {
+  ::-webkit-scrollbar {
+    width: 7px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent
+  }
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
+ @supports (scrollbar-width: thin) and (not selector(::-webkit-scrollbar)) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.3) transparent;
+  }
+} 
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
 
-::-webkit-scrollbar-thumb {
-  background: rgb(255,255,255,.5);
-  border-radius: 8px;
-}
 
 .gradient {
   mask-image: linear-gradient(black 80%, transparent)
@@ -47,7 +59,7 @@ html {
 /* -------------------- CARDS -------------------- */
 
 .card-base {
-  @apply relative z-0  transition-transform duration-300 hover:scale-[1.15] hover:z-10 will-change-transform;
+  @apply relative z-0  transition-transform duration-300 hover:scale-150 hover:z-10 will-change-transform;
   
 }
 .card-base.is-active{
@@ -59,7 +71,7 @@ html {
 }
 
 .card-base-revert-scale{
-  @apply group-hover:scale-[0.869565]
+  @apply group-hover:scale-[0.85] origin-left
 }
 
 /* -------------------- BOTONES -------------------- */
@@ -134,14 +146,21 @@ html {
 .frame-container{
   @apply w-screen min-h-screen relative flex justify-center items-center box-border
 }
+
 .player-frame {
-  @apply relative shadow-xl z-10 w-full aspect-video pointer-events-auto ;
-}
-.player-frame-transition{
-  @apply transition-all duration-300 ease-in-out
+  @apply relative shadow-xl z-10 pointer-events-auto transition-all duration-300 ease-in-out;
 }
 
-.player-frame--normal {
+.player-float{
+  @apply w-full aspect-video rounded-lg overflow-hidden ;
+}
+
+.player-embed{
+  @apply w-full h-full
+}
+
+
+.player-frame--normal { 
   @apply inset-0 m-auto w-[70vw];
 }
 
@@ -211,7 +230,8 @@ app-trailer youtube-player>div>iframe {
 }
 
 .carousel-container{
-    @apply flex overflow-auto w-auto h-full transition-transform duration-500 ease-in-out;
+    @apply flex overflow-auto w-auto h-full ;
+    will-change: transform;           /* ← clave para rendimiento */
     scrollbar-width: none
 }
 

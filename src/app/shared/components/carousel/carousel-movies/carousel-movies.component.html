@@ -1,6 +1,6 @@
 @if(loader.hasData()){
     <main class=" w-full mb-16">
-        <header class="mb-6 " [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize">
+        <header class="mb-6 " [style.padding-left.px]="carouselService.slidesInfo.layout().edgeOffset">
             <h2 class="text-title-carousel">
                  <span class="w-1 h-6 bg-[#f20d0d] rounded-full"></span> 
                 {{title()}}</h2>
@@ -16,22 +16,22 @@
            
             <div cdkScrollable class="carousel-container show-overflow" #carousel
                 [style.gap.px]="carouselService.slidesInfo.layout().spaceBetween"
-                [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize"
-                [style.padding-right.px]="carouselService.slidesInfo.layout().peekSize">
+                [style.padding-left.px]="carouselService.slidesInfo.layout().edgeOffset"
+                [style.padding-right.px]="carouselService.slidesInfo.layout().edgeOffset">
 
                 @for(movie of loader.data();track movie.id; let i = $index;){
                     <div [ngClass]="cardClasses()[i]"
                         [class.pointer-events-none]="!slideExpansion.canExpand(
                             carouselService.state().activeIndex(),i,carouselService.slidesInfo.layout().slidesPerView)"
                         class="carousel-item card-base h-full" 
-                        [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize" @fade #slide>
+                        [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize" @fade>
                         <app-card-movie [movie]="movie"> </app-card-movie>
                     </div>
                 }
 
                 @if(canLoadMore()){
                     @for(_ of carouselService.slidesInfo.skeletonSlideIndexes(); track $index) {
-                        <div class="carousel-item" 
+                        <div class="carousel-item" #sentinels
                             [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize"  @fade>
                             <app-carousel-movies-skeleton 
                                 [hasHeader]="false" 

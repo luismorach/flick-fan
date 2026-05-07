@@ -45,7 +45,7 @@
 
           @if(canLoadMore()){
             @for(_ of slidesInfo.skeletonSlideIndexes();track $index;){
-              <div class=" animate-pulse card" [style.width.px]="slidesInfo.layout().slideMainAxisSize"  #sentinel></div>
+              <div class=" animate-pulse card" [style.width.px]="slidesInfo.layout().slideMainAxisSize"  #sentinels></div>
             }
           }
       </div>
