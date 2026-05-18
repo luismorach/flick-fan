@@ -36,6 +36,7 @@ export class CarouselMoviesComponent {
   // Inputs
   readonly movieList = input.required<MovieList | undefined>()
   readonly title = input.required<string>()
+  readonly subtitle = input<string>()
   readonly zIndex = input<number>(20)
 
   // Dependencies

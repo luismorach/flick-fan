@@ -11,23 +11,23 @@
 }
 
 .slide.is-active{
-    @apply scale-[2] z-20;
+    @apply scale-[2] z-20 opacity-100;
 }
 .slide.is-near{
-    @apply scale-150 z-10
+    @apply scale-150 z-10 opacity-100
 }
 .slide.is-far.prev-vertical{
-    @apply translate-y-[40%]
+    @apply translate-y-[40%] opacity-100;
 }
 .slide.is-far.next-vertical{
-    @apply -translate-y-[40%]
+    @apply -translate-y-[40%] opacity-100;
 }
 
 .slide.is-far.prev-horizontal{
-    @apply translate-x-[40%]
+    @apply translate-x-[40%] opacity-100;
 }
 .slide.is-far.next-horizontal{
-    @apply -translate-x-[40%]
+    @apply -translate-x-[40%] opacity-100;
 }
 
 .slide.is-active .img-container{

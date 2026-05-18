@@ -1,4 +1,4 @@
-import { Component, computed, effect, ElementRef, inject, input, output, untracked, viewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, input, output, viewChild } from '@angular/core';
 import { IconComponent } from '../../../../icon/icon.component';
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { RatingComponent } from '../../../rating/rating.component';
@@ -7,8 +7,8 @@ import { AutoImagePipe } from '../../../../pipes/autoimage/auto-image.pipe';
 import { MinutesToTimePipe } from '../../../../pipes/minutes-to-time/minutes-to-time.pipe';
 import { RouterLink } from '@angular/router';
 import { getKeyTrailer } from '../../../../utils/helpers';
-import { FloatTrailerService } from '../../../../../core/services/float-trailer/float-trailer.service';
-import { style, animate, AnimationBuilder } from '@angular/animations';
+import { style} from '@angular/animations';
+import { AnimationsService } from '../../../../../core/services/animations/animations.service';
 
 @Component({
   selector: 'app-banner-movie-details',
@@ -23,8 +23,7 @@ export class BannerDetailComponent {
   readonly cardIndex = input<number>()
   readonly onPlayTailer = output<void>()
 
-  private readonly floatTrailer = inject(FloatTrailerService);
-  private readonly builder = inject(AnimationBuilder);
+  private readonly animationsService = inject(AnimationsService);
 
   private readonly metadata = viewChild.required<ElementRef<HTMLElement>>('metadata')
   private readonly overview = viewChild.required<ElementRef<HTMLElement>>('overview')
@@ -39,36 +38,38 @@ export class BannerDetailComponent {
       this.animateIn()
   })
 
-  constructor(){
-   // this.floatTrailer.setupVideo(this.movie)
-  }
   playTrailer(): void {
     this.onPlayTailer.emit()
-    //this.floatTrailer.playTest(this.movie)
-    //this.floatTrailer.playFloatTrailer(this.currentTrailerKey())
   }
 
   private animateIn() {
-    let animation = this.builder.build([
+    const elements = [
+      this.metadata().nativeElement,
+      this.overview().nativeElement,
+      this.buttons().nativeElement
+    ];
+    this.animationsService.resetAnimations(elements);
+
+    // Metadata
+    this.animationsService.playAnimation(
+      this.metadata().nativeElement,
       style({ opacity: 0, transform: 'translateX(-60%)' }),
-      animate('300ms 300ms ease', style({ opacity: 1, transform: 'translateX(0)' }))
-    ]);
-    let player = animation.create(this.metadata().nativeElement);
-    player.play();
+      '300ms 300ms ease'
+    );
 
-    animation = this.builder.build([
+    // Overview
+    this.animationsService.playAnimation(
+      this.overview().nativeElement,
       style({ opacity: 0, transform: 'translateY(100%)' }),
-      animate('500ms 500ms ease', style({ opacity: 1, transform: 'translateX(0)' }))
-    ]);
-    player = animation.create(this.overview().nativeElement);
-    player.play();
+      '500ms 500ms ease'
+    );
 
-    animation = this.builder.build([
+    // Buttons
+    this.animationsService.playAnimation(
+      this.buttons().nativeElement,
       style({ opacity: 0, transform: 'translateY(3%)' }),
-      animate('700ms 700ms ease', style({ opacity: 1, transform: 'translateX(0)' }))
-    ]);
-    player = animation.create(this.buttons().nativeElement);
-    player.play();
-
+      '700ms 700ms ease'
+    );
   }
-}
+
+ }

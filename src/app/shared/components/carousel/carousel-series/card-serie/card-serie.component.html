@@ -5,14 +5,18 @@
     [style.height.px]=" slideInfo().layout().slideMainAxisSize * 1.5" >
 
     <figure class="h-full absolute w-full" #posterImage>
-        <img [ngSrc]="serie().poster_path | autoImage : 'poster'" fill 
-            class="card-image" loading="lazy" [alt]="serie().name">
+        <img [ngSrc]="serie().poster_path" ngSrcset="500w, 780w, 1280w, 1920w" fill loading="lazy"
+            [loaderParams]="{type:'poster'}"  class="card-image"  [alt]="serie().name"
+             sizes="(max-width: 398px) 100vw, (max-width: 508px) 67vw, (max-width: 748px) 50vw, 
+            (max-width: 988px) 33vw, (max-width: 1388px) 25vw, 20vw">
     </figure>
 
     <figure class="w-full h-full relative opacity-0" #backdropImage>
         
-        <img [ngSrc]="serie().backdrop_path | autoImage : 'backdrop-wide'" fill 
-            class="card-image" loading="lazy" [alt]="serie().name">
+        <img [ngSrc]="serie().backdrop_path" ngSrcset="500w, 780w, 1280w, 1920w, 3840w" fill 
+        sizes="(max-width: 398px) 100vw, (max-width: 508px) 67vw, (max-width: 748px) 50vw, 
+            (max-width: 988px) 33vw, (max-width: 1388px) 25vw, 20vw"
+            class="card-image" loading="lazy" [alt]="serie().name"> 
         
         <figcaption class="overlay-serie">
             <img class="title" [src]="serie().external_ids?.imdb_id | autoImage:'logo'"  [alt]="serie().name">

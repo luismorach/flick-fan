@@ -1,27 +1,22 @@
-import { DecimalPipe, NgClass } from '@angular/common';
-import { Component, input, Input } from '@angular/core';
+import { DecimalPipe} from '@angular/common';
+import { Component, input} from '@angular/core';
+import { IconComponent } from "../../icon/icon.component";
 
 @Component({
   selector: 'app-rating',
-  imports: [NgClass,DecimalPipe],
+  imports: [DecimalPipe, IconComponent],
   templateUrl: './rating.component.html',
   styleUrl: './rating.component.css'
 })
 export class RatingComponent {
-  rating= input.required<number | undefined> ()
-  
-  calculatePercent = (index: number) => {
-    const base = index * 2;
-    const diff = (this.rating() ?? 0) - base;
+  rating = input.required<number | undefined>()
 
-    if (diff >= 2) {
-      return { 'from-100% to-100%': true };
-    } else if (diff <= 0) {
-      return { 'from-0% to-0%': true };
-    } else {
-      const percent = ((diff / 2) * 100).toFixed(2);
-      return { [`from-[${percent}%] to-[${percent}%]`]: true };
-    }
+  calculatePercent = (index: number) : number => {
+    // Ejemplo: si la calificación es 3.5, la estrella en index 3 (la cuarta) devuelve 50
+    // Aquí pones tu lógica actual, pero que retorne el número limpio.
+    const base = index * 2;
+    const score = (this.rating() ?? 0) - base;
+    return score >= 2 ? 100 : score <= 0 ? 0 : Number(((score / 2) * 100).toFixed(2));
   }
-  
+
 }

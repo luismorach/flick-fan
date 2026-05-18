@@ -1,19 +1,19 @@
 <main appBackgroundNavScroll>
     <app-banner-movies [movieList]="nowPlaying()"></app-banner-movies>
 
-   <!--  <app-carousel-movies [movieList]="popularMovies()" title="Películas populares" [zIndex]="3">
+    <app-carousel-movies [movieList]="popularMovies()" title="Películas populares" subtitle="lo más esperado" [zIndex]="3">
     </app-carousel-movies>
 
-    <app-carousel-movies [movieList]="upcomingMovies()" title="Películas recientes" [zIndex]="2">
+    <app-carousel-movies [movieList]="upcomingMovies()" title="Películas recientes" subtitle="lo más nuevo" [zIndex]="2">
     </app-carousel-movies>
 
     <app-banner-series [listSeries]="airingToday()" @fade>
     </app-banner-series>
 
-    <app-carousel-series [seriesList]="onTheAir()" title="Series al aire" @fade>
+    <app-carousel-series [seriesList]="onTheAir()" title="Series al aire" subtitle="en emisión" @fade>
     </app-carousel-series>
 
-    <app-carousel-series [seriesList]="popularSeries()" title="Series populares" @fade>
-    </app-carousel-series> -->
+    <app-carousel-series [seriesList]="popularSeries()" title="Series populares" subtitle="lo más esperado" @fade>
+    </app-carousel-series>
 
 </main>

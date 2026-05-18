@@ -1,58 +1,53 @@
 @if(loader.hasData()){
-    <main class="w-full mb-24 relative min-h-screen grid items-end grid-cols-1 
+<main class="w-full mb-24 relative min-h-screen grid items-end grid-cols-1 
     [grid-template-areas:'info''carousel'] md:grid-cols-2 md:[grid-template-areas:'carousel_info'] 
-    lg:grid-cols-3 lg:[grid-template-areas:'carousel_info_info']" >
-        
-        <section class=" relative overflow-hidden z-20 md:px-8  [grid-area:carousel] mx-auto w-full"
-            [style.max-width]="isVertical() ? 'none' : '500px'"
-            [style.height]="viewportHeight()">
-           <app-carousel-navigation [carouselService]="carouselService"> </app-carousel-navigation>
+    lg:grid-cols-3 lg:[grid-template-areas:'carousel_info_info']">
 
-            <div cdkScrollable class="carousel-container h-full w-full" #carousel 
-                [class.flex-col]="carouselService.slidesInfo.direction() === 'vertical'"
-                [style.padding]="spacingToCenter()">
-                
-                @for(serie of loader.data();track serie.id;let i=$index;){
-                    <div appSlideStyle [attr.data-id]="serie.id"
-                        [index]="i" 
-                        [carousel]="carouselService"
-                        [style.height]="slideHeight()"
-                        [style.width]="slideWidth()"
-                        [style.aspect-ratio]="isVertical() ? '16 / 9': '9 / 16'"
-                        class="carousel-item slide" #slide>
+    <section class=" relative overflow-hidden z-20 md:px-8  [grid-area:carousel] mx-auto w-full"
+        [style.max-width]="isVertical() ? 'none' : '500px'" [style.height]="viewportHeight()">
+        <app-carousel-navigation [carouselService]="carouselService"> </app-carousel-navigation>
 
-                        <figure class="img-container">
-                            <img [ngSrc]="serie.backdrop_path | autoImage:'backdrop-wide'" 
-                            [alt]="serie.name" fill #img loading="lazy"
-                                class="w-full h-full object-cover object-center rounded-md ">
-                        </figure>
-                    </div>
-                }
+        <div cdkScrollable class="carousel-container h-full w-full" #carousel
+            [class.flex-col]="carouselService.slidesInfo.direction() === 'vertical'"
+            [style.padding]="spacingToCenter()">
 
-               @if(canLoadMore()){ 
-                    <div appSlideStyle #sentinels
-                        [index]="loader.data().length" 
-                        [carousel]="carouselService"
-                        [style.height]="slideHeight()"
-                        [style.width]="slideWidth()"
-                        [style.aspect-ratio]="isVertical() ? '16 / 9': '9 / 16'"
-                        class="carousel-item animate-pulse slide">
-                    </div> 
-                }
+            @for(serie of loader.data();track serie.id;let i=$index;){
+            <div appSlideStyle [attr.data-id]="serie.id" [index]="i" [carousel]="carouselService"
+                [style.height]="slideHeight()" [style.width]="slideWidth()"
+                [style.aspect-ratio]="isVertical() ? '16 / 9': '9 / 16'" class="carousel-item slide opacity-0" #slide>
+
+                <figure class="img-container">
+                    <img [ngSrc]="serie.backdrop_path" ngSrcset="500w, 780w, 1280w, 1920w, 3840w"
+                        fill [loaderParams]="{type:'backdrop'}" 
+                        sizes="(max-width: 768px) 55vw, 20vw" 
+                        [alt]="serie.name" fill #img loading="lazy"
+                        class="w-full h-full object-cover object-center rounded-md ">
+                </figure>
             </div>
-        </section>
+            }
 
-       @if(carouselService.state().isAtSkeleton()){
-            <app-skeleton mode="overlay"></app-skeleton>
-        }@else{
-            <figure class="w-full h-screen absolute gradient-top">
-                <img [ngSrc]="carouselService.state().currentElement().backdrop_path|autoImage:'backdrop-square'" fill
-                priority [alt]="carouselService.state().currentElement().name"
-                class="w-full h-full object-cover object-center gradient-top">
-                <div class="overlay"></div>
-            </figure>
+            @if(canLoadMore()){
+            <div appSlideStyle #sentinels [index]="loader.data().length" [carousel]="carouselService"
+                [style.height]="slideHeight()" [style.width]="slideWidth()"
+                [style.aspect-ratio]="isVertical() ? '16 / 9': '9 / 16'" class="carousel-item animate-pulse slide">
+            </div>
+            }
+        </div>
+    </section>
 
-            <app-banner-details class="[grid-area:info]" [serie]="carouselService.state().currentElement()"></app-banner-details>
-        }
-    </main>
+    @if(carouselService.state().isAtSkeleton()){
+    <app-skeleton mode="overlay"></app-skeleton>
+    }@else{
+    <figure class="w-full h-screen absolute gradient-top">
+        <img [ngSrc]="carouselService.state().currentElement().backdrop_path" ngSrcset="500w, 780w, 1280w, 1920w, 3840w"
+                        fill [loaderParams]="{type:'backdrop'}" sizes="100vw" fill priority
+            [alt]="carouselService.state().currentElement().name"
+            class="w-full h-full object-cover object-center gradient-top">
+        <div class="overlay"></div>
+    </figure>
+
+    <app-banner-details class="[grid-area:info]"
+        [serie]="carouselService.state().currentElement()"></app-banner-details>
+    }
+</main>
 }

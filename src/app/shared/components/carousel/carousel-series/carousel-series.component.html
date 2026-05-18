@@ -1,9 +1,8 @@
 @if (loader.hasData()) {
     <main class=" w-full mb-16">
         <header class="mb-6" [style.padding-left.px]="carouselService.slidesInfo.layout().edgeOffset">
-             <h2 class="text-title-carousel">
-                 <span class="w-1 h-6 bg-[#f20d0d] rounded-full"></span> 
-                {{title()}}</h2>
+            <span class="text-subtitle-carousel">{{subtitle()}}</span>
+             <h2 class="text-title-carousel">{{title()}}</h2>
         </header>
 
         <section 

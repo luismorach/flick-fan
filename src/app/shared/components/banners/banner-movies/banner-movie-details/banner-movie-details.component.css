@@ -6,18 +6,19 @@
 }
  
 .title{
-  @apply uppercase text-2xl text-left sm:text-3xl md:text-4xl lg:text-5xl relative 
-          w-full max-h-48 object-contain object-center line-clamp-2;
+  @apply uppercase tracking-tighter text-surface font-black text-3xl  sm:text-4xl md:text-5xl lg:text-6xl 
+  relative text-left w-full max-h-48 object-contain object-center line-clamp-2;
 }
 .metadata{
   @apply opacity-0
 }
 
 .overview{
-  @apply text-gray-300 pt-2 text-justify text-sm sm:text-base h-full line-clamp-5 opacity-0;
+  @apply text-surface/80 pt-2 text-justify text-sm sm:text-base h-full line-clamp-5 opacity-0;
 }
 
 .buttons{
-  @apply flex justify-start gap-4 text-lg my-4 opacity-0  h-9 sm:h-10 ;
+  @apply flex justify-start gap-4 text-lg my-4 opacity-0  h-9 sm:h-11 ;
 }
 
+ 

@@ -119,7 +119,7 @@ export class FloatTrailerService {
             this.attachedRef?.instance.hasError.set(true)
           } else {
             this.attachedRef?.instance.hasError.set(false)
-            this.setVideoKey(keyTrailer)
+            this.videoKey.set(keyTrailer)
             this.attachedRef.instance.videoKey = this.videoKey
             this.attachedRef.instance.mode.set('float')
             this.setupBackdropInteraction()
@@ -218,11 +218,6 @@ export class FloatTrailerService {
     backdrop.classList.toggle(BACKDROP_HIDDEN, isMinimized);
   }
 
-  setVideoKey(videoKey: string | undefined): void {
-    if (!videoKey?.trim()) return;
-    this.videoKey.set(videoKey)
-  }
-
   hideFloatTrailer(): void {
     if (!this.overlayRef) return;
 
@@ -233,4 +228,9 @@ export class FloatTrailerService {
     this.currentEffect?.destroy()
     this.currentOwner=undefined
   }
+
+  hasTrailer(): boolean {
+    return this.videoKey() !== '';
+  }
+  
 }

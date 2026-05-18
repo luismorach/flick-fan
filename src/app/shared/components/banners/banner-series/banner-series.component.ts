@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, input
 import { NgOptimizedImage } from '@angular/common';
 import { SkeletonComponent } from './skeleton/skeleton.component';
 import { SerieList, Serie } from '../../../../core/interfaces/serie/serie.interface';
-import { AutoImagePipe } from '../../../pipes/autoimage/auto-image.pipe';
 import { CarouselNavigationComponent } from "../../carousel/carousel-navigation/carousel-navigation.component";
 import { fade } from '../../../animations/animations';
 import { SlideStyleDirective } from "../../../../core/directives/slide-style/slide-style.directive";
@@ -20,7 +19,6 @@ import { hasInfiniteScroll, withInfiniteScroll } from '../../../utils/data-loade
   imports: [
     NgOptimizedImage,
     SkeletonComponent,
-    AutoImagePipe,
     CarouselNavigationComponent,
     SlideStyleDirective,
     BannerDetailsComponent,

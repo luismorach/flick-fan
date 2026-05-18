@@ -1,10 +1,10 @@
 @if(rating()){
-    <div class="flex items-center gap-1">
-        @for (char of "12345";track char;let index=$index){
-            <i class="fa solid fa-star bg-gradient-to-r from-[#e50914]
-            to-zinc-300 bg-clip-text text-transparent text-[12px] sm:text-sm leading-none " 
-            [ngClass]="calculatePercent(index)"></i>
-        }
-        <p class="pl-1 sm:pl-2 text-center text-sm sm:text-base font-racing">{{rating() | number:'1.1-1' :'en-US'}} </p>
-    </div>
+<div class="flex items-end gap-1 py-2">
+    @for (char of "12345"; track char; let index = $index) {
+    @let percent = calculatePercent(index);
+    @let gradId = 'grad-' + index + '-' + rating();
+    <app-icon name="star" color="text-red-500" backgroundColor="#e50914" [percentGrad]="percent" [gradId]="gradId">  </app-icon>
+    }
+    <p class="pl-1 text-center ">{{rating() | number:'1.1-1' :'en-US'}} </p>
+</div>
 }

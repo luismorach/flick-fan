@@ -32,6 +32,7 @@ export function useSlidesInfo(container: Signal<ElementRef<HTMLElement> | undefi
   const direction = computed(() => activeConfig().containerOrientation ?? 'horizontal');
 
   const layout = computed<SlidesInfoLayout>(() => {
+    console.log('Calculating layout with mainAxisMetrics', mainAxisMetrics(), 'and activeConfig', activeConfig())
     const mainAxisMetricsRef = mainAxisMetrics()
     const config = activeConfig()
     const normalizedConfig = normalizeConfig(config);

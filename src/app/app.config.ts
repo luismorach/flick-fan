@@ -13,16 +13,16 @@ import { GlobalCacheConfig } from 'ngx-cacheable'; */
 import { ApiService } from './core/services/API/api.service';
 import { lastValueFrom } from 'rxjs';
 
-registerLocaleData(localeVE,'es-VE')
+registerLocaleData(localeVE, 'es-VE')
 
 /* GlobalCacheConfig.storageStrategy = LocalStorageStrategy;
 // (opcional) TTL global por defecto (ngx-cacheable usará maxAge en @Cacheable si se define)
 GlobalCacheConfig.maxCacheCount = 200;
 GlobalCacheConfig.maxAge = 15 * 60 *1000 */
 export const appConfig: ApplicationConfig = {
-  
+
   providers: [
-    {provide:LOCALE_ID,useValue:'es-VE'},
+    { provide: LOCALE_ID, useValue: 'es-VE' },
     {
       provide: APP_INITIALIZER,
       useFactory: initializeGenres,
@@ -32,24 +32,37 @@ export const appConfig: ApplicationConfig = {
     {
       provide: IMAGE_LOADER,
       useValue: (config: ImageLoaderConfig) => {
-        // 1. Si la imagen es una ruta local (assets) o la de "no imagen", no añadir prefijo
-        if (config.src.startsWith('assets/') || config.src.includes('default-image')) {
-          return config.src;
+        const type = config.loaderParams?.['type'];
+        if (!config.src) {
+
+          switch (type) {
+
+            case 'poster':
+              return '/assets/images/poster-default.png';
+
+            case 'backdrop':
+              return '/assets/images/backdrop-default.png';
+
+            case 'backdrop-square':
+              return '/assets/images/backdrop-square-default.png';
+
+            default:
+              return '/assets/images/default-placeholder.webp';
+          }
         }
-
         // 2. Si no hay ancho definido (src base), usamos 'original' o 'w500'
-        const width =  config.width && config.width <= 1920 ? `w${config.width}` : 'original';
+        const width = config.width && config.width <= 1920 ? `w${config.width}` : 'original';
 
-        
+
         // 3. Retornar la URL construida para TMDB
-        return `https://image.tmdb.org/t/p/${width}${config.src}`; 
+        return `https://image.tmdb.org/t/p/${width}${config.src}`;
       }
     },
     provideRouter(routes), provideClientHydration(),
     provideAnimations(),
-    provideHttpClient(withInterceptors([apiInterceptor,errorInterceptor]),withFetch()),
-   /*  LocalStorageStrategy, */
-    
+    provideHttpClient(withInterceptors([apiInterceptor, errorInterceptor]), withFetch()),
+    /*  LocalStorageStrategy, */
+
   ]
 };
 

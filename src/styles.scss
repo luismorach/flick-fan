@@ -56,6 +56,13 @@ html {
           to-100% 
 }
 
+.glass-panel {
+     background: rgba(25, 25, 25, 0.4);
+     backdrop-filter: blur(24px) saturate(180%);
+     -webkit-backdrop-filter: blur(24px) saturate(180%);
+     border: 1px solid rgba(255, 255, 255, 0.08);
+ }
+
 /* -------------------- CARDS -------------------- */
 
 .card-base {
@@ -76,9 +83,39 @@ html {
 
 /* -------------------- BOTONES -------------------- */
 .btn-primary {
-  @apply rounded-full transition-all duration-100 font-racing bg-white/5 backdrop-blur-sm text-sm 
-  flex justify-center items-center gap-2 sm:gap-2.5 sm:text-base;
+  @apply rounded-full transition-all duration-100 bg-white/5 backdrop-blur-sm text-sm font-racing
+  flex justify-center items-center gap-2 sm:gap-2.5 sm:text-base text-surface;
 }
+
+.btn{
+  @apply text-surface flex items-center gap-3 px-10 py-4 rounded-xl font-extrabold tracking-widest text-sm transition-all 
+  duration-300 
+}
+
+.btn-secondary{
+  @apply  border-white/20  hover:!bg-white/10 active:scale-95
+}
+
+.btn-glossy {
+    @apply hover:scale-105 active:scale-95 shadow-2xl shadow-[#e50914]/40;
+     background: linear-gradient(135deg, rgba(229, 9, 20, .5) 0%, rgba(180, 0, 10, .5) 100%);
+     position: relative;
+     overflow: hidden;
+ }
+
+ .btn-glossy::after {
+  @apply absolute -top-1/2 -left-1/2 w-[200%] h-[200%] rotate-45 transition-all duration-500;
+     content: '';
+     background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+ }
+ .btn-glossy:hover::after {
+     @apply left-full;
+ }
+
+ .btn-glossy:disabled{
+  @apply pointer-events-none opacity-50 cursor-default;
+}
+
 
 .btn-primary:disabled{
   @apply pointer-events-none opacity-50 cursor-default;
@@ -88,10 +125,10 @@ html {
   @apply from-red-700 to-red-900 shadow-lg shadow-red-500/25 outline outline-2 bg-transparent;
 }
 
-
+/* 
 .btn-secondary {
   @apply p-2 bg-gray-800 text-white rounded-lg transition-all duration-300 hover:bg-red-700;
-}
+} */
 
 .btn-icon {
   @apply flex items-center justify-center w-10 h-10 bg-gray-800 text-white rounded-lg transition-all duration-300 hover:bg-red-700;
@@ -105,7 +142,7 @@ html {
 }
 
 .badge-text {
-  @apply font-semibold text-white text-sm;
+  @apply font-semibold text-surface text-sm;
 }
 
 /* -------------------- TYPOGRAFÍA -------------------- */
@@ -114,28 +151,28 @@ html {
   @apply text-5xl font-bold inline-block text-white mb-4 tracking-tight bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent
 }
 .text-title-carousel{
-@apply text-white text-2xl font-bold mb-6 flex items-center gap-2
+@apply text-2xl md:text-3xl lg:text-4xl font-black text-surface tracking-tighter uppercase;
+
 }
-/* .text-title-carousel {
-  @apply text-2xl sm:text-3xl font-bold inline-block relative bg-gradient-to-r from-red-500 to-red-300 bg-clip-text 
-  text-transparent after:h-1 after:w-3/5 after:bg-gradient-to-r after:from-red-500 after:to-red-300 
-  after:rounded-full after:absolute after:bottom-0 after:left-0 pb-2 
-} */
+.text-subtitle-carousel{
+@apply text-primary font-black tracking-[0.4em] uppercase text-[8px] lg:text-[10px] mb-4 block;
+
+}
 
 .text-title-card {
-  @apply text-white font-medium text-base line-clamp-1 group-hover:text-[14px];;
+  @apply text-surface/90 font-black text-base line-clamp-1;
 }
 
 .text-genre-card {
-  @apply text-red-400 text-sm font-light group-hover:text-[12px];
+  @apply text-surface-variant/80 text-xs font-black uppercase tracking-wide;
 }
 
 .text-info-card {
-  @apply text-gray-400 text-sm font-light group-hover:text-[12px];
+  @apply text-surface/60 text-xs font-black uppercase tracking-wide;
 }
 
 .text-overview-card {
-  @apply text-gray-300 text-[12px] line-clamp-3;
+  @apply text-surface/80 text-xs leading-normal line-clamp-3;
 }
 
 /* -------------------- TRAILER -------------------- */
@@ -213,21 +250,6 @@ app-trailer youtube-player>div>iframe {
 
 /* -------------------- CAROUSEL -------------------- */
 
-.embla {
-    @apply overflow-hidden relative;
-}
-
-.embla__viewport {
-  @apply overflow-hidden;   
-}
-
-.embla__container{
-    @apply flex
-}
-
-.embla__slide {
-    @apply flex-none relative
-}
 
 .carousel-container{
     @apply flex overflow-auto w-auto h-full ;

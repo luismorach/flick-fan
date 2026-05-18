@@ -32,6 +32,7 @@ export class CarouselSeriesComponent {
   // Inputs
   readonly seriesList = input.required<SerieList | undefined>();
   readonly title = input.required<string>();
+  readonly subtitle = input<string>();
 
   // Dependencies
   readonly carouselService = inject(CarouselService<SerieList, 'results'>)

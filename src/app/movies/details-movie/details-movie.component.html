@@ -2,14 +2,17 @@
 
     <div class="relative w-full h-screen">
 
-        <img [ngSrc]="movie()?.backdrop_path | autoImage : 'backdrop-square'" fill loading="lazy"
-            class="object-cover object-center gradient opacity-30">
+        <img [ngSrc]="movie()?.backdrop_path || '' " fill loading="lazy" ngSrcset="500w, 780w, 1280w, 1920w, 3840w" [alt]="movie()?.title"
+         [loaderParams]="{type:'backdrop'}" sizes="100vw" class="object-cover object-center gradient opacity-30">
+
         <div class="relative h-full container  px-4 md:px-24 flex flex-col justify-end pb-8">
             <div class="flex flex-col md:flex-row gap-8 items-end">
                 <!-- Poster (Hidden on mobile, visible on tablet+) -->
                 <figure
-                    class="hidden md:block w-[240px] shrink-0 rounded-xl overflow-hidden shadow-2xl shadow-[#e50914]/20 border border-white/10 transform  z-10">
-                    <img [ngSrc]="movie()?.poster_path | autoImage : 'tall'" class="aspect-[2/3] bg-cover bg-center">
+                    class="hidden md:block w-[240px] shrink-0 rounded-xl overflow-hidden shadow-2xl shadow-[#e50914]/20 border
+                     border-white/10 transform  z-10 relative aspect-[2/3]">
+                    <img [ngSrc]="movie()?.poster_path || ''" class="aspect-[2/3] bg-cover bg-center" 
+                    fill loading="lazy" ngSrcset="500w, 780w, 1280w, 1920w, 3840w" [alt]="movie()?.title">
                 </figure>
 
                 <!-- Text Content -->
@@ -68,7 +71,7 @@
                         </button>
                         <div class="flex flex-col ml-6 border-l border-white/10 pl-8">
                             <div class="flex items-center gap-1.5 mb-1">
-                                <app-icon name="star" color="text-[#e50914]" backgroundColor="fill-[#e50914]">
+                                <app-icon name="star" color="text-[#e50914]" backgroundColor="#e50914">
                                 </app-icon>
                                 <span class="text-[#e5e2e1] text-xl font-black tracking-tighter">
                                     {{movie()?.vote_average | number:'1.1-1' :'en-US'}}</span>
@@ -107,20 +110,17 @@
                         </span>
                     </div>
                     <div class="group">
-                        <span class="block text-[10px] font-black text-[#e50914] uppercase tracking-[0.3em]
-                         mb-2">
+                        <span class="block text-[10px] font-black text-[#e50914] uppercase tracking-[0.3em] mb-2">
                             Productor
                         </span>
-                        <span class="text-[#e5e2e1] text-lg font-bold group-hover:text-[#e50914] 
-                            transition-colors cursor-default">
+                        <span class="text-[#e5e2e1] text-lg font-bold group-hover:text-[#e50914] transition-colors cursor-default">
                             {{producer()?.name}}
                         </span>
                     </div>
                     <div class="group">
                         <span
                             class="block text-[10px] font-black text-[#e50914] uppercase tracking-[0.3em] mb-2">Production</span>
-                        <span class="text-[#e5e2e1] text-lg font-bold group-hover:text-[#e50914] 
-                            transition-colors cursor-default">
+                        <span class="text-[#e5e2e1] text-lg font-bold group-hover:text-[#e50914] transition-colors cursor-default">
                             {{production()?.name}}
                         </span>
                     </div>
@@ -136,8 +136,8 @@
                 <div class="flex items-center gap-5 group cursor-pointer">
                     <figure
                         class="w-16 h-16 rounded-2xl overflow-hidden ring-1 relative ring-white/10 group-hover:ring-[#e50914]/50 transition-all duration-500">
-                        <img [ngSrc]="cast.profile_path| autoImage : 'square'" fill class="w-full h-full object-cover group-hover:scale-110 transition-transform 
-                         duration-700" />
+                        <img [ngSrc]="cast.profile_path" fill class="w-full h-full object-cover group-hover:scale-110 transition-transform 
+                         duration-700" ngSrcset="92w, 500w, 780w, 1280w, 1920w, 3840w" [loaderParams]="{type:'backdrop-square'}" [alt]="cast.name" />
                     </figure>
                     <div>
                         <span
@@ -173,15 +173,16 @@
             <app-carousel-navigation [carouselService]="carouselService"></app-carousel-navigation>
             <div class="carousel-container" cdkScrollable #carouselSimilarMovies
                 [style.gap.px]="carouselService.slidesInfo.layout().spaceBetween"
-                [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize"
-                [style.padding-right.px]="carouselService.slidesInfo.layout().peekSize">
+                [style.padding-left.px]="carouselService.slidesInfo.layout().edgeOffset"
+                [style.padding-right.px]="carouselService.slidesInfo.layout().edgeOffset">
 
                 @for(similarMovie of similarMoviesLoader.data();track similarMovie.id){
                 <div class="group cursor-pointer carousel-item " (click)="redirect(similarMovie.id)"
                     [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize">
                     <div
                         class="relative aspect-[3/4.5] rounded-3xl overflow-hidden mb-6 ring-1 ring-white/5 group-hover:ring-[#e50914]/40 transition-all duration-700">
-                        <img [ngSrc]="similarMovie.poster_path | autoImage : 'wide'" fill
+                        <img [ngSrc]="similarMovie.poster_path" fill ngSrcset="92w, 500w, 780w, 1280w, 1920w, 3840w" 
+                        [loaderParams]="{type:'poster'}"
                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
 
                         <div
@@ -205,7 +206,7 @@
 
                 <!-- @if(canLoadMore()){ -->
                 @for(_ of carouselService.slidesInfo.skeletonSlideIndexes(); track $index) {
-                <div class="carousel-item aspect-[3/4.5] rounded-3xl bg-gray-700 animate-pulse"
+                <div class="carousel-item aspect-[3/4.5] rounded-3xl bg-gray-700 animate-pulse" #sentinels
                     [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize">
 
                 </div>

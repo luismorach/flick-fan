@@ -12,5 +12,8 @@ export class IconComponent {
   @Input() name: string = '';         // nombre del icono
   @Input() size: string = 'w-5 h-5';  // clases de Tailwind para tamaño
   @Input() color: string = ''; // color del icono
-  @Input() backgroundColor:string = 'bg-transparent'
+  @Input() backgroundColor: string = 'bg-transparent'
+  @Input() percentGrad: number = 100
+  @Input() gradId: string = '1'
+
 }

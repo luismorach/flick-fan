@@ -24,49 +24,25 @@ export interface SizeAnimationConfig {
 })
 
 export class AnimationsService {
-  private readonly animationBuilder = inject(AnimationBuilder)
+  private readonly builder = inject(AnimationBuilder);
+  
+  playAnimation(element: HTMLElement, initialState: any, timing: string) {
+    const animation = this.builder.build([
+      initialState,
+      animate(timing, style({ opacity: 1, transform: 'translateX(0)' }))
+    ]);
 
-  moveX(config: AnimationConfig): AnimationFactory {
-    const timing = this.buildTiming(config);
-    return this.animationBuilder.build([
-      style({ transform: `translateX(${config.startPosition})` }),
-      animate(timing, style({ transform: `translateX(${config.endPosition})` }))
-    ])
+    const player = animation.create(element);
+    player.play();
   }
 
-  moveY(config: AnimationConfig): AnimationFactory {
-    const timing = this.buildTiming(config);
-    return this.animationBuilder.build([
-      style({ transform: `translateY(${config.startPosition})`, opacity: 0 }),
-      animate(timing, style({ transform: `translateY(${config.endPosition})`, opacity: 1 }))
-    ])
-  }
+  resetAnimations(elements: HTMLElement[]) {
 
-  changeX(config: AnimationConfig): AnimationFactory {
-    const timing = this.buildTiming(config);
-    return this.animationBuilder.build([
-      style({ left: config.startPosition }),
-      animate(timing, style({ left: config.endPosition }))
-    ])
-  }
-  changeY(config: AnimationConfig): AnimationFactory {
-    const timing = this.buildTiming(config);
-    return this.animationBuilder.build([
-      style({ top: config.startPosition }),
-      animate(timing, style({ top: config.endPosition }))
-    ])
-  }
-
-  changeSize(config: SizeAnimationConfig): AnimationFactory {
-    const timing = this.buildTiming(config);
-    return this.animationBuilder.build([
-      style({ width: config.startWidth, height: config.startHeight }),
-      animate(timing, style({ width: config.endWidth, height: config.endHeight }))
-    ])
-  }
-
-  private buildTiming(config: AnimationConfig | SizeAnimationConfig): string {
-    const { duration, delay = '0ms', easing = 'ease' } = config;
-    return `${duration} ${delay} ${easing}`;
+    elements.forEach(el => {
+      if (el) {
+        el.style.animation = 'none';
+        void el.offsetWidth; // force reflow
+      }
+    });
   }
 }

@@ -3,7 +3,6 @@ import { Component, computed, inject, input, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Movie } from '../../../../../core/interfaces/movie/movie.interface';
 import { IconComponent } from '../../../../icon/icon.component';
-import { AutoImagePipe } from '../../../../pipes/autoimage/auto-image.pipe';
 import { getKeyTrailer } from '../../../../utils/helpers';
 import { FloatTrailerService } from '../../../../../core/services/float-trailer/float-trailer.service';
 import { CdkPortalOutlet } from '@angular/cdk/portal';
@@ -14,8 +13,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-card-movie',
   standalone: true,
-  imports: [NgOptimizedImage, CommonModule, DatePipe, RouterLink,
-    IconComponent, AutoImagePipe, CdkPortalOutlet],
+  imports: [NgOptimizedImage, CommonModule, DatePipe, RouterLink, IconComponent,  CdkPortalOutlet],
   templateUrl: './card-movie.component.html',
   styleUrls: ['./card-movie.component.css']
 })

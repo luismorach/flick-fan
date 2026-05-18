@@ -28,6 +28,8 @@ const EMBED_YOUTUBE_PLAYER_CONFIG: YT.PlayerVars = {
   showinfo: 0,
   modestbranding: 1,
   cc_load_policy: 0,
+  origin: window.location.origin,
+  enablejsapi: 1,
 }
 
 type TrailerMode = 'float' | 'embed';

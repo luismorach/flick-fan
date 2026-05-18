@@ -19,9 +19,9 @@
         <circle cx="256" cy="144" r="36" fill="currentColor" stroke="none" />
     </svg>
 
-    <svg *ngSwitchCase="'star'" class="{{ size }} {{ color }} {{backgroundColor}}" viewBox="0 0 24 24">
+    <!-- <svg *ngSwitchCase="'star'" class="{{ size }} {{ color }} {{backgroundColor}}" viewBox="0 0 24 24">
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-    </svg>
+    </svg> -->
 
     <svg *ngSwitchCase="'clapperboard'" class="{{ size }} {{ color }} {{backgroundColor}}"
         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="48" height="48" fill="currentColor">
@@ -159,15 +159,27 @@
             stroke-linejoin="round" />
     </svg>
 
-    <svg *ngSwitchCase="'arrow-down'" class="{{ size }} {{ color }} {{backgroundColor}}" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg *ngSwitchCase="'arrow-down'" class="{{ size }} {{ color }} {{backgroundColor}}" width="48" height="48"
+        viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="24" cy="24" r="23" stroke="white" stroke-opacity="0.2" fill="none" />
         <path d="M24 18V30M24 30L18 24M24 30L30 24" stroke="white" stroke-width="1.5" stroke-linecap="round"
             stroke-linejoin="round" />
     </svg>
 
+    <svg *ngSwitchCase="'star'" class="{{ size }} {{ color }} {{backgroundColor}}" width="24" height="24" 
+        viewBox="0 0 24 24" class="inline-block">
+        <defs>
+            <!-- ID único por cada iteración -->
+            <linearGradient [id]="gradId" x1="0%" y1="0%" x2="100%" y2="0%">
+                <!-- Color activo -->
+                <stop [attr.offset]="percentGrad + '%'" [attr.stop-color]="backgroundColor" />
+                <!-- Color de fondo (el zinc-300 que usabas) -->
+                <stop [attr.offset]="percentGrad + '%'" stop-color="#d4d4d8" />
+            </linearGradient>
+        </defs>
 
-
-
-
+        <path [attr.fill]="'url(#' + gradId + ')'"
+            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+    </svg>
 
 </ng-container>

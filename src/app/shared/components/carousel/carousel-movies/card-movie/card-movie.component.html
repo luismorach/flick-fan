@@ -4,12 +4,13 @@
     <figure class="relative w-full aspect-video rounded-t-xl overflow-hidden">
         <ng-template cdkPortalOutlet></ng-template>
 
-        <img [ngSrc]="movie().backdrop_path | autoImage : 'backdrop-wide'" fill class="card-image" loading="lazy"
-            [alt]="movie().title">
+        <img [ngSrc]="movie().backdrop_path" ngSrcset="500w, 780w, 1280w, 1920w, 3840w" fill
+            [loaderParams]="{type:'backdrop'}" class="card-image" loading="lazy" [alt]="movie().title" sizes="(max-width: 398px) 100vw, (max-width: 508px) 75vw, (max-width: 748px) 55vw, 
+            (max-width: 988px) 38vw, (max-width: 1388px) 28vw, 22vw">
 
         @if(movie().vote_average){
-        <figcaption class="badge-vote card-base-revert-scale">
-            <app-icon name="star" color="text-red-500" backgroundColor="fill-red-500"> </app-icon>
+        <figcaption class="badge-vote card-base-revert-scale ">
+            <app-icon name="star" color="text-red-500" backgroundColor="#e50914"> </app-icon>
             <span class="badge-text">{{ movie().vote_average | number:'1.1-1' :'en-US'}}</span>
         </figcaption>
         }
@@ -18,18 +19,19 @@
     <section class="pt-2 mb-3 w-full relative">
         <header class="mx-4">
             @if(movie().title){
-            <h2 class="text-title-card ">{{ movie().title }}</h2>
+            <h2 class="text-title-card card-base-revert-scale">{{ movie().title }}</h2>
             }
-            @if (hasGenres()) {
-            <span class="text-genre-card">{{primaryGenre()}}</span>
-            }
-
-            <div class="flex flex-wrap items-center gap-4 text-info-card">
-                @if(movie().release_date){
-                <span>{{movie().release_date | date:'longDate'}}</span>
+            <div class="flex items-center gap-2 mt-1">
+                @if (hasGenres()) {
+                <p class="text-genre-card card-base-revert-scale">{{primaryGenre()}}</p>
                 }
 
+                @if(movie().release_date){
+                <p class="w-1 h-1 bg-surface/20 rounded-full card-base-revert-scale"></p>
+                <p class="text-info-card card-base-revert-scale">{{movie().release_date | date :'yyyy'}} </p>
+                }
             </div>
+
         </header>
 
         <div class="card-hover-overlay">
@@ -40,15 +42,16 @@
                     {{movie().overview}}
                 </p>
                 }
-                <div class="flex gap-2 transition-all duration-500 pt-3 text-white card-base-revert-scale">
-                    <a [routerLink]="['/watch-movie/',movie().id]" class="btn-primary px-6 flex-1 ">
-                        <app-icon name="play"></app-icon>
-                        Ver ahora
+                <div class="flex gap-2 transition-all duration-500 pt-3">
+                    <a [routerLink]="['/watch-movie/',movie().id]" class="btn-glossy btn h-9 !px-6 !text-[10px]">
+                        <app-icon name="play" size="w-4 h-4"></app-icon>
+                        VER AHORA
                     </a>
-                    <a class="btn-primary p-2 ">
+                    <a class="glass-panel btn btn-secondary !p-2 !rounded-full !border-none !bg-white/5">
                         <app-icon name="plus"></app-icon>
                     </a>
-                    <a [routerLink]="['/details-movie/',movie().id]" class="btn-primary p-2 ">
+                   <a [routerLink]="['/details-movie/',movie().id]" 
+                        class="glass-panel btn btn-secondary !p-2 !rounded-full !border-none !bg-white/5">
                         <app-icon name="info"></app-icon>
                     </a>
                 </div>

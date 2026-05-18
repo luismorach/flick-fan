@@ -1,13 +1,14 @@
-import { DatePipe } from '@angular/common';
-import { Component, computed, effect, ElementRef, inject, input, output, untracked, viewChild } from '@angular/core';
+import { DatePipe, NgOptimizedImage } from '@angular/common';
+import { Component, computed, effect, ElementRef, inject, input, viewChild } from '@angular/core';
 import { Serie } from '../../../../../core/interfaces/serie/serie.interface';
 import { AutoImagePipe } from '../../../../pipes/autoimage/auto-image.pipe';
 import { RatingComponent } from '../../../rating/rating.component';
 import { IconComponent } from '../../../../icon/icon.component';
 import { RouterLink } from '@angular/router';
-import { animate, AnimationBuilder, style } from '@angular/animations';
+import { style } from '@angular/animations';
 import { getKeyTrailer } from '../../../../utils/helpers';
 import { FloatTrailerService } from '../../../../../core/services/float-trailer/float-trailer.service';
+import { AnimationsService } from '../../../../../core/services/animations/animations.service';
 
 @Component({
   selector: 'app-banner-details',
@@ -17,8 +18,10 @@ import { FloatTrailerService } from '../../../../../core/services/float-trailer/
 })
 export class BannerDetailsComponent {
   readonly serie = input.required<Serie>()
-  builder = inject(AnimationBuilder);
-  private readonly floatTrailer = inject(FloatTrailerService);
+
+  private readonly animationsService = inject(AnimationsService);
+
+  readonly floatTrailer = inject(FloatTrailerService);
   private readonly metadata = viewChild.required<ElementRef<HTMLElement>>('metadata')
   private readonly overview = viewChild.required<ElementRef<HTMLElement>>('overview')
   private readonly buttons = viewChild.required<ElementRef<HTMLElement>>('buttons')
@@ -30,40 +33,41 @@ export class BannerDetailsComponent {
 
   changeSerie = effect(() => {
     const serie = this.serie()
-    //this.floatTrailer.setVideoKey(this.currentTrailerKey())
     requestAnimationFrame(() => this.animateIn());
   })
 
   private animateIn() {
-    let animation = this.builder.build([
+    const elements = [
+      this.metadata().nativeElement,
+      this.overview().nativeElement,
+      this.buttons().nativeElement
+    ];
+    this.animationsService.resetAnimations(elements);
+
+    // Metadata
+    this.animationsService.playAnimation(
+      this.metadata().nativeElement,
       style({ opacity: 0, transform: 'translateX(-150%)' }),
-      animate('300ms 300ms ease', style({ opacity: 1, transform: 'translateX(0)' }))
-    ]);
-    let player = animation.create(this.metadata().nativeElement);
-    player.play();
+      '300ms 300ms ease'
+    );
 
-    animation = this.builder.build([
+    // Overview
+    this.animationsService.playAnimation(
+      this.overview().nativeElement,
       style({ opacity: 0, transform: 'translateY(100%)' }),
-      animate('500ms 500ms ease', style({ opacity: 1, transform: 'translateX(0)' }))
-    ]);
-    player = animation.create(this.overview().nativeElement);
-    player.play();
+      '500ms 500ms ease'
+    );
 
-    animation = this.builder.build([
+    // Buttons
+    this.animationsService.playAnimation(
+      this.buttons().nativeElement,
       style({ opacity: 0, transform: 'translateY(3%)' }),
-      animate('700ms 700ms ease', style({ opacity: 1, transform: 'translateX(0)' }))
-    ]);
-    player = animation.create(this.buttons().nativeElement);
-    player.play();
-
+      '700ms 700ms ease'
+    );
   }
 
-  constructor() {
-    ///this.floatTrailer.setupVideo(this.serie)
-  }
+  
   playTrailer(): void {
-    this.floatTrailer.register(this,this.serie)
-    //this.floatTrailer.playTest(this.serie)
-    //this.floatTrailer.playFloatTrailer(this.currentTrailerKey())
+    this.floatTrailer.register(this, this.serie)
   }
 }
