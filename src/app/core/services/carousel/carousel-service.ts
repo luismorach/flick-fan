@@ -5,9 +5,9 @@ import { CarouselOptions } from '../../interfaces/shared/carousel-interface';
 import { SlidesInfoHook, useSlidesInfo } from '../../../shared/utils/use-slides-info';
 import { useIntersectionObserver } from '../../../shared/utils/use-intersection-observer';
 import { CarouselController, CarouselNavigationAPI, CarouselStateAPI, useCarouselcontroller } from '../../../shared/utils/use-carousel-controller';
-import { AnyEnhancedLoader } from '../../../shared/utils/data-loaders/types';
 import { hasPagination } from '../../../shared/utils/data-loaders/enhancers/with-pagination';
 import { canLoadDetails } from '../../../shared/utils/data-loaders/enhancers/with-details';
+import { LoaderCore } from '../../../shared/utils/data-loaders/types';
 
 @Injectable()
 export class CarouselService<T extends Object, R extends keyof T> {
@@ -16,7 +16,7 @@ export class CarouselService<T extends Object, R extends keyof T> {
     // ==========================================
     private readonly destroyRef = inject(DestroyRef);
     slidesInfo: SlidesInfoHook = useSlidesInfo(signal(undefined), {})
-    private loader?: AnyEnhancedLoader<T, R>
+    private loader?: LoaderCore<T, R>
     private controller: CarouselController = useCarouselcontroller(signal(undefined), { slidesConfig: {} }, this.loader)
 
     // ==========================================
@@ -49,7 +49,7 @@ export class CarouselService<T extends Object, R extends keyof T> {
     initialize(
         carouselContainer: Signal<ElementRef<HTMLElement> | undefined>,
         carouselOptions: CarouselOptions,
-        loader?: AnyEnhancedLoader<T, R>
+        loader?: LoaderCore<T, R>
     ): void {
         this.loader = loader
         this.controller = useCarouselcontroller(carouselContainer, carouselOptions, loader)

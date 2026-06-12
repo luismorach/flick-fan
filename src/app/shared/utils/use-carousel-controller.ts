@@ -1,8 +1,8 @@
 import { computed, effect, ElementRef, Signal, signal, untracked } from "@angular/core";
 import { CarouselOptions } from "../../core/interfaces/shared/carousel-interface";
 import { SlidesInfoHook, useSlidesInfo } from "./use-slides-info";
-import { AnyEnhancedLoader } from "./data-loaders/types";
 import { hasPagination } from "./data-loaders/enhancers/with-pagination";
+import { LoaderCore } from "./data-loaders/types";
 
 export interface CarouselController {
     isAtEnd: Signal<boolean>
@@ -29,7 +29,7 @@ export type CarouselStateAPI =
 export function useCarouselcontroller<T extends Object, R extends keyof T>(
     carouselContainer: Signal<ElementRef<HTMLElement> | undefined>,
     carouselOptions: CarouselOptions,
-    loader: AnyEnhancedLoader<T, R> | undefined): CarouselController {
+    loader: LoaderCore<T, R> | undefined): CarouselController {
 
     const slidesInfo: SlidesInfoHook = useSlidesInfo(carouselContainer, carouselOptions.slidesConfig)
 

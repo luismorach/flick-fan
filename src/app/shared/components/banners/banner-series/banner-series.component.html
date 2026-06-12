@@ -17,7 +17,7 @@
                 [style.aspect-ratio]="isVertical() ? '16 / 9': '9 / 16'" class="carousel-item slide opacity-0" #slide>
 
                 <figure class="img-container">
-                    <img [ngSrc]="serie.backdrop_path" ngSrcset="500w, 780w, 1280w, 1920w, 3840w"
+                    <img [ngSrc]="serie.backdrop_path || 'fallback'" ngSrcset="500w, 780w, 1280w, 1920w, 3840w"
                         fill [loaderParams]="{type:'backdrop'}" 
                         sizes="(max-width: 768px) 55vw, 20vw" 
                         [alt]="serie.name" fill #img loading="lazy"
@@ -26,7 +26,7 @@
             </div>
             }
 
-            @if(canLoadMore()){
+            @if(loader.canLoadMore()){
             <div appSlideStyle #sentinels [index]="loader.data().length" [carousel]="carouselService"
                 [style.height]="slideHeight()" [style.width]="slideWidth()"
                 [style.aspect-ratio]="isVertical() ? '16 / 9': '9 / 16'" class="carousel-item animate-pulse slide">
@@ -39,7 +39,7 @@
     <app-skeleton mode="overlay"></app-skeleton>
     }@else{
     <figure class="w-full h-screen absolute gradient-top">
-        <img [ngSrc]="carouselService.state().currentElement().backdrop_path" ngSrcset="500w, 780w, 1280w, 1920w, 3840w"
+        <img [ngSrc]="carouselService.state().currentElement().backdrop_path || 'fallback'" ngSrcset="500w, 780w, 1280w, 1920w, 3840w"
                         fill [loaderParams]="{type:'backdrop'}" sizes="100vw" fill priority
             [alt]="carouselService.state().currentElement().name"
             class="w-full h-full object-cover object-center gradient-top">

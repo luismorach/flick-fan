@@ -1,11 +1,11 @@
 import { computed, DestroyRef, effect, ElementRef, inject, Signal, untracked } from "@angular/core"
 import { PaginatedMetaData } from "../../../../core/interfaces/shared/generic.interface"
-import { ArrayKey, AnyEnhancedLoader, LoaderWithPagination, LoaderCore, AUTO_FILL, LoaderWithAutoFill } from "../types"
+import { ArrayKey,  LoaderWithPagination, LoaderCore, AUTO_FILL, LoaderWithAutoFill } from "../types"
 import { hasPagination} from "./with-pagination"
 import { canFilter } from "./with-filter"
 
 export function withAutoFillViewport<T extends PaginatedMetaData, R extends ArrayKey<T>>
-    (loader: AnyEnhancedLoader<T, R>): LoaderWithAutoFill<T, R> {
+    (loader: LoaderCore<T, R>): LoaderWithAutoFill<T, R> {
 
     const setupAutoFill = (sentinel: Signal<readonly ElementRef<HTMLElement>  [] | undefined>,
         container?: Signal<ElementRef<HTMLElement> | undefined>) => {

@@ -4,7 +4,7 @@
     <figure class="relative w-full aspect-video rounded-t-xl overflow-hidden">
         <ng-template cdkPortalOutlet></ng-template>
 
-        <img [ngSrc]="movie().backdrop_path" ngSrcset="500w, 780w, 1280w, 1920w, 3840w" fill
+        <img [ngSrc]="movie().backdrop_path || 'fallback'" ngSrcset="500w, 780w, 1280w, 1920w, 3840w" fill
             [loaderParams]="{type:'backdrop'}" class="card-image" loading="lazy" [alt]="movie().title" sizes="(max-width: 398px) 100vw, (max-width: 508px) 75vw, (max-width: 748px) 55vw, 
             (max-width: 988px) 38vw, (max-width: 1388px) 28vw, 22vw">
 
@@ -43,15 +43,14 @@
                 </p>
                 }
                 <div class="flex gap-2 transition-all duration-500 pt-3">
-                    <a [routerLink]="['/watch-movie/',movie().id]" class="btn-glossy btn h-9 !px-6 !text-[10px]">
+                    <a [routerLink]="['/watch-movie/',movie().id]" class="btn-primary px-6 !text-xs">
                         <app-icon name="play" size="w-4 h-4"></app-icon>
-                        VER AHORA
+                        Ver ahora
                     </a>
-                    <a class="glass-panel btn btn-secondary !p-2 !rounded-full !border-none !bg-white/5">
+                    <a class="btn-primary p-1.5">
                         <app-icon name="plus"></app-icon>
                     </a>
-                   <a [routerLink]="['/details-movie/',movie().id]" 
-                        class="glass-panel btn btn-secondary !p-2 !rounded-full !border-none !bg-white/5">
+                   <a [routerLink]="['/details-movie/',movie().id]" class="btn-primary p-1.5 ">
                         <app-icon name="info"></app-icon>
                     </a>
                 </div>

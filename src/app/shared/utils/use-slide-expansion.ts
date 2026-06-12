@@ -114,6 +114,42 @@ export function useSlideExpansion() {
         return 'origin-center';
     }
 
+    const animateScroll = (el: HTMLElement, from: number, to: number, duration: number) => {
+        const start = performance.now();
+        const delta = to - from;
+
+        const tick = (now: number) => {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = cubicBezier(progress, 0.2, 0.45, 0, 1); // misma curva que el width
+            el.scrollLeft = from + delta * ease;
+            if (progress < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+    }
+
+    const cubicBezier = (t: number, p1x: number, p1y: number, p2x: number, p2y: number): number => {
+        const cx = 3 * p1x;
+        const bx = 3 * (p2x - p1x) - cx;
+        const ax = 1 - cx - bx;
+        const cy = 3 * p1y;
+        const by = 3 * (p2y - p1y) - cy;
+        const ay = 1 - cy - by;
+
+        const sampleX = (t: number) => ax * t ** 3 + bx * t ** 2 + cx * t;
+        const sampleY = (t: number) => ay * t ** 3 + by * t ** 2 + cy * t;
+
+        // Newton-Raphson para resolver t dado x
+        let tSolved = t;
+        for (let i = 0; i < 8; i++) {
+            const x = sampleX(tSolved) - t;
+            const dx = 3 * ax * tSolved ** 2 + 2 * bx * tSolved + cx;
+            if (Math.abs(dx) < 1e-6) break;
+            tSolved -= x / dx;
+        }
+        return sampleY(tSolved);
+    }
+
     return {
         canExpand,
         adjustTranslateForExpandedSlide,

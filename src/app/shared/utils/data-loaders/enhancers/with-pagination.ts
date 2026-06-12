@@ -2,9 +2,10 @@ import { inject, signal } from "@angular/core";
 import { PaginatedMetaData } from "../../../../core/interfaces/shared/generic.interface";
 import { ParamsApi } from "../../../../core/interfaces/shared/params-http.interface";
 import { ApiService } from "../../../../core/services/API/api.service";
-import { AnyEnhancedLoader, ArrayKey, LoaderCore, LoaderWithPagination, PAGINATION } from "../types";
+import { ArrayKey, LoaderCore, LoaderWithPagination, PAGINATION } from "../types";
 
-export function withPagination<T extends PaginatedMetaData, R extends ArrayKey<T>>(loader: AnyEnhancedLoader<T, R>): LoaderWithPagination<T, R> {
+export function withPagination<T extends PaginatedMetaData, R extends ArrayKey<T>>
+(loader: LoaderCore<T, R>): LoaderWithPagination<T, R> {
     const api = inject(ApiService)
     const isFetchingMoreData = signal(false)
 

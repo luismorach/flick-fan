@@ -1,10 +1,10 @@
 import { inject } from "@angular/core"
 import { ParamsApi } from "../../../../core/interfaces/shared/params-http.interface"
 import { ApiService } from "../../../../core/services/API/api.service"
-import { ArrayKey, AnyEnhancedLoader, LoaderWithDetails, ItemWithId, LoaderCore, DETAILS } from "../types"
+import { ArrayKey,  LoaderWithDetails, ItemWithId, LoaderCore, DETAILS } from "../types"
 
 export function WithDetails<T extends { type: string }, R extends ArrayKey<T>>
-    (loader: AnyEnhancedLoader<T, R>): AnyEnhancedLoader<T, R> & LoaderWithDetails<T, R> {
+    (loader: LoaderCore<T, R>):  LoaderWithDetails<T, R> {
     const api = inject(ApiService)
 
     const loadDetails = async (id: number) => {

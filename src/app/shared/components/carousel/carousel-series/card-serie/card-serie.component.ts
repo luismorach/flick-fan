@@ -4,7 +4,6 @@ import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Serie } from '../../../../../core/interfaces/serie/serie.interface';
 import { TimerManager } from '../../../../utils/timer-manager';
-import { AutoImagePipe } from '../../../../pipes/autoimage/auto-image.pipe';
 import { IconComponent } from "../../../../icon/icon.component";
 import { CdkPortalOutlet } from '@angular/cdk/portal';
 import { SlidesInfoHook } from '../../../../utils/use-slides-info';
@@ -12,7 +11,7 @@ import { HoverSerieExpandDirective } from "../../../../../core/directives/hover-
 
 @Component({
   selector: 'app-card-serie',
-  imports: [NgOptimizedImage, DecimalPipe, RouterLink, AutoImagePipe,
+  imports: [NgOptimizedImage, DecimalPipe, RouterLink,
     IconComponent, CdkPortalOutlet, HoverSerieExpandDirective],
   providers: [TimerManager],
   templateUrl: './card-serie.component.html',

@@ -23,7 +23,7 @@ export class ApiService {
   public moviesGenres: WritableSignal<Genre[]> = signal([])
   public seriesGenres: WritableSignal<Genre[]> = signal([])
   public allGenres: WritableSignal<Genre[]> = signal([]);
-  private readonly ENRICHMENT_CONCURRENCY = 4;
+  private cache = new Map<string, Observable<any>>();
 
   readonly methodMap: { [key: string]: any } = {
     now_playing_movies: this.getNowPlaying.bind(this),
@@ -33,7 +33,6 @@ export class ApiService {
     similar_movies: this.getSimilarMovies.bind(this),
     recomended_movies: this.getRecomendedMovies.bind(this),
     details_movie: this.getDetailsMovie.bind(this),
-    movies_by_genre: this.getMoviesByGenre.bind(this),
     search_movies: this.searchMovie.bind(this),
 
     popular_series: this.getPopularSeries.bind(this),
@@ -49,14 +48,12 @@ export class ApiService {
 
   // ==================== MOVIES ====================
 
-  /* @Cacheable() */
   getNowPlaying(params: ParamsApi) {
     const endpoint = `movie/now_playing`
     const type = 'now_playing_movies'
     return this.getMediaDetails<Movie>(endpoint, params, type)
   }
 
-  /* @Cacheable() */
   getPopular(params: ParamsApi) {
     const endpoint = `movie/popular`
     const type = 'popular_movies'
@@ -69,17 +66,17 @@ export class ApiService {
     return this.getMediaDetails<Movie>(endpoint, params, type)
   }
 
-  /*  @Cacheable() */
   getTopRatedMovies(params: ParamsApi) {
     const endpoint = `movie/top_rated`
     const type = 'top_rated_movies'
     return this.getMediaDetails<Movie>(endpoint, params, type)
   }
-  /* @Cacheable() */
   getDetailsMovie(params: ParamsApi): Observable<Movie> {
     return this.http
       .get<Movie>(`${this.API_BASE}/movie/${params.dataId}`, {
-        params: this.buildParams({ append_to_response: 'videos,release_dates' })
+        params: this.buildParams({ append_to_response: 'videos,release_dates,images',
+          include_image_language: 'en-US,null'
+        })
       })
   }
 
@@ -99,16 +96,25 @@ export class ApiService {
   }
 
   getMediaDetails<T extends MediaItem>(endpoint: string, params: ParamsApi, type: string) {
-    return this.http.get<MediaList<T>>(`${this.API_BASE}/${endpoint}`, {
-      params: this.buildParams(params),
-    }).pipe(map((list) => ({
-      ...list,
-      type: type,
-      results: list.results.map(data => ({
-        ...data,
-        genres: this.mapGenreIdsToGenres(data.genre_ids)
-      }))
-    })))
+    const httpParams = this.buildParams(params)
+    const cacheKey = `${endpoint}_${httpParams.toString()}`;
+    if (!this.cache.has(cacheKey)) {
+      const request$ = this.http.get<MediaList<T>>(`${this.API_BASE}/${endpoint}`, { params: httpParams })
+        .pipe(map((list) => ({
+          ...list,
+          type: type,
+          results: list.results.map(data => ({
+            ...data,
+            genres: this.mapGenreIdsToGenres(data.genre_ids)
+          }))
+        })), 
+        shareReplay({ bufferSize: 1, refCount: false})
+      )
+      console.log(`Realizando nueva solicitud para: ${endpoint} con params: ${httpParams.toString()}`);
+      this.cache.set(cacheKey, request$);
+    }
+
+    return this.cache.get(cacheKey) as Observable<MediaList<T>>;
   }
 
   private mapGenreIdsToGenres(genreIds: number[] = [], allGenres: Genre[] = this.allGenres() ?? []): Genre[] {
@@ -134,46 +140,22 @@ export class ApiService {
     return this.getMediaDetails<Movie>(endpoint, params, type)
   }
 
-  getMoviesByGenre(params: ParamsApi) {
-    return this.http
-      .get<Movie>(`${this.API_BASE}/search/movie`, {
-        params: this.buildParams(params),
-      })
-    //https://api.themoviedb.org/3/search/movie?api_key=TU_API_KEY&query=superman&with_genres=28&language=es-MX
-    /* return this.http
-      .get<Movie>(`${this.API_BASE}/discover/movie`, {
-        params: this.buildParams({
-          page,
-          sort_by: 'popularity.desc',
-          with_genres: genreId,
-        }),
-      })
-      .pipe(
-        switchMap((response) => this.enrichMoviesWithDetails(response, 'movies_by_genre'))
-      ); */
-  }
-
-
   // ==================== SERIES ====================
 
-  /* @Cacheable() */
   getAiringTodaySeries(params: ParamsApi) {
     const type = 'airing_today_series'
     return this.getMediaDetails<Serie>('tv/airing_today', params, type)
   }
 
-  /* @Cacheable() */
   getOnTheAirSeries(params: ParamsApi) {
     const type = 'on_the_air_series'
     return this.getMediaDetails<Serie>('tv/on_the_air', params, type)
   }
-  /*  @Cacheable() */
   getPopularSeries(params: ParamsApi) {
     const type = 'popular_series'
     return this.getMediaDetails<Serie>('tv/popular', params, type)
   }
 
-  /*  @Cacheable() */
   getTopRatedSeries(params: ParamsApi) {
     const endpoint = 'tv/top_rated'
     const type = 'top_rated_series'
@@ -183,7 +165,8 @@ export class ApiService {
   getDetailsSerie(params: ParamsApi): Observable<Serie> {
     return this.http
       .get<Serie>(`${this.API_BASE}/tv/${params.dataId}`, {
-        params: this.buildParams({ append_to_response: 'videos,external_ids,release_dates' }),
+        params: this.buildParams({ append_to_response: 'videos,images,release_dates',
+          include_image_language: 'en-US,null' }),
       })
   }
 
@@ -266,38 +249,7 @@ export class ApiService {
     return this.genresCache$
   }
 
-  async getMoreData<T extends { page: number; results: any[], type: string }>
-    (
-      currentData: WritableSignal<T | undefined>,
-      ...extraArgs: any[]
-    ) {
-    const currentValue = currentData();
-    if (!currentValue) {
-      console.error('No hay datos actuales');
-      return;
-    }
-
-    const apiMethod = this.methodMap[currentValue.type];
-
-    if (!apiMethod) {
-      console.error(`Unknown data type: ${currentValue.type}`);
-      return;
-    }
-
-    const nextPage = (currentValue.page ?? 0) + 1;
-    console.log('Loading page:', nextPage, 'for type:', currentValue.type, 'extraargs:', extraArgs);
-    const newData: T = await lastValueFrom(apiMethod(nextPage, ...extraArgs));
-
-    console.log(newData)
-    currentData.update((data) => ({
-      ...data,
-      page: newData.page,
-      results: [...(data?.results ?? []), ...newData.results]
-    } as T));
-  }
-
-  async fetchNextPage<T>(params: ParamsApi = {}
-  ): Promise<T> {
+  async fetchNextPage<T>(params: ParamsApi = {} ): Promise<T> {
 
     const type = params.type ?? ''
     const apiMethod = this.methodMap[type];
@@ -326,6 +278,7 @@ export class ApiService {
 
   private buildParams(params: Record<string, any> = {}): HttpParams {
     let httpParams = new HttpParams().set('language', this.DEFAULT_LANGUAGE);
+    
 
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {

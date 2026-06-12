@@ -1,0 +1,4 @@
+.title{
+  @apply uppercase tracking-tighter text-surface font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl 
+  relative text-center w-full max-h-24  line-clamp-2;
+}

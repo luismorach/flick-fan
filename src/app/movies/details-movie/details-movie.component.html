@@ -2,17 +2,18 @@
 
     <div class="relative w-full h-screen">
 
-        <img [ngSrc]="movie()?.backdrop_path || '' " fill loading="lazy" ngSrcset="500w, 780w, 1280w, 1920w, 3840w" [alt]="movie()?.title"
-         [loaderParams]="{type:'backdrop'}" sizes="100vw" class="object-cover object-center gradient opacity-30">
+        <img [ngSrc]="movie()?.backdrop_path || 'fallback' " fill priority ngSrcset="500w, 780w, 1280w, 1920w, 3840w"
+            [alt]="movie()?.title" [loaderParams]="{type:'backdrop'}" sizes="100vw"
+            class="object-cover object-center gradient opacity-30">
 
         <div class="relative h-full container  px-4 md:px-24 flex flex-col justify-end pb-8">
             <div class="flex flex-col md:flex-row gap-8 items-end">
                 <!-- Poster (Hidden on mobile, visible on tablet+) -->
-                <figure
-                    class="hidden md:block w-[240px] shrink-0 rounded-xl overflow-hidden shadow-2xl shadow-[#e50914]/20 border
+                <figure class="hidden md:block w-[240px] shrink-0 rounded-xl overflow-hidden shadow-2xl shadow-[#e50914]/20 border
                      border-white/10 transform  z-10 relative aspect-[2/3]">
-                    <img [ngSrc]="movie()?.poster_path || ''" class="aspect-[2/3] bg-cover bg-center" 
-                    fill loading="lazy" ngSrcset="500w, 780w, 1280w, 1920w, 3840w" [alt]="movie()?.title">
+                    <img [ngSrc]="movie()?.poster_path || 'fallback'" class="aspect-[2/3] bg-cover bg-center" fill
+                        priority ngSrcset="500w, 780w, 1280w, 1920w, 3840w" [alt]="movie()?.title"
+                        [loaderParams]="{type:'poster'}" sizes="240px" />
                 </figure>
 
                 <!-- Text Content -->
@@ -37,20 +38,21 @@
                     </span>
                     <!-- Title -->
                     <h1
-                        class="text-white text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-[-0.033em] drop-shadow-lg">
+                        class="text-surface text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-[-0.033em] drop-shadow-lg">
                         {{movie()?.title}}
                     </h1>
 
                     <p
-                        class="text-gray-300 text-base md:text-lg leading-relaxed line-clamp-3 md:line-clamp-none max-w-3xl drop-shadow-md">
+                        class="text-surface/70 text-base md:text-lg leading-relaxed line-clamp-3 md:line-clamp-none max-w-3xl drop-shadow-md">
                         {{movie()?.tagline}}
                     </p>
 
                     <!-- Genre Chips -->
                     <div class="flex gap-2 flex-wrap my-2">
                         @for(genre of movie()?.genres;track genre.id){
-                        <div class="flex h-6 items-center justify-center px-4 rounded-full border border-white/15">
-                            <span class="text-[#e5e2e1]/60 text-[10px] font-bold tracking-[0.2em] uppercase ">
+                        <div
+                            class="flex h-6 items-center justify-center bg-primary/15 px-4 rounded-full border border-white/15">
+                            <span class="text-surface/60 text-[10px] font-bold tracking-[0.2em] uppercase ">
                                 {{ genre.name }}
                             </span>
                         </div>
@@ -58,12 +60,12 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-6 ">
-                        <button class="btn-glossy text-white flex items-center gap-3 px-10
+                        <a [routerLink]="['/watch-movie', movie()?.id]" class="btn-glossy text-white flex items-center gap-3 px-10
                              py-4 rounded-xl font-extrabold tracking-widest text-sm transition-all 
                              duration-300 hover:scale-105 active:scale-95 shadow-2xl shadow-[#e50914]/40 group">
                             <app-icon name="play" size="w-6 h-6"></app-icon>
                             VER AHORA
-                        </button>
+                    </a>
                         <button class="glass-panel border-white/20 text-[#e5e2e1] flex items-center gap-3 
                             px-10 py-4 rounded-xl font-extrabold tracking-widest text-sm transition-all 
                             duration-300 hover:!bg-white/10 active:scale-95">
@@ -113,14 +115,16 @@
                         <span class="block text-[10px] font-black text-[#e50914] uppercase tracking-[0.3em] mb-2">
                             Productor
                         </span>
-                        <span class="text-[#e5e2e1] text-lg font-bold group-hover:text-[#e50914] transition-colors cursor-default">
+                        <span
+                            class="text-[#e5e2e1] text-lg font-bold group-hover:text-[#e50914] transition-colors cursor-default">
                             {{producer()?.name}}
                         </span>
                     </div>
                     <div class="group">
                         <span
                             class="block text-[10px] font-black text-[#e50914] uppercase tracking-[0.3em] mb-2">Production</span>
-                        <span class="text-[#e5e2e1] text-lg font-bold group-hover:text-[#e50914] transition-colors cursor-default">
+                        <span
+                            class="text-[#e5e2e1] text-lg font-bold group-hover:text-[#e50914] transition-colors cursor-default">
                             {{production()?.name}}
                         </span>
                     </div>
@@ -133,11 +137,12 @@
                 Featured Cast</h3>
             <div class="space-y-8 overflow-y-auto ">
                 @for(cast of credits()?.cast;track cast){
-                <div class="flex items-center gap-5 group cursor-pointer">
+                <div class="flex items-center gap-5 group cursor-pointer pl-1">
                     <figure
                         class="w-16 h-16 rounded-2xl overflow-hidden ring-1 relative ring-white/10 group-hover:ring-[#e50914]/50 transition-all duration-500">
-                        <img [ngSrc]="cast.profile_path" fill class="w-full h-full object-cover group-hover:scale-110 transition-transform 
-                         duration-700" ngSrcset="92w, 500w, 780w, 1280w, 1920w, 3840w" [loaderParams]="{type:'backdrop-square'}" [alt]="cast.name" />
+                        <img [ngSrc]="cast.profile_path || 'fallback'" fill class="w-full h-full object-cover group-hover:scale-110 transition-transform 
+                         duration-700" ngSrcset="92w, 500w, 780w, 1280w, 1920w, 3840w"
+                            [loaderParams]="{type:'backdrop-square'}" [alt]="cast.name" />
                     </figure>
                     <div>
                         <span
@@ -159,13 +164,14 @@
 
     <!-- Sophisticated Similar Movies Section -->
     <section class="pb-32  max-w-[1600px] mx-auto overflow-hidden">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 px-8 md:px-24">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 "
+            [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize + carouselService.slidesInfo.layout().slidesOffsetBefore">
             <div>
                 <span class="text-[#e50914] font-black tracking-[0.4em] uppercase text-[8px] lg:text-[10px] mb-4 block">
                     Experiencia Recomendada</span>
-                <h2
-                    class="font-headline text-3xl md:text-4xl lg:text-5xl font-black text-[#e5e2e1] tracking-tighter uppercase">
-                    Ecos cinematográficos</h2>
+                <h3
+                    class="font-headline text-3xl md:text-4xl lg:text-5xl font-black text-surface tracking-tighter uppercase">
+                    Ecos cinematográficos</h3>
             </div>
         </div>
 
@@ -173,16 +179,16 @@
             <app-carousel-navigation [carouselService]="carouselService"></app-carousel-navigation>
             <div class="carousel-container" cdkScrollable #carouselSimilarMovies
                 [style.gap.px]="carouselService.slidesInfo.layout().spaceBetween"
-                [style.padding-left.px]="carouselService.slidesInfo.layout().edgeOffset"
-                [style.padding-right.px]="carouselService.slidesInfo.layout().edgeOffset">
+                [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize + carouselService.slidesInfo.layout().slidesOffsetBefore"
+                [style.padding-right.px]="carouselService.slidesInfo.layout().peekSize + carouselService.slidesInfo.layout().slidesOffsetAfter">
 
                 @for(similarMovie of similarMoviesLoader.data();track similarMovie.id){
                 <div class="group cursor-pointer carousel-item " (click)="redirect(similarMovie.id)"
                     [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize">
                     <div
                         class="relative aspect-[3/4.5] rounded-3xl overflow-hidden mb-6 ring-1 ring-white/5 group-hover:ring-[#e50914]/40 transition-all duration-700">
-                        <img [ngSrc]="similarMovie.poster_path" fill ngSrcset="92w, 500w, 780w, 1280w, 1920w, 3840w" 
-                        [loaderParams]="{type:'poster'}"
+                        <img [ngSrc]="similarMovie.poster_path" fill ngSrcset="92w, 500w, 780w, 1280w, 1920w, 3840w"
+                            [loaderParams]="{type:'poster'}"
                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
 
                         <div

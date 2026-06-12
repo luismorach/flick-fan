@@ -37,10 +37,10 @@ export class CarouselSeriesComponent {
   // Dependencies
   readonly carouselService = inject(CarouselService<SerieList, 'results'>)
   readonly slideExpansion = useSlideExpansion()
-  readonly loader = useDataLoader<SerieList, 'results'>('results', this.seriesList).pipe(
-    withInfiniteScroll,
-    WithDetails,
-  )
+  readonly loader = useDataLoader<SerieList, 'results'>('results', this.seriesList)
+  .with(withInfiniteScroll)
+  .with(WithDetails)
+  .build();
 
 
   // Configuration
@@ -55,7 +55,9 @@ export class CarouselSeriesComponent {
       slidesPerView: 1,
       peekSkeletonOffset: 1,
       peek: 24,
-      spaceBetween: 24,
+      spaceBetween: 10,
+      slidesOffsetAfter: 10,
+      slidesOffsetBefore: 10,
       expandedSlideMultiplier: 2.6,
       breakpoints: {
         398: { slidesPerView: 1.5 },
@@ -68,9 +70,7 @@ export class CarouselSeriesComponent {
   }
 
   constructor() {
-    if (hasInfiniteScroll(this.loader)) {
-      this.loader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
-    }
+     this.loader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
     this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.loader)
   }
 
@@ -88,10 +88,6 @@ export class CarouselSeriesComponent {
 
   onSlideCollapseHover() {
     this.slideExpansion.restoreBaseTranslate()
-  }
-
-  canLoadMore() {
-    return hasPagination(this.loader) && this.loader.canLoadMore()
   }
 
 }

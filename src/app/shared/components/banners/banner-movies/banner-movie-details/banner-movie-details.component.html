@@ -1,14 +1,28 @@
 <main class="h-full relative">
-    <img [ngSrc]="movie().backdrop_path" ngSrcset="500w, 780w, 1280w, 1920w, 3840w" [loaderParams]="{type:'backdrop'}"
-        sizes="100vw" fill priority class="object-cover object-center gradient">
+    <img [ngSrc]="movie().backdrop_path || 'fallback'" ngSrcset="500w, 780w, 1280w, 1920w, 3840w"
+        [loaderParams]="{type:'backdrop'}" sizes="100vw" fill loading="lazy"
+        class="object-cover object-center gradient">
 
     <div class="overlay"></div>
 
     <section class="text-surface flex justify-around items-center  z-10 w-full h-full py-12">
         <header class="xl:max-w-[32%] lg:w-2/5 md:w-1/2 sm:w-3/4 w-full px-8 md:p-0 my-auto">
             <article class="metadata" #metadata>
-                <img class="title" [src]="movie().imdb_id | autoImage:'logo'" [alt]="movie().title" priority>
-
+                @if(movie().images && movie().images.logos && movie().images.logos.length > 0){
+                @let file_path= movie().images.logos[0].file_path;
+                @if(file_path){
+                <img class="title"  [src]="'https://image.tmdb.org/t/p/w500' + file_path" [alt]="movie().title"
+                    [attr.srcset]="
+                    'https://image.tmdb.org/t/p/w300' + file_path + ' 300w, ' +
+                    'https://image.tmdb.org/t/p/w500' + file_path + ' 500w, ' +
+                    'https://image.tmdb.org/t/p/w780' + file_path + ' 780w, ' +
+                    'https://image.tmdb.org/t/p/w1280' + file_path + ' 1280w'
+                    " 
+                    sizes="(max-width: 640px) 80vw, (max-width: 768px) 75vw,  (max-width: 1280px) 31vw,31vw">
+                }
+                }@else{
+                <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-su">{{movie().title}}</h1>
+                }
                 <div class=" text-sm  flex flex-wrap pt-4 gap-4 sm:gap-6 font-black items-center text-surface">
                     <app-rating [rating]="movie().vote_average"></app-rating>
                     <div class="flex items-center gap-1 sm:gap-2">
@@ -38,17 +52,16 @@
             <p class="overview" #overview>{{movie().overview}}</p>
 
             <section class="buttons" #buttons>
-                <button class="btn-glossy btn"
-                    (click)="playTrailer()" [disabled]="!currentTrailerKey()"
+                <button class="btn-primary px-5" (click)="playTrailer()" [disabled]="!currentTrailerKey()"
                     [attr.aria-label]="`Reproducir avance de  ${movie().title}`" (keyup.enter)="playTrailer()"
                     tabindex="0" type="button">
-                    <app-icon name="clapperboard" size="w-6 h-6"></app-icon>
-                    AVANCE
+                    <app-icon name="clapperboard"></app-icon>
+                    <span>Avance</span>
                 </button>
-                <a [routerLink]="['/details-movie',movie().id]" class="glass-panel btn btn-secondary"
-                    [attr.aria-label]="`Obtener más información de  ${movie().title}`">
-                            <app-icon name="info"></app-icon>
-                    MÁS INFO
+
+                <a [routerLink]="['/details-movie',movie().id]" class="btn-primary px-5">
+                    <app-icon name="info"></app-icon>
+                    <span>Más info</span>
                 </a>
 
             </section>

@@ -1,11 +1,11 @@
 import {
-  ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, effect, ElementRef, inject,
+  ChangeDetectionStrategy, Component, computed, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject,
   input,
   viewChild,
   viewChildren,
 } from '@angular/core';
 import { CardMovieComponent } from './card-movie/card-movie.component';
-import { Movie, MovieList } from '../../../../core/interfaces/movie/movie.interface';
+import { MovieList } from '../../../../core/interfaces/movie/movie.interface';
 import { fade } from '../../../animations/animations';
 import { CarouselNavigationComponent } from '../carousel-navigation/carousel-navigation.component';
 import { CarouselMoviesSkeletonComponent } from './carousel-skeleton/carousel-movies-skeleton.component';
@@ -15,10 +15,8 @@ import { NgClass } from '@angular/common';
 import { useSlideExpansion } from '../../../utils/use-slide-expansion';
 import { useDataLoader } from '../../../utils/data-loaders/use-data-loader';
 import { CarouselService } from '../../../../core/services/carousel/carousel-service';
-import { hasPagination, withPagination } from '../../../utils/data-loaders/enhancers/with-pagination';
-import { canLoadDetails, WithDetails } from '../../../utils/data-loaders/enhancers/with-details';
-import { canFilter, withFilter } from '../../../utils/data-loaders/enhancers/with-filter';
-import { hasInfiniteScroll, withInfiniteScroll } from '../../../utils/data-loaders/enhancers/with-infinite-scroll';
+import { WithDetails } from '../../../utils/data-loaders/enhancers/with-details';
+import { withInfiniteScroll } from '../../../utils/data-loaders/enhancers/with-infinite-scroll';
 
 @Component({
   selector: 'app-carousel-movies',
@@ -42,10 +40,11 @@ export class CarouselMoviesComponent {
   // Dependencies
   readonly slideExpansion = useSlideExpansion()
   readonly carouselService = inject(CarouselService<MovieList, 'results'>);
-  readonly loader = useDataLoader<MovieList, 'results'>('results', this.movieList).pipe(
-    withInfiniteScroll,
-    WithDetails,
-  )
+
+  readonly loader = useDataLoader<MovieList, 'results'>('results', this.movieList)
+    .with(withInfiniteScroll)
+    .with(WithDetails)
+    .build();
 
   // View Queries
   private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carousel')
@@ -59,12 +58,14 @@ export class CarouselMoviesComponent {
       slidesPerView: 1,
       peekSkeletonOffset: 1,
       peek: 24,
-      spaceBetween: 24,
+      spaceBetween: 10,
+      slidesOffsetAfter: 10,
+      slidesOffsetBefore: 10,
       breakpoints: {
         398: { slidesPerView: 1.5 },
         508: { slidesPerView: 2, },
         748: { slidesPerView: 3, peek: 32 },
-        988: { slidesPerView: 4, peek: 44 }, 
+        988: { slidesPerView: 4, peek: 44 },
         1388: { slidesPerView: 5 }
       }
     }
@@ -78,14 +79,8 @@ export class CarouselMoviesComponent {
     return currentMovies.map((_, i) => this.slideExpansion.getCardOriginClass(i, slidesPerView));
   });
 
-  canLoadMore() {
-    return hasPagination(this.loader) && this.loader.canLoadMore()
-  }
-
   constructor() {
-    if (hasInfiniteScroll(this.loader)) {
-      this.loader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
-    }
+    this.loader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
     this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.loader)
   }
 

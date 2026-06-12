@@ -62,9 +62,10 @@ export default class DetailsSerieComponent {
     { initialValue: undefined }
   );
 
-  readonly recomendedSeriesLoader = useDataLoader<SerieList, 'results'>('results', this.recomended, { dataId: this.id_serie() }).pipe(
-    withPagination
-  )
+  readonly recomendedSeriesLoader = useDataLoader<SerieList, 'results'>('results', this.recomended, { dataId: this.id_serie() })
+  .with(withPagination)
+  .build();
+  
 
   private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carouselRecomendedSeries')
   private readonly sinopsysContainer = viewChild<ElementRef<HTMLElement>>('leftPanel')

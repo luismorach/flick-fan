@@ -33,18 +33,18 @@ export const appConfig: ApplicationConfig = {
       provide: IMAGE_LOADER,
       useValue: (config: ImageLoaderConfig) => {
         const type = config.loaderParams?.['type'];
-        if (!config.src) {
+        if (config.src === 'fallback') {
 
           switch (type) {
 
             case 'poster':
-              return '/assets/images/poster-default.png';
+              return '/assets/images/poster-default.webp';
 
             case 'backdrop':
-              return '/assets/images/backdrop-default.png';
+              return '/assets/images/backdrop-default.webp';
 
             case 'backdrop-square':
-              return '/assets/images/backdrop-square-default.png';
+              return '/assets/images/backdrop-square-default.webp';
 
             default:
               return '/assets/images/default-placeholder.webp';

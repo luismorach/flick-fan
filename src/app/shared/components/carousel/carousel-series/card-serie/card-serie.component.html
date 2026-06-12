@@ -1,28 +1,39 @@
 <main appHoverSerieExpand [slideInfo]="slideInfo()" [serie]="serie()" [activeIndex]="activeIndex()"
     [cardIndex]="cardIndex()" (expanded)="hoverEnter.emit($event)" (collapse)="hoverLeave.emit($event)"
-    class="relative rounded-xl overflow-hidden bg-black " 
-    [style.width.px]="slideInfo().layout().slideMainAxisSize"
-    [style.height.px]=" slideInfo().layout().slideMainAxisSize * 1.5" >
+    class="relative rounded-xl overflow-hidden bg-black" [style.width.px]="slideInfo().layout().slideMainAxisSize"
+    [style.height.px]=" slideInfo().layout().slideMainAxisSize * 1.5">
 
     <figure class="h-full absolute w-full" #posterImage>
-        <img [ngSrc]="serie().poster_path" ngSrcset="500w, 780w, 1280w, 1920w" fill loading="lazy"
-            [loaderParams]="{type:'poster'}"  class="card-image"  [alt]="serie().name"
-             sizes="(max-width: 398px) 100vw, (max-width: 508px) 67vw, (max-width: 748px) 50vw, 
+        <img [ngSrc]="serie().poster_path || 'fallback'" ngSrcset="500w, 780w, 1280w, 1920w" fill loading="lazy"
+            [loaderParams]="{type:'poster'}" class="card-image" [alt]="serie().name" sizes="(max-width: 398px) 100vw, (max-width: 508px) 67vw, (max-width: 748px) 50vw, 
             (max-width: 988px) 33vw, (max-width: 1388px) 25vw, 20vw">
     </figure>
 
-    <figure class="w-full h-full relative opacity-0" #backdropImage>
-        
-        <img [ngSrc]="serie().backdrop_path" ngSrcset="500w, 780w, 1280w, 1920w, 3840w" fill 
-        sizes="(max-width: 398px) 100vw, (max-width: 508px) 67vw, (max-width: 748px) 50vw, 
-            (max-width: 988px) 33vw, (max-width: 1388px) 25vw, 20vw"
-            class="card-image" loading="lazy" [alt]="serie().name"> 
-        
+    <figure class="w-full h-full relative opacity-0 " #backdropImage>
+
+        <img [ngSrc]="serie().backdrop_path || 'fallback'" ngSrcset="500w, 780w, 1280w, 1920w, 3840w" fill sizes="(max-width: 398px) 100vw, (max-width: 508px) 67vw, (max-width: 748px) 50vw, 
+            (max-width: 988px) 33vw, (max-width: 1388px) 25vw, 20vw" class="card-image" loading="lazy"
+            [alt]="serie().name"  [loaderParams]="{type:'backdrop'}" class="object-cover">
+
         <figcaption class="overlay-serie">
-            <img class="title" [src]="serie().external_ids?.imdb_id | autoImage:'logo'"  [alt]="serie().name">
+
+            @if(serie().images && serie().images.logos && serie().images.logos.length > 0){
+            @let file_path= serie().images.logos[0].file_path;
+            @if(file_path){
+            <img class="title" [src]="'https://image.tmdb.org/t/p/w500' + file_path" [alt]="serie().name" [attr.srcset]="
+                    'https://image.tmdb.org/t/p/w300' + file_path + ' 300w, ' +
+                    'https://image.tmdb.org/t/p/w500' + file_path + ' 500w, ' +
+                    'https://image.tmdb.org/t/p/w780' + file_path + ' 780w, ' +
+                    'https://image.tmdb.org/t/p/w1280' + file_path + ' 1280w'
+                    " sizes="(max-width: 640px) 80vw, (max-width: 768px) 75vw,  (max-width: 1280px) 31vw,31vw">
+            }
+            }@else{
+            <h1 class="title">{{serie().name}}</h1>
+            }
+           <!--  <img class="title" [src]="serie().external_ids?.imdb_id | autoImage:'logo'" [alt]="serie().name"> -->
 
             <div class="text-lg font-racing py-4 pb-16 flex gap-6">
-                <a [routerLink]="['/details-serie/',serie().id]" class="btn-primary px-6" >
+                <a [routerLink]="['/details-serie/',serie().id]" class="btn-primary px-6">
                     <app-icon name="info"></app-icon>
                     <span>Más información</span>
                 </a>
@@ -32,15 +43,13 @@
                 </div>
             </div>
         </figcaption>
-        <ng-template cdkPortalOutlet ></ng-template>
+        <ng-template cdkPortalOutlet></ng-template>
     </figure>
 
     @if(serie().vote_average){
-        <div class="badge-vote">
-            <app-icon name="star" color="text-red-500" backgroundColor="fill-red-500"> </app-icon>
-            <span class="badge-text">{{ serie().vote_average | number:'1.1-1' :'en-US'}}</span>
-        </div>
+    <div class="badge-vote">
+        <app-icon name="star" color="text-red-500" backgroundColor="fill-red-500"> </app-icon>
+        <span class="badge-text">{{ serie().vote_average | number:'1.1-1' :'en-US'}}</span>
+    </div>
     }
 </main>
-
-

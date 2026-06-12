@@ -10,7 +10,6 @@ import { FloatTrailerService } from '../../services/float-trailer/float-trailer.
 import { ApiService } from '../../services/API/api.service';
 import { Serie } from '../../interfaces/serie/serie.interface';
 import { getKeyTrailer } from '../../../shared/utils/helpers';
-import { WindowService } from '../../services/window/window.service';
 import { useSlideExpansion } from '../../../shared/utils/use-slide-expansion';
 
 @Directive({
@@ -25,7 +24,6 @@ export class HoverSerieExpandDirective {
   private readonly timerManager: TimerManager = inject(TimerManager)
   private readonly api = inject(ApiService)
   private readonly cdr = inject(ChangeDetectorRef);
-  private readonly windowService = inject(WindowService)
 
   private readonly cardElement: HTMLElement = inject(ElementRef<HTMLElement>).nativeElement;
 
@@ -63,18 +61,20 @@ export class HoverSerieExpandDirective {
       if (slideElement) this.expanded.emit(slideElement)
       this.attachTrailer()
     }, 300)
+    
   }
 
   private getDetailsSerie() {
     this.api.getDetailsSerie({ dataId: this.serie().id }).subscribe((detailsSerie) => {
-      this.serie().external_ids = detailsSerie.external_ids
       this.serie().videos = detailsSerie.videos
-      this.cdr.markForCheck()
+      this.serie().images = detailsSerie.images
+      setTimeout(() => this.cdr.markForCheck(), 350)
     })
   }
 
   private changeWidthSlide(width: number, delay: string) {
-    this.renderer.setStyle(this.cardElement, 'transition', `width .3s cubic-bezier(.2,.45,0,1) ${delay}`)
+    this.renderer.setStyle(this.cardElement, 'will-change', 'width')
+    this.renderer.setStyle(this.cardElement, 'transition', `width .5s cubic-bezier(.2,.45,0,1) ${delay}`)
     this.renderer.setStyle(this.cardElement, 'width', `${width}px`)
   }
 

@@ -1,8 +1,8 @@
 import { computed, Signal, signal } from "@angular/core";
-import { AnyEnhancedLoader, ArrayKey, FILTER, ItemType, LoaderCore, LoaderWithFilter } from "../types";
+import { ArrayKey, FILTER, ItemType, LoaderCore, LoaderWithFilter } from "../types";
 
 
-export function withFilter<T extends object, R extends ArrayKey<T>>(loader: AnyEnhancedLoader<T, R>):
+export function withFilter<T extends object, R extends ArrayKey<T>>(loader: LoaderCore<T, R>):
  LoaderWithFilter<T, R> {
 
     const filterPredicate = signal<((item: ItemType<T, R>) => boolean) | null>(null);

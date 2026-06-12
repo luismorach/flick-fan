@@ -1,9 +1,9 @@
 import { computed, effect, signal, Signal, WritableSignal } from "@angular/core";
-import { AnyEnhancedLoader, LoaderCore, ArrayKey, LoaderEnhancer, PipeMethod } from "./types";
+import { LoaderCore, ArrayKey, LoaderEnhancer,  LoaderBuilder } from "./types";
 import { ParamsApi } from "../../../core/interfaces/shared/params-http.interface";
 
 export function useDataLoader<T extends object, K extends ArrayKey<T>>
-    (dataKey: K, dataSource: Signal<T | undefined>, extraArgs?: ParamsApi): AnyEnhancedLoader<T, K> & { pipe: PipeMethod<T, K> } {
+    (dataKey: K, dataSource: Signal<T | undefined>, extraArgs?: ParamsApi): LoaderBuilder<T, K, LoaderCore<T, K>> {
 
     const mutableData: WritableSignal<T | undefined> = signal(undefined)
 
@@ -17,7 +17,7 @@ export function useDataLoader<T extends object, K extends ArrayKey<T>>
         return (current ? current[dataKey] : []) as T[K] & any[];
     });
 
-    const core: AnyEnhancedLoader<T, K> = {
+    const core: LoaderCore<T, K> = {
         mutableData,
         data,
         isInitialized: computed(() => mutableData() !== undefined),
@@ -28,27 +28,6 @@ export function useDataLoader<T extends object, K extends ArrayKey<T>>
         capabilities: new Set()
     }
 
-
-    const pipe = createLoaderPipe<T, K>(core)
-
-    return {
-        ...core,
-        pipe
-    }
+    return new LoaderBuilder<T, K, LoaderCore<T, K>>(core);
+    
 }
-
-export function createLoaderPipe<T extends object, K extends ArrayKey<T>>(core: LoaderCore<T, K>) {
-
-    function pipe(...enhancers: Array<LoaderEnhancer<T, K>>) {
-        return enhancers.reduce(
-            (currentLoader, enhancerFn) => enhancerFn(currentLoader),
-            core
-        ) as AnyEnhancedLoader<T, K>;
-    }
-    return pipe;
-}
-
-
-
-
-

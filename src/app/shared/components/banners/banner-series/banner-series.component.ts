@@ -38,10 +38,12 @@ export class BannerSeriesComponent {
 
   // Dependencies
   readonly carouselService = inject(CarouselService<SerieList, 'results'>);
-  readonly loader = useDataLoader<SerieList, 'results'>('results', this.listSeries).pipe(
-    withInfiniteScroll,
-    WithDetails,
-  )
+  readonly loader = useDataLoader<SerieList, 'results'>('results', this.listSeries)
+  .with(withInfiniteScroll)
+  .with(WithDetails)
+  .build();
+  
+  
 
   // View Queries
   private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carousel')
@@ -116,13 +118,7 @@ export class BannerSeriesComponent {
   }
 
   constructor() {
-    if (hasInfiniteScroll(this.loader)) {
-      this.loader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
-    }
+    this.loader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
     this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.loader)
-  }
-
-  canLoadMore() {
-    return hasPagination(this.loader) && this.loader.canLoadMore()
   }
 }

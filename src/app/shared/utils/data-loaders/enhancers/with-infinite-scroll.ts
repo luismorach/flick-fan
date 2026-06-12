@@ -1,10 +1,10 @@
 import { DestroyRef, effect, ElementRef, inject, Signal } from "@angular/core";
 import { PaginatedMetaData } from "../../../../core/interfaces/shared/generic.interface";
-import { ArrayKey, AnyEnhancedLoader, LoaderCore, INFINITE_SCROLL, LoaderWithPagination, LoaderWithInfiniteScroll, PAGINATION } from "../types";
+import { ArrayKey, LoaderCore, INFINITE_SCROLL, LoaderWithPagination, LoaderWithInfiniteScroll, PAGINATION } from "../types";
 import { withPagination } from "./with-pagination";
 
 export function withInfiniteScroll<T extends PaginatedMetaData, R extends ArrayKey<T>>
-    (loader: AnyEnhancedLoader<T, R>): LoaderWithInfiniteScroll<T, R> & LoaderWithPagination<T, R> {
+    (loader: LoaderCore<T, R>): LoaderWithPagination<T, R> & LoaderWithInfiniteScroll<T, R> {
 
     const pagination = withPagination(loader)
 

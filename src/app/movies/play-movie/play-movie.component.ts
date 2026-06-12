@@ -6,7 +6,7 @@ import { fade } from '../../shared/animations/animations';
 import { UrlSafePipe } from '../../shared/pipes/url-safe/url-safe.pipe';
 import { ApiService } from '../../core/services/API/api.service';
 import { ComunicatorService } from '../../core/services/comunicator/comunicator.service';
-import { MovieList } from '../../core/interfaces/movie/movie.interface';
+import { Movie, MovieList } from '../../core/interfaces/movie/movie.interface';
 import { CarouselMoviesComponent } from '../../shared/components/carousel/carousel-movies/carousel-movies.component';
 import { CarouselMoviesSkeletonComponent } from '../../shared/components/carousel/carousel-movies/carousel-skeleton/carousel-movies-skeleton.component';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -36,7 +36,7 @@ export default class PlayMovieComponent {
 
   movie = toSignal(
     toObservable(this.id_movie).pipe(
-      switchMap(id => this.api.getDetailsMovie({ dataId: id }))),
+      switchMap(id => this.api.getDetails<Movie>({ dataId: id,type: 'movies' }))),
     { initialValue: undefined }
   );
 

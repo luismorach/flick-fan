@@ -1,8 +1,7 @@
 <div [class]="mode() === 'float' ? 'frame-container' : 'w-full h-full'">
 
   <div class="player-frame" cdkDrag cdkDragRootElement=".cdk-overlay-container"
-    [cdkDragDisabled]="mode() === 'embed' || !svc.isMinimized()" 
-      [ngClass]="{
+    [cdkDragDisabled]="mode() === 'embed' || !svc.isMinimized()" [ngClass]="{
         'player-float':mode() === 'float',
         'player-embed':mode() === 'embed',
         'player-frame--normal':!svc.isMinimized() && mode() === 'float',
@@ -12,9 +11,13 @@
     @if (mode() === 'float'){
     <div class="frame-player-buttons">
       @if (svc.isMinimized()){
-      <i (click)="drag()._dragRef.reset(); svc.maximizeFloatTrailer()" class="fa-solid fa-maximize player-button"></i>
+      <app-icon class="player-button" name="maximize" color="text-white" backgroundColor="#e50914" size="w-5 h-5"
+        (click)="drag()._dragRef.reset();svc.maximizeFloatTrailer()"></app-icon>
+     <!--  <i (click)="drag()._dragRef.reset(); svc.maximizeFloatTrailer()" class="fa-solid fa-maximize player-button"></i> -->
       }
-      <i (click)="svc.hideFloatTrailer()" class="fa-solid fa-xmark player-button"></i>
+      <app-icon class="player-button" name="close" color="text-white" backgroundColor="#e50914" size="w-5 h-5"
+        (click)="svc.hideFloatTrailer()"></app-icon>
+      <!-- <i (click)="svc.hideFloatTrailer()" class="fa-solid fa-xmark player-button"></i> -->
     </div>
     }
 

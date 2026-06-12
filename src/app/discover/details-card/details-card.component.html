@@ -1,18 +1,21 @@
 
-<div class="w-[26rem] h-[29.8rem] bg-black/50 rounded-tl-xl overflow-hidden sticky top-36 ">
+<div class="w-[26rem] h-[calc(100vh-9rem)] bg-[#151414] rounded-tl-xl overflow-hidden sticky top-36 " >
     @let item = selectedItem();
       @if(item){
        <section class="px-10 pt-7 pb-4 relative z-10 flex flex-col h-full">
           <header class="w-full flex flex-col flex-1 overflow-y-auto ">
               <figure class="h-24 flex justify-center">
-                @if(isMovie(item)){
-                  <img  [src]="item.imdb_id | autoImage:'logo'" [alt]="item.title"
-                  class="w-full object-contain text-white text-3xl 
-                  flex items-center justify-center h-24 before:text-center before:line-clamp-2">
+                @if(titleImage()){
+                  <img  [src]="'https://image.tmdb.org/t/p/w500' + titleImage()" alt="title()"
+                  [attr.srcset]="
+                    'https://image.tmdb.org/t/p/w300' + titleImage() + ' 300w, ' +
+                    'https://image.tmdb.org/t/p/w500' + titleImage() + ' 500w, ' +
+                    'https://image.tmdb.org/t/p/w780' + titleImage() + ' 780w, ' +
+                    'https://image.tmdb.org/t/p/w1280' + titleImage() + ' 1280w'
+                    " sizes="15rem"
+                  class="w-full object-contain flex items-center justify-center h-24 ">
                 }@else {
-                  <img  [src]="item.external_ids?.imdb_id| autoImage:'logo'" [alt]="item.name"
-                  class="w-full object-contain text-white text-3xl 
-                  flex items-center justify-center h-24 before:text-center before:line-clamp-2">
+                  <h1 class="title">{{title()}}</h1>
                 }
               </figure>
 
@@ -26,7 +29,7 @@
                 }
 
                 <div class="flex gap-1 items-center my-4 mx-2">
-                  <app-icon name="star" color="text-red-600" backgroundColor="fill-red-600" size="w-5 h-5"> </app-icon>
+                  <app-icon name="star" color="text-red-600" backgroundColor="#e50914" size="w-5 h-5"> </app-icon>
                   <p> {{item.vote_average| number:'1.1-1' :'en-US'}}</p> 
                 </div>
               </div>
@@ -70,9 +73,11 @@
           </section>
         </section>
       }
-        <figure class="absolute top-0 w-full aspect-[2/3] blur-[10px] opacity-30 z-0">
-              <img [ngSrc]="selectedItem()?.backdrop_path | autoImage : 'tall'" alt=""
-                 class="aspect-[2/3] bg-cover bg-center" fill>
+        <figure class="absolute top-0 w-full aspect-[2/3]  opacity-30 blur-[10px] z-0">
+              <img [ngSrc]="selectedItem()?.poster_path || 'fallback'" alt="" [loaderParams]="{type:'poster'}"
+              ngSrcset="300w, 500w, 780w, 1280w, 1920w, 3840w" 
+              sizes="26rem"
+                 class="aspect-[2/3] bg-cover bg-center" fill priority>
         </figure>
       
     </div> 

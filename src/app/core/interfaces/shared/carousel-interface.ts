@@ -16,6 +16,8 @@ export interface CarouselOptions {
 
 export interface slidesConfig {
     peek?: number;
+    slidesOffsetBefore?: number;
+    slidesOffsetAfter?: number;
     spaceBetween?: number;
     slidesPerView?: number;
     containerOrientation?: 'horizontal' | 'vertical';

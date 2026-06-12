@@ -18,7 +18,7 @@
 }
 
 .buttons{
-  @apply flex justify-start gap-4 text-lg my-4 opacity-0  h-9 sm:h-11 ;
+  @apply flex justify-start gap-4 text-lg my-4 opacity-0  h-9 sm:h-10 ;
 }
 
  

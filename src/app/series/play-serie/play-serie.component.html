@@ -202,8 +202,7 @@ min-h-screen pt-16 overflow-x-hidden">
 
     </div>
     @defer(when similarSeries()){
-    <app-carousel-series [seriesList]="similarSeries()" id="similar" title="Series similares"
-        (requestMoreData)="API.getMoreData(similarSeries,id_serie)">
+    <app-carousel-series [seriesList]="similarSeries()" id="similar" title="Series similares">
     </app-carousel-series>
     }
     <!--  @placeholder{
@@ -211,8 +210,7 @@ min-h-screen pt-16 overflow-x-hidden">
         } -->
 
     @defer(when recomendedSeries()){
-    <app-carousel-series [seriesList]="recomendedSeries()" id="recomended" title="Series recomendadas"
-        (requestMoreData)="API.getMoreData(recomendedSeries,id_serie)">
+    <app-carousel-series [seriesList]="recomendedSeries()" id="recomended" title="Series recomendadas">
     </app-carousel-series>
     }
     <!--  @placeholder{

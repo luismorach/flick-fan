@@ -12,6 +12,8 @@ import { IconComponent } from '../../shared/icon/icon.component';
 import { MinutesToTimePipe } from '../../shared/pipes/minutes-to-time/minutes-to-time.pipe';
 import { useDataLoader } from '../../shared/utils/data-loaders/use-data-loader';
 import { CarouselNavigationComponent } from "../../shared/components/carousel/carousel-navigation/carousel-navigation.component";
+import { withPagination } from '../../shared/utils/data-loaders/enhancers/with-pagination';
+import { WithDetails } from '../../shared/utils/data-loaders/enhancers/with-details';
 
 const defaultSeason: Season = {
   air_date: new Date(),
@@ -89,7 +91,7 @@ export class DetailsEpisodesComponent {
     }
   }
 
-  readonly loaderEpisodes = useDataLoader<Season, 'episodes'>('episodes', this.season)
+  readonly loaderEpisodes = useDataLoader<Season, 'episodes'>('episodes', this.season).build();
 
   constructor() {
     this.carousel.initialize(this.carouselEpisodesContainer, this.carouselOptions, this.loaderEpisodes)

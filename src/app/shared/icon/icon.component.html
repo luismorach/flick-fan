@@ -100,43 +100,25 @@
 
 
     <svg *ngSwitchCase="'maximize'" class="{{ size }} {{ color }} {{backgroundColor}}"
-        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="150" height="150" fill="none"
-        stroke="currentColor" stroke-width="40" stroke-linecap="round" stroke-linejoin="round">
+     xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Líneas diagonales principales (la X) -->
+        <path d="M6 6l12 12M18 6L6 18" />
+
         <!-- Flecha superior izquierda -->
-        <path d="
-    M200 120
-    L140 120
-    A25 25 0 0 0 130 130
-    L130 200 Z" fill="white" />
+        <path d="M9 5H5v4" />
 
         <!-- Flecha superior derecha -->
-        <path d="
-    M332 120
-    L392 120
-    A20 20 0 0 1 412 140
-    L412 200 z" fill="white" />
+        <path d="M15 5h4v4" />
 
         <!-- Flecha inferior izquierda -->
-        <path d="
-    M180 392
-    L120 392
-    A20 20 0 0 1 100 372
-    L100 312 Z " fill="white" />
+        <path d="M5 15v4h4" />
 
         <!-- Flecha inferior derecha -->
-        <path d="
-    M332 392
-    L392 392
-    A20 20 0 0 0 412 372
-    L412 312 Z " fill="white" />
-
-        <!-- Cruz central -->
-        <path d="
-    M160 160
-    L352 352
-    M352 160
-    L160 352" stroke-width="60" />
+        <path d="M19 15v4h-4" />
     </svg>
+
+   <!--  -->
 
 
 
@@ -166,7 +148,7 @@
             stroke-linejoin="round" />
     </svg>
 
-    <svg *ngSwitchCase="'star'" class="{{ size }} {{ color }} {{backgroundColor}}" width="24" height="24" 
+    <svg *ngSwitchCase="'star'" class="{{ size }} {{ color }} {{backgroundColor}}" width="24" height="24"
         viewBox="0 0 24 24" class="inline-block">
         <defs>
             <!-- ID único por cada iteración -->
@@ -180,6 +162,12 @@
 
         <path [attr.fill]="'url(#' + gradId + ')'"
             d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+    </svg>
+
+    <svg *ngSwitchCase="'close'" class="{{ size }} {{ color }} {{backgroundColor}}" xmlns="http://www.w3.org/2000/svg"
+        width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 6L6 18M6 6l12 12" />
     </svg>
 
 </ng-container>

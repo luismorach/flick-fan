@@ -3,21 +3,35 @@
         <header class="flex flex-col justify-end w-full mb-4">
 
             <article class="metadata" #metadata>
-                <img class="title" [src]="serie().external_ids?.imdb_id | autoImage:'logo'" [alt]="serie().name"
-                    loading="lazy">
+                @if(serie().images && serie().images.logos && serie().images.logos.length > 0){
+                @let file_path= serie().images.logos[0].file_path;
+                @if(file_path){
+                    <img class="title"  [src]="'https://image.tmdb.org/t/p/w500' + file_path" [alt]="serie().name"
+                    [attr.srcset]="
+                    'https://image.tmdb.org/t/p/w300' + file_path + ' 300w, ' +
+                    'https://image.tmdb.org/t/p/w500' + file_path + ' 500w, ' +
+                    'https://image.tmdb.org/t/p/w780' + file_path + ' 780w, ' +
+                    'https://image.tmdb.org/t/p/w1280' + file_path + ' 1280w'
+                    " 
+                    sizes="(max-width: 640px) 80vw, (max-width: 768px) 75vw,  (max-width: 1280px) 31vw,31vw">
+                }
+                }@else{
+                <h1 class="title">{{serie().name}}</h1>
+                }
 
                 <section class="flex flex-wrap gap-4 lg:gap-6 pt-4 text-sm font-black">
 
                     <app-rating class="flex" [rating]="serie().vote_average"></app-rating>
 
                     <div class="flex items-center gap-1 sm:gap-2">
-                        <app-icon name="date" color="text-red-300" size="w-3 h-3 lg:w-4 lg:h-4"></app-icon>
+                        <app-icon name="date" color="text-surface-variant" size="w-3 h-3 lg:w-4 lg:h-4"></app-icon>
                         <span>{{serie().first_air_date|date:'yyyy'}} - {{serie().last_air_date|date:'yyyy'}}</span>
-                    </div>
+                    </div> 
 
                     <div class="flex items-center gap-1 sm:gap-2">
-                        <app-icon name="film" color="text-red-300" size="w-3 h-3 lg:w-4 lg:h-4"></app-icon>
-                        <span>{{ serie().number_of_seasons }} temporadas, {{ serie().number_of_episodes }} episodios</span>
+                        <app-icon name="film" color="text-surface-variant" size="w-3 h-3 lg:w-4 lg:h-4"></app-icon>
+                        <span>{{ serie().number_of_seasons }} temporadas, {{ serie().number_of_episodes }}
+                            episodios</span>
                     </div>
                 </section>
 
@@ -38,16 +52,16 @@
             <p class="overview" #overview>{{serie().overview}}</p>
 
             <section class="buttons" #buttons>
-                <button class="btn-glossy btn " (click)="playTrailer()" [disabled]="!floatTrailer.hasTrailer()"
+                <button class="btn-primary px-5" (click)="playTrailer()" [disabled]="!floatTrailer.hasTrailer()"
                     [attr.aria-label]="`Reproducir avance de  ${serie().name}`" (keyup.enter)="playTrailer()"
                     tabindex="0" type="button">
                     <app-icon name="clapperboard"></app-icon>
-                    <span>AVANCE</span>
+                    <span>Avance</span>
                 </button>
 
-                <a [routerLink]="['/details-serie', serie().id]" class="glass-panel btn btn-secondary ">
+                <a [routerLink]="['/details-serie', serie().id]" class="btn-primary px-5">
                     <app-icon name="info"></app-icon>
-                    <span>MÁS INFO</span>
+                    <span>Más info</span>
                 </a>
             </section>
         </header>

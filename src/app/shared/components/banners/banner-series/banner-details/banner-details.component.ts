@@ -1,7 +1,6 @@
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, computed, effect, ElementRef, inject, input, viewChild } from '@angular/core';
 import { Serie } from '../../../../../core/interfaces/serie/serie.interface';
-import { AutoImagePipe } from '../../../../pipes/autoimage/auto-image.pipe';
 import { RatingComponent } from '../../../rating/rating.component';
 import { IconComponent } from '../../../../icon/icon.component';
 import { RouterLink } from '@angular/router';
@@ -12,7 +11,7 @@ import { AnimationsService } from '../../../../../core/services/animations/anima
 
 @Component({
   selector: 'app-banner-details',
-  imports: [AutoImagePipe, RatingComponent, IconComponent, DatePipe, RouterLink],
+  imports: [ RatingComponent, IconComponent, DatePipe, RouterLink],
   templateUrl: './banner-details.component.html',
   styleUrl: './banner-details.component.css',
 })

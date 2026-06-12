@@ -13,11 +13,12 @@ export const FILTER = Symbol('filter');
 export const INFINITE_SCROLL = Symbol('infinite_scroll');
 export const AUTO_FILL = Symbol('auto_fill');
 
-export type LoaderEnhancer<T extends object, K extends ArrayKey<T>> =
+/* export type LoaderEnhancer<T extends object, K extends ArrayKey<T>> =
     (loader: AnyEnhancedLoader<T, K>) => AnyEnhancedLoader<T, K>;
 
 export type PipeMethod<T extends object, K extends ArrayKey<T>> =
-    (...enhancers: Array<LoaderEnhancer<T, K>>) => AnyEnhancedLoader<T, K>;
+    (...enhancers: Array<LoaderEnhancer<T, K>>) => AnyEnhancedLoader<T, K>; */
+    export type LoaderEnhancer<TIn, TOut> = (loader: TIn) => TOut;
 
 export type ItemType<T, R extends ArrayKey<T>> = T[R] extends (infer U)[] ? U : never;
 
@@ -32,6 +33,21 @@ export interface LoaderCore<T extends object, K extends keyof T> {
     readonly capabilities: Set<symbol>;
 };
 
+
+export class LoaderBuilder<T extends object, K extends ArrayKey<T>, TLoader extends LoaderCore<T, K>> {
+
+    constructor(private loader: TLoader) { }
+
+    with<TOut extends LoaderCore<T, K>>(
+        enhancer: LoaderEnhancer<TLoader, TOut>
+    ): LoaderBuilder<T, K, TOut & TLoader> {
+        return new LoaderBuilder<T, K, TOut & TLoader>(enhancer(this.loader)as TLoader & TOut);
+    }
+
+    build(): TLoader {
+        return this.loader;
+    }
+}
 export interface LoaderWithPagination<T extends object, K extends keyof T> extends LoaderCore<T, K> {
     isFetchingMoreData: Signal<boolean>;
     loadMoreData: (params?: ParamsApi) => Promise<void>;
@@ -49,18 +65,12 @@ export interface LoaderWithFilter<T extends object, K extends ArrayKey<T>> exten
 
 export interface LoaderWithInfiniteScroll<T extends object, K extends ArrayKey<T>> extends LoaderCore<T, K> {
     setupInfiniteScroll: (
-        sentinel: Signal<readonly ElementRef<HTMLElement> [] | undefined>,
+        sentinel: Signal<readonly ElementRef<HTMLElement>[] | undefined>,
         container?: Signal<ElementRef<HTMLElement> | undefined>,
     ) => void
 };
 
 export interface LoaderWithAutoFill<T extends object, K extends keyof T> extends LoaderCore<T, K> {
-    setupAutoFill: (sentinel: Signal<readonly ElementRef<HTMLElement>  [] | undefined>,
-        container?: Signal<ElementRef<HTMLElement> | undefined>) =>  void
+    setupAutoFill: (sentinel: Signal<readonly ElementRef<HTMLElement>[] | undefined>,
+        container?: Signal<ElementRef<HTMLElement> | undefined>) => void
 };
-
-export type AnyEnhancedLoader<T extends object, K extends keyof T> =
-    | LoaderCore<T, K>
-    | LoaderWithPagination<T, K>
-    | LoaderWithDetails<T, K>
-    | (LoaderWithPagination<T, K> & LoaderWithDetails<T, K>);

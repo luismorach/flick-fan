@@ -6,17 +6,20 @@ import { WindowService } from '../../core/services/window/window.service';
 export interface SlidesInfoLayout {
   slidesPerView: number
   spaceBetween: number,
+  slidesOffsetBefore: number,
+  slidesOffsetAfter: number,
   spacingToCenterSlide: number,
   expandedSlideSize: number,
   viewportMainAxisSize: number,
   slideMainAxisSize: number,
   slideMainAxisSizeWithGap: number,
   peekSize: number,
-  edgeOffset: number,
 }
 
 interface NormalizedSlidesConfig {
   peekSize: number;
+  slidesOffsetBefore: number;
+  slidesOffsetAfter: number;
   spaceBetween: number;
   slidesPerView: number;
   expandedMultiplier: number;
@@ -40,7 +43,6 @@ export function useSlidesInfo(container: Signal<ElementRef<HTMLElement> | undefi
     const isVertical = normalizedConfig.direction === 'vertical' ? true : false
     const viewportMainAxisSize = isVertical ? mainAxisMetricsRef.height : mainAxisMetricsRef.width
     const sizes = calculateSlideSizes(mainAxisMetricsRef, normalizedConfig);
-    const edgeOffset = normalizedConfig.peekSize + normalizedConfig.spaceBetween
 
     const spacing = calculateCenterSpacing(
       viewportMainAxisSize,
@@ -52,7 +54,6 @@ export function useSlidesInfo(container: Signal<ElementRef<HTMLElement> | undefi
     return {
       ...normalizedConfig,
       ...sizes,
-      edgeOffset,
       spacingToCenterSlide: spacing,
     };
   });
@@ -77,7 +78,7 @@ export function useSlidesInfo(container: Signal<ElementRef<HTMLElement> | undefi
     direction,
     skeletonSlideIndexes,
     visibleSkeletonsCount,
-    hasSlides
+    hasSlides,
   };
 }
 
@@ -105,6 +106,8 @@ function getActiveConfig(viewportWidth: number, baseConfig: SlidesConfig): Slide
 function normalizeConfig(config: SlidesConfig): NormalizedSlidesConfig {
   return {
     peekSize: Math.max(0, config.peek ?? 0),
+    slidesOffsetBefore: Math.max(0, config.slidesOffsetBefore ?? 0),
+    slidesOffsetAfter: Math.max(0, config.slidesOffsetAfter ?? 0),
     spaceBetween: Math.max(0, config.spaceBetween ?? 0),
     slidesPerView: Math.max(1, config.slidesPerView ?? 1),
     expandedMultiplier: Math.max(1, config.expandedSlideMultiplier ?? 1),
@@ -121,7 +124,7 @@ function calculateSlideSizes(mainAxisMetrics: mainAxisMetrics, config: Normalize
   let slideMainAxisSize: number
 
   const availableSize = viewportSize
-    - ((config.slidesPerView + 1) * config.spaceBetween)
+    - (((config.slidesPerView -1)* config.spaceBetween) + config.slidesOffsetBefore + config.slidesOffsetAfter)
     - (config.peekSize * 2);
 
   const safeAvailableSize = Math.max(0, availableSize);
