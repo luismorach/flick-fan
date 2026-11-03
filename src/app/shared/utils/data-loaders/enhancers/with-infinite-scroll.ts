@@ -8,11 +8,17 @@ export function withInfiniteScroll<T extends PaginatedMetaData, R extends ArrayK
 
     const pagination = withPagination(loader)
 
-    const setupInfiniteScroll = (sentinel: Signal<readonly ElementRef<HTMLElement>[] | undefined>,
-        container?: Signal<ElementRef<HTMLElement> | undefined>) => {
+    const setupInfiniteScroll = (sentinel: readonly ElementRef<HTMLElement>[],
+        container?: ElementRef<HTMLElement>) => {
 
         let io: IntersectionObserver | undefined = undefined
-        const destroyRef = inject(DestroyRef);
+        const containerEl = container?.nativeElement ?? null;
+        const sentinelEl = sentinel[0]?.nativeElement
+        console.log('infinite scroll', containerEl, sentinelEl)
+        io = createIntersectionObserver(containerEl, pagination)
+        io.observe(sentinelEl)
+        return () => io.disconnect()
+        /* const destroyRef = inject(DestroyRef);
 
         const cleanupRef = effect((onCleanup) => {
             const containerSignal = container?.();
@@ -40,6 +46,7 @@ export function withInfiniteScroll<T extends PaginatedMetaData, R extends ArrayK
             io?.disconnect()
             io = undefined
         })
+    */
     }
 
     pagination.capabilities.add(INFINITE_SCROLL);
@@ -63,7 +70,7 @@ function createIntersectionObserver<T extends PaginatedMetaData, R extends Array
         loader.loadMoreData()
     },
         {
-            root:root,
+            root: root,
             threshold: 0.1,
             rootMargin: '0px 0px 0px 0px'
         }

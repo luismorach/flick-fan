@@ -1,7 +1,7 @@
-<main class="h-full relative">
+<main class="backdrop" [style.width.px]="carouselService().state().slidesInfo.layout().slideMainAxisSize">
     <img [ngSrc]="movie().backdrop_path || 'fallback'" ngSrcset="500w, 780w, 1280w, 1920w, 3840w"
         [loaderParams]="{type:'backdrop'}" sizes="100vw" fill loading="lazy"
-        class="object-cover object-center gradient">
+        class="object-cover object-center ">
 
     <div class="overlay"></div>
 

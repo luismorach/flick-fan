@@ -62,7 +62,7 @@ export default class DetailsSerieComponent {
     { initialValue: undefined }
   );
 
-  readonly recomendedSeriesLoader = useDataLoader<SerieList, 'results'>('results', this.recomended, { dataId: this.id_serie() })
+  readonly recomendedSeriesLoader = useDataLoader<SerieList, 'results'>('results', this.recomended)
   .with(withPagination)
   .build();
   

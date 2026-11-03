@@ -10,7 +10,7 @@ export function withPagination<T extends PaginatedMetaData, R extends ArrayKey<T
     const isFetchingMoreData = signal(false)
 
     const loadMoreData = async (): Promise<void> => {
-        const params = loader.extraArgs ?? {}
+        const params = loader.extraArgs?.() ?? {}
         const data = loader.mutableData();
 
         console.log('entre a consultar mas data', data)

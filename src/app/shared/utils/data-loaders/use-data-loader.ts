@@ -1,18 +1,14 @@
-import { computed, effect, signal, Signal, WritableSignal } from "@angular/core";
+import { computed, effect, linkedSignal, signal, Signal, WritableSignal } from "@angular/core";
 import { LoaderCore, ArrayKey, LoaderEnhancer,  LoaderBuilder } from "./types";
 import { ParamsApi } from "../../../core/interfaces/shared/params-http.interface";
 
 export function useDataLoader<T extends object, K extends ArrayKey<T>>
-    (dataKey: K, dataSource: Signal<T | undefined>, extraArgs?: ParamsApi): LoaderBuilder<T, K, LoaderCore<T, K>> {
+    (dataKey: K, dataSource: Signal<T | undefined>, extraArgs?: Signal<ParamsApi>): LoaderBuilder<T, K, LoaderCore<T, K>> {
 
-    const mutableData: WritableSignal<T | undefined> = signal(undefined)
+    const mutableData = linkedSignal(dataSource)
+    //const data= signal([] as T[K] & any[])
 
-    effect(() => {
-        console.log('configurando data', dataSource())
-        mutableData.set(dataSource());
-    })
-
-    const data = computed(() => {
+   const data = computed(() => {
         const current = mutableData()
         return (current ? current[dataKey] : []) as T[K] & any[];
     });

@@ -14,12 +14,12 @@
             class="flex grow-0 overflow-hidden"
             [style.padding-left.px]="peek()" 
             [style.padding-right.px]="peek()" 
-            [style.gap.px]="slidesInfo.layout().spaceBetween">
+            [style.gap.px]="slidesInfo().layout().spaceBetween">
         
             @for(_ of skeletons(); track $index) { 
                 <div class="flex-shrink-0"
-                    [style.width.px]="slidesInfo.layout().slideMainAxisSize"
-                    [style.height.px]=" slidesInfo.layout().slideMainAxisSize * 1.5" >
+                    [style.width.px]="slidesInfo().layout().slideMainAxisSize"
+                    [style.height.px]=" slidesInfo().layout().slideMainAxisSize * 1.5" >
                     <ng-container *ngTemplateOutlet="skeletonCard"></ng-container>
                 </div>
                 

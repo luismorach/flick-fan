@@ -15,7 +15,7 @@ export function WithDetails<T extends { type: string }, R extends ArrayKey<T>>
 
             if (!details) return
 
-            console.log('actualizando detalles', loader)
+            //console.log('actualizando detalles', loader)
             loader.mutableData.update((mediaList) => {
                 if (!mediaList) return mediaList;
 
@@ -30,7 +30,7 @@ export function WithDetails<T extends { type: string }, R extends ArrayKey<T>>
         } catch (error) {
             console.warn(' error en actualizacion', error)
         } finally {
-            console.log(' detalles actualizados', loader.mutableData())
+            //console.log(' detalles actualizados', loader.mutableData())
         }
     }
 

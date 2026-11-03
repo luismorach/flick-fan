@@ -33,9 +33,9 @@
     }
   </div>
 
-  @if(mode() === 'embed'){
+  
   <div class="btn-volume" (click)="changeMuted($event)" @fadeInButton>
     <app-icon [name]="mutedState() ? 'volume-xmark': 'volume-high'"></app-icon>
   </div>
-  }
+  
 </div>

@@ -8,6 +8,8 @@ import { IconComponent } from "../../../../icon/icon.component";
 import { CdkPortalOutlet } from '@angular/cdk/portal';
 import { SlidesInfoHook } from '../../../../utils/use-slides-info';
 import { HoverSerieExpandDirective } from "../../../../../core/directives/hover-serie-expand/hover-serie-expand.directive";
+import { CarouselService } from '../../../../../core/services/test/carousel/carousel-service';
+import { useSlideExpansion } from '../../../../utils/use-slide-expansion';
 
 @Component({
   selector: 'app-card-serie',
@@ -21,11 +23,26 @@ import { HoverSerieExpandDirective } from "../../../../../core/directives/hover-
 export class CardSerieComponent {
 
   readonly serie = input.required<Serie>();
-  readonly slideInfo = input.required<SlidesInfoHook>()
   readonly cardIndex = input<number>()
-  readonly activeIndex = input<number>()
+  readonly carouselService = input.required<CarouselService<any,any>>()
+
+  slideExpansion = useSlideExpansion()
 
   readonly hoverEnter = output<HTMLElement>();
-  readonly hoverLeave = output<HTMLElement>();
+  readonly hoverLeave = output<HTMLElement>(); 
 
+  onHoverEnter(element:HTMLElement | null){
+   const slide = element?.parentElement
+    const position = this.carouselService().state().currentPosition?.()
+
+    if (!slide || position === undefined) return
+
+    console.log('expaddiennddo', slide,position)
+
+    this.slideExpansion.adjustTranslateForExpandedSlide( slide,this.carouselService()) 
+  }
+  onHoverLeave(element:HTMLElement){
+    console.log('colapsando')
+    this.slideExpansion.restoreBaseTranslate() 
+  }
 }

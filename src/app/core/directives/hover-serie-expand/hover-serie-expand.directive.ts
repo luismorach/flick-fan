@@ -11,6 +11,7 @@ import { ApiService } from '../../services/API/api.service';
 import { Serie } from '../../interfaces/serie/serie.interface';
 import { getKeyTrailer } from '../../../shared/utils/helpers';
 import { useSlideExpansion } from '../../../shared/utils/use-slide-expansion';
+import { CarouselService } from '../../services/test/carousel/carousel-service';
 
 @Directive({
   selector: '[appHoverSerieExpand]',
@@ -27,10 +28,9 @@ export class HoverSerieExpandDirective {
 
   private readonly cardElement: HTMLElement = inject(ElementRef<HTMLElement>).nativeElement;
 
-  readonly slideInfo = input.required<SlidesInfoHook>()
   readonly serie = input.required<Serie>()
   readonly cardIndex = input<number>()
-  readonly activeIndex = input<number>()
+  readonly carouselService = input.required<CarouselService<any, any>>()
 
   readonly expanded = output<HTMLElement>();
   readonly collapse = output<HTMLElement>();
@@ -42,6 +42,12 @@ export class HoverSerieExpandDirective {
   private readonly posterElement = computed(() => this.poster().nativeElement);
   private readonly backdropElement = computed(() => this.backdrop().nativeElement);
   private readonly parentElement = computed(() => this.cardElement.parentElement);
+
+  private readonly activeIndex = computed(() => this.carouselService().state().activeIndex?.() ?? 0)
+  private readonly slideInfo = computed(() => this.carouselService().state().slidesInfo)
+
+  private readonly width = computed(() => this.slideInfo().layout().slideMainAxisSize)
+  private readonly expandedWidth = computed(() => this.slideInfo().layout().expandedSlideSize)
 
   private readonly slideExpansion = useSlideExpansion()
 
@@ -56,12 +62,12 @@ export class HoverSerieExpandDirective {
     const slideElement = this.parentElement()
     this.getDetailsSerie()
     this.timerManager.addTimeout(() => {
-      this.changeWidthSlide(this.slideInfo().layout().expandedSlideSize, '0s')
+      this.changeWidthSlide(this.expandedWidth(), '0s')
       this.animateImageChange(0, '0s');
       if (slideElement) this.expanded.emit(slideElement)
       this.attachTrailer()
     }, 300)
-    
+
   }
 
   private getDetailsSerie() {
@@ -73,9 +79,11 @@ export class HoverSerieExpandDirective {
   }
 
   private changeWidthSlide(width: number, delay: string) {
+    console.log('creciendo',this.cardElement,width,delay)
     this.renderer.setStyle(this.cardElement, 'will-change', 'width')
-    this.renderer.setStyle(this.cardElement, 'transition', `width .5s cubic-bezier(.2,.45,0,1) ${delay}`)
+    this.renderer.setStyle(this.cardElement, 'transition', `width .4s cubic-bezier(.2,.45,0,1) ${delay}`) 
     this.renderer.setStyle(this.cardElement, 'width', `${width}px`)
+    /* this.renderer.setStyle(this.cardElement, 'transform', `scaleX(${width})`) */
   }
 
   private animateImageChange(posterOpacity: number, delay: string) {
@@ -83,7 +91,7 @@ export class HoverSerieExpandDirective {
     this.renderer.setStyle(this.posterElement(), 'transition', `opacity .3s cubic-bezier(.2,.45,0,1) ${delay}`)
     this.renderer.setStyle(this.posterElement(), 'opacity', `${posterOpacity}`);
     this.renderer.setStyle(this.backdropElement(), 'transition', `opacity .3s cubic-bezier(.2,.45,0,1) ${delay}`)
-    this.renderer.setStyle(this.backdropElement(), 'opacity', `${backdropOpacity}`);
+    this.renderer.setStyle(this.backdropElement(), 'opacity', `${backdropOpacity}`); 
   }
 
   attachTrailer() {
@@ -100,8 +108,8 @@ export class HoverSerieExpandDirective {
   private resetSlide() {
     const slideElement = this.parentElement()
     this.floatTrailer.detachTrailerEmbed()
-    this.changeWidthSlide(this.slideInfo().layout().slideMainAxisSize, '300ms')
+    this.changeWidthSlide(this.width(), '300ms')
     this.animateImageChange(1, '300ms')
-    if (slideElement) this.collapse.emit(slideElement)
+    if (slideElement) this.collapse.emit(slideElement) 
   }
 }

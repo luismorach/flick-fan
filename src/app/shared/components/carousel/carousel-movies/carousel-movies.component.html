@@ -1,6 +1,8 @@
 @if(loader.hasData()){
 <main class=" w-full mb-16">
-    <header class="mb-6 " [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize + carouselService.slidesInfo.layout().slidesOffsetBefore">
+   
+
+    <header class="mb-12 " [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize + carouselService.slidesInfo.layout().slidesOffsetBefore">
         <span class="text-subtitle-carousel">{{subtitle()}}</span>
         <h2 class="text-title-carousel">{{title()}} </h2>
     </header>
@@ -19,7 +21,7 @@
                             carouselService.state().activeIndex(),i,carouselService.slidesInfo.layout().slidesPerView)"
                 class="carousel-item card-base h-full"
                 [style.width.px]="carouselService.slidesInfo.layout().slideMainAxisSize" @fade>
-                <app-card-movie [movie]="movie"> </app-card-movie>
+               <!--  <app-card-movie [movie]="movie" [carouselService]="carouselService"> </app-card-movie> -->
             </div>
             }
 
@@ -40,5 +42,5 @@
 </main>
 }
 @else if(loader.isInitialized()){
-<app-carousel-movies-skeleton @fade></app-carousel-movies-skeleton>
+<!-- <app-carousel-movies-skeleton @fade></app-carousel-movies-skeleton> -->
 }

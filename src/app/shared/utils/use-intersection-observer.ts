@@ -5,46 +5,63 @@ import { DestroyRef, effect, ElementRef, inject, Signal } from "@angular/core";
  * It only observes elements with data-id that are **direct children** of the container.
  * It does not detect elements inside encapsulated child components.
  */
-export function useIntersectionObserver(rootInput: ElementRef<HTMLElement>, callback: (id: number) => void) {
+export function useIntersectionObserver() {
     const observed = new WeakSet<HTMLElement>();
-    const root = rootInput.nativeElement
-    if (!root) return () => { }
+    let io: IntersectionObserver | undefined = undefined
 
-    const io = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (!entry.isIntersecting) return
+    const initialize = (root: ElementRef<HTMLElement>, callback: (id: number) => void) => {
+        if (io) return;
+        io = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return
 
-            const target = entry.target as HTMLElement
-            const id = Number(target.dataset['id']);
+                const target = entry.target as HTMLElement
+                const id = Number(target.dataset['id']);
 
-            if (!id || target.dataset['loaded']) return;
+                if (!id || target.dataset['loaded']) return;
 
-            target.dataset['loaded'] = 'true'
-            callback(id)
-        });
-    },
-        {
-            root: root,
-            threshold: 0.1,
-            rootMargin: '200px 200px'
-        }
-    );
+                target.dataset['loaded'] = 'true'
+                callback(id)
+            });
+        },
+            {
+                root: root.nativeElement,
+                threshold: 0.1,
+                rootMargin: '200px 200px'
+            }
+        );
+    }
 
-    const observeInitialElements = () => {
-        root.querySelectorAll<HTMLElement>('[data-id]').forEach((el) => {
+    const observeElements = (elements: HTMLElement[]) => {
+        if (!io) return
+        console.log('observando elementos', elements)
+        elements.forEach((el) => {
             if (observed.has(el)) return;
-            io.observe(el);
+            io?.observe(el);
             observed.add(el);
         });
     }
 
-    observeInitialElements()
+    /*  const observeInitialElements = () => {
+         requestAnimationFrame(() => {
+             console.log('elementos a observar para cargar detalles', root.querySelectorAll<HTMLElement>('[data-id]'))
+ 
+             root.querySelectorAll<HTMLElement>('[data-id]').forEach((el) => {
+                 if (observed.has(el)) return;
+                 io.observe(el);
+                 observed.add(el);
+             });
+         })
+ 
+     } */
 
-    const mo = new MutationObserver(mutations => {
+    //observeInitialElements()
+
+    /* const mo = new MutationObserver(mutations => {
         for (const mutation of mutations) {
             mutation.addedNodes.forEach(node => {
                 if (node.nodeType !== Node.ELEMENT_NODE) return;
-
+ 
                 const added = node as HTMLElement;
                 if (added.dataset['id'] && !observed.has(added)) {
                     io.observe(added)
@@ -53,13 +70,17 @@ export function useIntersectionObserver(rootInput: ElementRef<HTMLElement>, call
             });
         }
     });
+ 
+    mo.observe(root, { childList: true, subtree: true }) */
 
-    mo.observe(root, { childList: true, subtree: true })
-
-    return () => {
-        io.disconnect();
-        mo.disconnect();
+    const destroy = () => {
+        io?.disconnect();
     }
 
+    return {
+        initialize,
+        observeElements,
+        destroy
+    }
 
 }

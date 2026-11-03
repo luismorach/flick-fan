@@ -51,7 +51,7 @@ export class DetailsCardComponent {
   link = computed(() => {
     const media = this.selectedItem()
     const type = (this.isMovie(media)) ? 'movie' : 'serie';
-    return `/details-${type}`
+    return `/details/${type}/${media?.id}`
   })
 
   selectGenre(genre: Genre) {

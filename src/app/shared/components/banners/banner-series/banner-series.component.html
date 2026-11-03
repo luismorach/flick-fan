@@ -1,14 +1,14 @@
-@if(loader.hasData()){
+<!-- @if(loader.hasData()){ -->
 <main class="w-full mb-24 relative min-h-screen grid items-end grid-cols-1 
     [grid-template-areas:'info''carousel'] md:grid-cols-2 md:[grid-template-areas:'carousel_info'] 
     lg:grid-cols-3 lg:[grid-template-areas:'carousel_info_info']">
 
-    <section class=" relative overflow-hidden z-20 md:px-8  [grid-area:carousel] mx-auto w-full"
+    <section class=" relative overflow-hidden z-20 md:px-8  [grid-area:carousel]  w-full"
         [style.max-width]="isVertical() ? 'none' : '500px'" [style.height]="viewportHeight()">
-        <app-carousel-navigation [carouselService]="carouselService"> </app-carousel-navigation>
+        <app-carousel-navigation-test [carouselService]="carouselService"> </app-carousel-navigation-test>
 
-        <div cdkScrollable class="carousel-container h-full w-full" #carousel
-            [class.flex-col]="carouselService.slidesInfo.direction() === 'vertical'"
+        <div class="carousel-container h-full w-full" #carousel
+            [class.flex-col]="carouselService.state().slidesInfo.direction() === 'vertical'"
             [style.padding]="spacingToCenter()">
 
             @for(serie of loader.data();track serie.id;let i=$index;){
@@ -35,19 +35,20 @@
         </div>
     </section>
 
-    @if(carouselService.state().isAtSkeleton()){
+    @if(carouselService.state().isAtSkeleton?.()){
     <app-skeleton mode="overlay"></app-skeleton>
     }@else{
+        @if(carouselService.state().currentElement?.(); as element){
     <figure class="w-full h-screen absolute gradient-top">
-        <img [ngSrc]="carouselService.state().currentElement().backdrop_path || 'fallback'" ngSrcset="500w, 780w, 1280w, 1920w, 3840w"
+        <img [ngSrc]="element.backdrop_path || 'fallback'" ngSrcset="500w, 780w, 1280w, 1920w, 3840w"
                         fill [loaderParams]="{type:'backdrop'}" sizes="100vw" fill priority
-            [alt]="carouselService.state().currentElement().name"
+            [alt]="element.name"
             class="w-full h-full object-cover object-center gradient-top">
         <div class="overlay"></div>
     </figure>
 
     <app-banner-details class="[grid-area:info]"
-        [serie]="carouselService.state().currentElement()"></app-banner-details>
+        [serie]="element"></app-banner-details>
+        }
     }
 </main>
-}

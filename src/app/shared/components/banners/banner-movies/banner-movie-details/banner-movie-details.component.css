@@ -4,6 +4,21 @@
           from-15% via-[rgba(15,15,15,.9)] via-40% to-[rgba(83,200,141,0)] 
           to-100% 
 }
+
+.backdrop {
+    @apply h-full relative;
+}
+
+.backdrop::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(to bottom,
+            transparent 80%,
+            #0f0f0f 100%
+        );
+}
  
 .title{
   @apply uppercase tracking-tighter text-surface font-black text-3xl  sm:text-4xl md:text-5xl lg:text-6xl 
@@ -18,7 +33,7 @@
 }
 
 .buttons{
-  @apply flex justify-start gap-4 text-lg my-4 opacity-0  h-9 sm:h-10 ;
+  @apply flex justify-start gap-4 text-lg my-4 opacity-0  h-9 sm:h-10  ;
 }
 
  

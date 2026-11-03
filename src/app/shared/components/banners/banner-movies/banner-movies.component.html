@@ -1,30 +1,32 @@
-@if(loader.hasData()){
+<!-- @if(loader.hasData()){ -->
     <main class="w-full min-h-screen mb-16 relative" @fade>
-        <div class="relative gradient overflow-hidden">
+        <div class="relative  gradient overflow-hidden">
             
-            <app-carousel-navigation [carouselService]="carouselService"></app-carousel-navigation>
+            <app-carousel-navigation-test [carouselService]="carouselService"></app-carousel-navigation-test>
             
-            <div #carousel class="carousel-container">
-                @for(movie of loader.data();track $index;let i=$index){
-                   <div class="carousel-item  min-h-screen w-full" [attr.data-id]="movie.id" #slide>
+            <div #carousel class="carousel-container"
+            [style.gap.px]="carouselService.state().slidesInfo.layout().spaceBetween"
+            [style.padding-left.px]="carouselService.state().slidesInfo.layout().peekSize + carouselService.state().slidesInfo.layout().slidesOffsetBefore"
+            [style.padding-right.px]="carouselService.state().slidesInfo.layout().peekSize + carouselService.state().slidesInfo.layout().slidesOffsetAfter">
+               @for(movie of loader.data();track $index;let i=$index){
+                   <div class="carousel-item  min-h-screen w-full" [attr.data-id]="movie.id" #slides> 
                         <app-banner-movie-details @fade
                             [movie]="movie" 
-                            [cardIndex]="i"
-                            [activeIndex]="carouselService.state().activeIndex()"
-                            (onPlayTailer)="playTrailer()">
+                            [index]="i"
+                            [carouselService]="carouselService">
                         </app-banner-movie-details>
                     </div>
                 }
 
-                @if(loader.canLoadMore()){
+                <!-- @if(loader.canLoadMore()){
                     <div class="carousel-item w-screen h-full" @fade #sentinels>
                         <app-banner-skeleton></app-banner-skeleton>
                     </div>
-                }
+                }  -->
             </div>
         </div>
     </main>
-}
+<!-- }
 @else if(loader.isInitialized()){
     <app-banner-skeleton @fade></app-banner-skeleton>
-}
+} -->

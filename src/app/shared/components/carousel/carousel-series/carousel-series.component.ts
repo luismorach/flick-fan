@@ -70,7 +70,7 @@ export class CarouselSeriesComponent {
   }
 
   constructor() {
-     this.loader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
+    // this.loader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
     this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.loader)
   }
 
@@ -80,10 +80,10 @@ export class CarouselSeriesComponent {
 
     if (!slide) return
 
-    this.slideExpansion.adjustTranslateForExpandedSlide(
+    /* this.slideExpansion.adjustTranslateForExpandedSlide(
       slide,
       this.carouselService.slidesInfo,
-      this.carouselService.state().currentPosition())
+      this.carouselService.state().currentPosition()) */
   }
 
   onSlideCollapseHover() {

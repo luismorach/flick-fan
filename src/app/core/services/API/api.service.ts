@@ -265,11 +265,11 @@ export class ApiService {
   async getDetails<T>(params: ParamsApi) {
     const type = params.type
     if (!type) return
-    (type.includes('movies')) ? params.type = 'details_movie' : params.type = 'details_serie'
+    (type.includes('movie')) ? params.type = 'details_movie' : params.type = 'details_serie'
     const apiMethod = this.methodMap[params.type];
     if (!apiMethod) throw new Error(`Unknown data type: ${type}`);
 
-    console.log('Loading details:', params.page, 'for type:', params.type, 'extraargs:', params);
+    //console.log('Loading details:', params.page, 'for type:', params.type, 'extraargs:', params);
     const details: T = await lastValueFrom(
       apiMethod(params));
     return details as T

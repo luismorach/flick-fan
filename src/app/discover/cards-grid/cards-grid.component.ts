@@ -97,7 +97,7 @@ export class CardsGridComponent {
 
   constructor() {
     this.loader.setupAutoFill(this.sentinels)
-    this.loader.setupInfiniteScroll(this.sentinels)
+    //this.loader.setupInfiniteScroll(this.sentinels)
   }
 
   async selectItem(item: Movie | Serie | undefined, index: number) {

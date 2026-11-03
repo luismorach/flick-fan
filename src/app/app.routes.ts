@@ -11,6 +11,9 @@ export const routes: Routes = [
         path: 'search/:query', loadComponent: () => import('./discover/discover.component'),
     },
     {
+        path: 'details/:type/:id', loadComponent: () => import('./media-details/details.component'),
+    },
+    {
         path: 'watch-movie/:id_movie', loadComponent: () => import('./movies/play-movie/play-movie.component'),
     },
     {

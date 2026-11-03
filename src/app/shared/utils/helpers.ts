@@ -74,6 +74,8 @@ export function getReleaseDate<T extends MediaItem>(data: T | undefined) {
     return release_dates[0]
 }
 
-
+export function isMovie(item: any): item is Movie {
+    return 'title' in item && 'runtime' in item
+  }
 
 

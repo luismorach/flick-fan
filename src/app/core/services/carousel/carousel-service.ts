@@ -5,7 +5,6 @@ import { CarouselOptions } from '../../interfaces/shared/carousel-interface';
 import { SlidesInfoHook, useSlidesInfo } from '../../../shared/utils/use-slides-info';
 import { useIntersectionObserver } from '../../../shared/utils/use-intersection-observer';
 import { CarouselController, CarouselNavigationAPI, CarouselStateAPI, useCarouselcontroller } from '../../../shared/utils/use-carousel-controller';
-import { hasPagination } from '../../../shared/utils/data-loaders/enhancers/with-pagination';
 import { canLoadDetails } from '../../../shared/utils/data-loaders/enhancers/with-details';
 import { LoaderCore } from '../../../shared/utils/data-loaders/types';
 
@@ -86,11 +85,11 @@ export class CarouselService<T extends Object, R extends keyof T> {
         try {
             this.setupEventListeners(carouselContainer)
 
-            if (carouselOptions.requiresEnrichment && canLoadDetails(this.loader)) {
+            /* if (carouselOptions.requiresEnrichment && canLoadDetails(this.loader)) {
                 const cleanup = useIntersectionObserver(carouselContainer,
                     this.loader.loadDetails.bind(this.loader))
                 this.destroyRef.onDestroy(cleanup)
-            }
+            } */
         } catch (error) {
             console.log('error inizializando', error)
         }

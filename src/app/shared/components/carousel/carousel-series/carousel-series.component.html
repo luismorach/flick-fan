@@ -1,6 +1,6 @@
 @if (loader.hasData()) {
     <main class=" w-full mb-16">
-        <header class="mb-6" [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize + carouselService.slidesInfo.layout().slidesOffsetBefore">
+        <header class="mb-12" [style.padding-left.px]="carouselService.slidesInfo.layout().peekSize + carouselService.slidesInfo.layout().slidesOffsetBefore">
             <span class="text-subtitle-carousel">{{subtitle()}}</span>
              <h2 class="text-title-carousel">{{title()}}</h2>
         </header>
@@ -19,14 +19,14 @@
 
                 @for(serie of loader.data(); track serie.id; let i = $index){
                     <div class="carousel-item" @fade>
-                        <app-card-serie 
+                       <!--  <app-card-serie 
                             [slideInfo]="carouselService.slidesInfo" 
                             [serie]="serie"
                             [activeIndex]="carouselService.state().activeIndex()"
                             [cardIndex]="i"
                             (hoverEnter)="onSlideExpandHover(i)"
                             (hoverLeave)="onSlideCollapseHover()">
-                        </app-card-serie>
+                        </app-card-serie> -->
                     </div>
                 }
                 

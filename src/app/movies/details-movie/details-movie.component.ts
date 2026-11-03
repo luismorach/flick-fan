@@ -57,7 +57,7 @@ export default class DetailsMovieComponent {
     { initialValue: undefined }
   );
 
-  readonly similarMoviesLoader = useDataLoader<MovieList, 'results'>('results', this.recomended,{ dataId: this.id_movie() })
+  readonly similarMoviesLoader = useDataLoader<MovieList, 'results'>('results', this.recomended)
   .with(withInfiniteScroll)
   .build();
   
@@ -99,7 +99,7 @@ export default class DetailsMovieComponent {
 
   constructor() {
     if (hasInfiniteScroll(this.similarMoviesLoader)) {
-      this.similarMoviesLoader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
+     // this.similarMoviesLoader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
     }
     this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.similarMoviesLoader)
   }

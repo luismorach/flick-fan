@@ -29,7 +29,7 @@ export interface LoaderCore<T extends object, K extends keyof T> {
     hasData: Signal<boolean>;
     dataLength: Signal<number>;
     dataKey: K;
-    extraArgs?: ParamsApi;
+    extraArgs?: Signal<ParamsApi>;
     readonly capabilities: Set<symbol>;
 };
 
@@ -63,14 +63,27 @@ export interface LoaderWithFilter<T extends object, K extends ArrayKey<T>> exten
     filteredData: Signal<T[K] & any[]>;
 };
 
-export interface LoaderWithInfiniteScroll<T extends object, K extends ArrayKey<T>> extends LoaderCore<T, K> {
+/* export interface LoaderWithInfiniteScroll<T extends object, K extends ArrayKey<T>> extends LoaderCore<T, K> {
     setupInfiniteScroll: (
         sentinel: Signal<readonly ElementRef<HTMLElement>[] | undefined>,
         container?: Signal<ElementRef<HTMLElement> | undefined>,
     ) => void
+};  */
+ export interface LoaderWithInfiniteScroll<T extends object, K extends ArrayKey<T>> extends LoaderCore<T, K> {
+    setupInfiniteScroll: (
+        sentinel: readonly ElementRef<HTMLElement>[],
+        container: ElementRef<HTMLElement> ,
+    ) => void
 };
-
+ 
 export interface LoaderWithAutoFill<T extends object, K extends keyof T> extends LoaderCore<T, K> {
     setupAutoFill: (sentinel: Signal<readonly ElementRef<HTMLElement>[] | undefined>,
         container?: Signal<ElementRef<HTMLElement> | undefined>) => void
 };
+
+export type AnyLoader = LoaderCore<any, any> 
+  & Partial<LoaderWithPagination<any, any>>
+  & Partial<LoaderWithInfiniteScroll<any, any>>
+  & Partial<LoaderWithDetails<any, any>>
+  & Partial<LoaderWithFilter<any, any>>
+  & Partial<LoaderWithAutoFill<any, any>>;

@@ -1,0 +1,55 @@
+.btn-navigation {
+  @apply z-[10000] w-14 h-14 flex justify-center items-center 
+  hover:!bg-[#e50914] hover:!border-[#e50914] transition-all duration-500
+  hover:cursor-pointer absolute  text-center text-sm 
+   text-white rounded-full 
+}
+
+.btn-navigation:disabled{
+  @apply  cursor-default invisible;
+}
+
+.btn-navigation-horizontal-next {
+  @apply right-2 top-[calc(50%-1.5rem)]
+}
+
+.btn-navigation-horizontal-prev {
+  @apply left-2 top-[calc(50%-1.5rem)]
+}
+
+.btn-navigation-vertical-next {
+  @apply bottom-4 left-[calc(50%-1.5rem)] ;
+}
+
+.btn-navigation-vertical-prev {
+  @apply top-4 left-[calc(50%-1.5rem)]
+}
+
+ .btn-glossy {
+     background: linear-gradient(135deg, rgba(229, 9, 20, 1) 0%, rgba(180, 0, 10, 1) 100%);
+     position: relative;
+     overflow: hidden;
+ }
+
+ .btn-glossy::after {
+     content: '';
+     position: absolute;
+     top: -50%;
+     left: -50%;
+     width: 200%;
+     height: 200%;
+     background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+     transform: rotate(45deg);
+     transition: 0.5s;
+ }
+
+ .btn-glossy:hover::after {
+     left: 100%;
+ }
+
+ .glass-panel {
+     background: rgba(25, 25, 25, 0.4);
+     backdrop-filter: blur(24px) saturate(180%);
+     -webkit-backdrop-filter: blur(24px) saturate(180%);
+     border: 1px solid rgba(255, 255, 255, 0.08);
+ }

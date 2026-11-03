@@ -1,0 +1,4 @@
+
+.carousel-item {
+  @apply transition-transform duration-150 ease-out
+}

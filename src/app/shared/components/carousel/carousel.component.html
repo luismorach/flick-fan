@@ -1,0 +1,44 @@
+<main class="w-full h-full" [class.invisible]="!loader().hasData()">
+
+    @if (headerTemplateRef(); as headerRef) {
+    <header class="mb-12"
+        [style.padding-left.px]="carouselService.state().slidesInfo.layout().peekSize + carouselService.state().slidesInfo.layout().slidesOffsetBefore"
+        [style.padding-right.px]="carouselService.state().slidesInfo.layout().peekSize + carouselService.state().slidesInfo.layout().slidesOffsetAfter">
+        <ng-container [ngTemplateOutlet]="headerRef"></ng-container>
+    </header>
+    }
+
+    <section class="relative" [style.height]="viewportHeight()">
+        <app-carousel-navigation-test [carouselService]="carouselService"></app-carousel-navigation-test>
+
+        <div class="carousel-container" cdkScrollable #carousel
+            [class.flex-col]="carouselService.state().slidesInfo.direction() === 'vertical'"
+            [class.items-center]="carouselService.state().slidesInfo.layout().centeredSlides"
+            [style.gap.px]="carouselService.state().slidesInfo.layout().spaceBetween"
+            [style.padding]="padding()">
+
+            @for(media of loader().data();track media.id;let index=$index){
+            @if(cardTemplateRef(); as card){
+            <div class="carousel-item" @fade [attr.data-id]="media.id" #slides>
+                <ng-container [ngTemplateOutlet]="card"
+                    [ngTemplateOutletContext]="{$implicit:{media,index,carouselService}}">
+                </ng-container>
+            </div>
+            }
+            }
+
+
+            @if(loader().canLoadMore?.()){
+            @for(_ of carouselService.state().slidesInfo.skeletonSlideIndexes(); track $index) {
+            <div class="carousel-item" @fade #sentinels
+                [style.width.px]="carouselService.state().slidesInfo.layout().slideMainAxisSize">
+                @if(skeletonTemplateRef(); as skeletonTemplate){
+                <ng-container [ngTemplateOutlet]="skeletonTemplate"></ng-container>
+                }
+            </div>
+            }
+            }
+
+        </div>
+    </section>
+</main>

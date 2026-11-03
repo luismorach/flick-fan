@@ -132,8 +132,9 @@ export function useCarouselcontroller<T extends Object, R extends keyof T>(
     }
 
     const prev = () => {
-        if (isAtStart()) return;
+console.log('retrocediendo')
 
+        if (isAtStart()) return;
         const prevIndex = Math.max(0, activeIndex() - slidesPerGroup());
         activeIndex.set(prevIndex);
     }

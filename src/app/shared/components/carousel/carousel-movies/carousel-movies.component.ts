@@ -76,11 +76,11 @@ export class CarouselMoviesComponent {
     const layout = this.carouselService.slidesInfo.layout();
     const slidesPerView = layout.slidesPerView;
 
-    return currentMovies.map((_, i) => this.slideExpansion.getCardOriginClass(i, slidesPerView));
+    return currentMovies.map((_, i) => this.slideExpansion.getCardOriginClass(i,0, slidesPerView));
   });
 
   constructor() {
-    this.loader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
+    //this.loader.setupInfiniteScroll(this.sentinels, this.carouselContainer)
     this.carouselService.initialize(this.carouselContainer, this.carouselOptions, this.loader)
   }
 

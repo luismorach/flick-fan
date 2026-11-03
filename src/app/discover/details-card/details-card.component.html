@@ -55,13 +55,13 @@
                 (click)="playTrailer()"
                 [disabled]="!currentTrailerKey()"
                 class="btn-primary h-full aspect-square" 
-                [attr.aria-label]="`Reproducir avance de  ${isMovie(item) ? item.title : item.name}`"
+                [attr.aria-label]="`Reproducir avance de  ${title()}`"
                 tabindex="0"
                 type="button">
                 <app-icon name="clapperboard" size="w-6 h-6"></app-icon>
             </button>
 
-            <a [routerLink]="[link(),selectedItem()?.id]" appTooltip="Más información" 
+            <a [routerLink]="[link()]" appTooltip="Más información" 
               class="btn-primary h-full aspect-square">
                 <app-icon name="info" size="w-6 h-6"></app-icon>
             </a>

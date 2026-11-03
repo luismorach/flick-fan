@@ -58,7 +58,7 @@ export const appConfig: ApplicationConfig = {
         return `https://image.tmdb.org/t/p/${width}${config.src}`;
       }
     },
-    provideRouter(routes), provideClientHydration(),
+    provideRouter(routes),
     provideAnimations(),
     provideHttpClient(withInterceptors([apiInterceptor, errorInterceptor]), withFetch()),
     /*  LocalStorageStrategy, */

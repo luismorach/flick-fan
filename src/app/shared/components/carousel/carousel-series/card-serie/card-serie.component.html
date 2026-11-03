@@ -1,18 +1,19 @@
-<main appHoverSerieExpand [slideInfo]="slideInfo()" [serie]="serie()" [activeIndex]="activeIndex()"
-    [cardIndex]="cardIndex()" (expanded)="hoverEnter.emit($event)" (collapse)="hoverLeave.emit($event)"
-    class="relative rounded-xl overflow-hidden bg-black" [style.width.px]="slideInfo().layout().slideMainAxisSize"
-    [style.height.px]=" slideInfo().layout().slideMainAxisSize * 1.5">
+<main appHoverSerieExpand [serie]="serie()" [carouselService]="carouselService()"
+    [cardIndex]="cardIndex()" (expanded)="onHoverEnter($event)" (collapse)="onHoverLeave($event)"
+    class="relative rounded-lg overflow-hidden bg-black" 
+    [style.width.px]="carouselService().state().slidesInfo.layout().slideMainAxisSize"
+    [style.height.px]="carouselService().state().slidesInfo.layout().slideMainAxisSize * 1.5">
 
     <figure class="h-full absolute w-full" #posterImage>
         <img [ngSrc]="serie().poster_path || 'fallback'" ngSrcset="500w, 780w, 1280w, 1920w" fill loading="lazy"
-            [loaderParams]="{type:'poster'}" class="card-image" [alt]="serie().name" sizes="(max-width: 398px) 100vw, (max-width: 508px) 67vw, (max-width: 748px) 50vw, 
+            [loaderParams]="{type:'poster'}" [alt]="serie().name" sizes="(max-width: 398px) 100vw, (max-width: 508px) 67vw, (max-width: 748px) 50vw, 
             (max-width: 988px) 33vw, (max-width: 1388px) 25vw, 20vw">
     </figure>
 
     <figure class="w-full h-full relative opacity-0 " #backdropImage>
 
         <img [ngSrc]="serie().backdrop_path || 'fallback'" ngSrcset="500w, 780w, 1280w, 1920w, 3840w" fill sizes="(max-width: 398px) 100vw, (max-width: 508px) 67vw, (max-width: 748px) 50vw, 
-            (max-width: 988px) 33vw, (max-width: 1388px) 25vw, 20vw" class="card-image" loading="lazy"
+            (max-width: 988px) 33vw, (max-width: 1388px) 25vw, 20vw"  loading="lazy"
             [alt]="serie().name"  [loaderParams]="{type:'backdrop'}" class="object-cover">
 
         <figcaption class="overlay-serie">

@@ -42,7 +42,12 @@ html {
 
 
 .gradient {
-  mask-image: linear-gradient(black 80%, transparent)
+  mask-image: linear-gradient(black 80%, transparent);
+   will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+
+  
 }
 
 .gradient-top {
@@ -97,7 +102,8 @@ html {
 }
 
 .btn-glossy {
-    @apply hover:scale-105 active:scale-95 shadow-2xl shadow-[#e50914]/40;
+    @apply  text-white flex items-center gap-3 px-10 rounded-xl font-extrabold tracking-widest text-sm transition-all 
+            duration-300 hover:scale-105 active:scale-95 shadow-2xl shadow-[#e50914]/40;
      background: linear-gradient(135deg, rgba(229, 9, 20, .5) 0%, rgba(180, 0, 10, .5) 100%);
      position: relative;
      overflow: hidden;
@@ -172,7 +178,7 @@ html {
 }
 
 .text-overview-card {
-  @apply text-surface/80 text-xs leading-normal line-clamp-3;
+  @apply text-surface/80 text-xs leading-normal line-clamp-5;
 }
 
 /* -------------------- TRAILER -------------------- */

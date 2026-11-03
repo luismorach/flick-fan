@@ -1,7 +1,6 @@
 import { computed, effect, ElementRef, inject, Signal } from '@angular/core';
 import { slidesConfig as SlidesConfig } from '../../core/interfaces/shared/carousel-interface';
 import { mainAxisMetrics, useResizeObserver } from './use-resize-observer';
-import { WindowService } from '../../core/services/window/window.service';
 
 export interface SlidesInfoLayout {
   slidesPerView: number
@@ -35,7 +34,8 @@ export function useSlidesInfo(container: Signal<ElementRef<HTMLElement> | undefi
   const direction = computed(() => activeConfig().containerOrientation ?? 'horizontal');
 
   const layout = computed<SlidesInfoLayout>(() => {
-    console.log('Calculating layout with mainAxisMetrics', mainAxisMetrics(), 'and activeConfig', activeConfig())
+    console.log('0hola')
+    //console.log('Calculating layout with mainAxisMetrics', mainAxisMetrics(), 'and activeConfig', activeConfig())
     const mainAxisMetricsRef = mainAxisMetrics()
     const config = activeConfig()
     const normalizedConfig = normalizeConfig(config);
@@ -128,7 +128,7 @@ function calculateSlideSizes(mainAxisMetrics: mainAxisMetrics, config: Normalize
     - (config.peekSize * 2);
 
   const safeAvailableSize = Math.max(0, availableSize);
-  console.log('availableSize', availableSize, viewportSize, config.slidesPerView, config.spaceBetween, config.peekSize)
+  //console.log('availableSize', availableSize, viewportSize, config.slidesPerView, config.spaceBetween, config.peekSize)
 
   if (aspectRatio && config.direction === 'vertical') {
     const safeWidth = Math.max(1, mainAxisMetrics.width);
@@ -141,6 +141,7 @@ function calculateSlideSizes(mainAxisMetrics: mainAxisMetrics, config: Normalize
   const expandedSlideSize = slideMainAxisSize * config.expandedMultiplier;
   const slideMainAxisSizeWithGap = slideMainAxisSize + config.spaceBetween;
 
+  //console.log('mainaxisSize', slideMainAxisSize, 'expandedSlideSize', expandedSlideSize, 'slideMainAxisSizeWithGap', slideMainAxisSizeWithGap)
   return {
     viewportMainAxisSize: viewportSize,
     slideMainAxisSize,

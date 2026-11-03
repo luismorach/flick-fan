@@ -1,64 +1,38 @@
-<main class="card-base-movie group" (mouseenter)="handleMouseEnterCard()" (mouseleave)="handleMouseLeaveCard()"
-    #movieCard>
+<main class="card-base-movie  group" (mouseenter)="handleMouseEnterCard()" (mouseleave)="handleMouseLeaveCard()"
+    #movieCard [class.pointer-events-none]="!canExpand()"
+    [style.width.px]="carouselService().state().slidesInfo.layout().slideMainAxisSize">
 
-    <figure class="relative w-full aspect-video rounded-t-xl overflow-hidden">
-        <ng-template cdkPortalOutlet></ng-template>
+   <figure class="relative w-full aspect-video rounded-t-lg overflow-hidden">
 
         <img [ngSrc]="movie().backdrop_path || 'fallback'" ngSrcset="500w, 780w, 1280w, 1920w, 3840w" fill
             [loaderParams]="{type:'backdrop'}" class="card-image" loading="lazy" [alt]="movie().title" sizes="(max-width: 398px) 100vw, (max-width: 508px) 75vw, (max-width: 748px) 55vw, 
             (max-width: 988px) 38vw, (max-width: 1388px) 28vw, 22vw">
 
         @if(movie().vote_average){
-        <figcaption class="badge-vote card-base-revert-scale ">
+        <figcaption class="badge-vote">
             <app-icon name="star" color="text-red-500" backgroundColor="#e50914"> </app-icon>
             <span class="badge-text">{{ movie().vote_average | number:'1.1-1' :'en-US'}}</span>
         </figcaption>
         }
-    </figure>
+    </figure> 
 
-    <section class="pt-2 mb-3 w-full relative">
+   <section class="pt-3 mb-3 w-full relative">
         <header class="mx-4">
             @if(movie().title){
-            <h2 class="text-title-card card-base-revert-scale">{{ movie().title }}</h2>
+            <h2 class="text-title-card" >{{ movie().title }}</h2>
             }
             <div class="flex items-center gap-2 mt-1">
                 @if (hasGenres()) {
-                <p class="text-genre-card card-base-revert-scale">{{primaryGenre()}}</p>
+                <p class="text-genre-card" >{{primaryGenre()}}</p>
                 }
 
                 @if(movie().release_date){
-                <p class="w-1 h-1 bg-surface/20 rounded-full card-base-revert-scale"></p>
-                <p class="text-info-card card-base-revert-scale">{{movie().release_date | date :'yyyy'}} </p>
+                <p class="w-1 h-1 bg-surface/20 rounded-full" ></p>
+                <p class="text-info-card">{{movie().release_date | date :'yyyy'}} </p>
                 }
             </div>
 
         </header>
-
-        <div class="card-hover-overlay">
-
-            <div class="card-hover-content ">
-                @if(movie().overview){
-                <p class="text-overview-card">
-                    {{movie().overview}}
-                </p>
-                }
-                <div class="flex gap-2 transition-all duration-500 pt-3">
-                    <a [routerLink]="['/watch-movie/',movie().id]" class="btn-primary px-6 !text-xs">
-                        <app-icon name="play" size="w-4 h-4"></app-icon>
-                        Ver ahora
-                    </a>
-                    <a class="btn-primary p-1.5">
-                        <app-icon name="plus"></app-icon>
-                    </a>
-                   <a [routerLink]="['/details-movie/',movie().id]" class="btn-primary p-1.5 ">
-                        <app-icon name="info"></app-icon>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-
     </section>
-
 
 </main>

@@ -10,8 +10,8 @@ export interface CarouselOptions {
     requiresEnrichment?: boolean;
     orientation?: 'horizontal' | 'vertical';
     slidesPerGroup?: number;
-    centeredSlides?: boolean;
     requireSnapMandatory?: boolean
+    requireAnimation?:boolean
 }
 
 export interface slidesConfig {

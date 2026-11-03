@@ -2,6 +2,8 @@ import { Signal, computed } from "@angular/core"
 import { Serie, SerieList } from "../../core/interfaces/serie/serie.interface"
 import { SlidesInfoHook, SlidesInfoLayout } from "./use-slides-info"
 import { Movie } from "../../core/interfaces/movie/movie.interface"
+import { CarouselComponent } from "../components/carousel/carousel.component"
+import { CarouselService } from "../../core/services/test/carousel/carousel-service"
 
 export function useSlideExpansion() {
     let slideExpandedWidth = 0
@@ -15,13 +17,16 @@ export function useSlideExpansion() {
     * Prevents the expanded slide from being cut off in the viewport.
     * @param index - Index of the slide to expand
     */
-    const adjustTranslateForExpandedSlide = (slide: HTMLElement, slidesInfo: SlidesInfoHook, position: number) => {
+    const adjustTranslateForExpandedSlide = (slide: HTMLElement,carouselService: CarouselService<any, any> | undefined) => {
         const containerEl = slide.parentElement as HTMLElement ?? undefined
-        if (!containerEl) return
+        const position = carouselService?.state().currentPosition?.()
+        const slidesInfo = carouselService?.state()?.slidesInfo
+        
+        if (!containerEl || position === undefined || !slidesInfo)  return
 
         container = containerEl
-        currentPosition = position
         viewportWidth = container.offsetWidth;
+        currentPosition = position
 
         slideExpandedWidth = slide.offsetLeft + slidesInfo.layout().expandedSlideSize +
             slidesInfo.layout().spaceBetween
@@ -47,6 +52,7 @@ export function useSlideExpansion() {
         const newTranslate = slideExpandedWidth - viewportWidth;
         container.scrollTo({ left: newTranslate, behavior: 'smooth' })
         shouldResetTranslate = true;
+        console.log('ajustando translate', newTranslate, viewportWidth, slideExpandedWidth, currentPosition)
     }
 
     /**
@@ -94,24 +100,36 @@ export function useSlideExpansion() {
         return chunk.map(s => s.id).join('-');
     }
 
-    const cardClassesMovies = (movies: Signal<Movie[]>, slidesInfoLayout: Signal<SlidesInfoLayout>) => {
+    const cardClassesMovies = (movies: Signal<Movie[]>, carouselRef: Signal<CarouselComponent | undefined>) => {
         return computed(() => {
             const currentMovies = movies();
-            const layout = slidesInfoLayout();
+            const layout = carouselRef()?.carouselService.state().slidesInfo.layout();
+            if (!layout) return []
             const slidesPerView = layout.slidesPerView;
             console.log('cambio layout', layout)
             return currentMovies.map((_, i) =>
-                getCardOriginClass(i, slidesPerView)
+                getCardOriginClass(i,0, slidesPerView)
             ) ?? []
         });
     }
 
-    const getCardOriginClass = (index: number, slidesPerView: number): string => {
-        const position = index % slidesPerView;
-        if (slidesPerView === 1) return 'origin-center';
-        if (position === 0) return 'origin-left';
-        if (position === slidesPerView - 1) return 'origin-right';
-        return 'origin-center';
+    const cardClassMovies = (index: Signal<number>, carouselService: Signal<CarouselService<any, any> | undefined>) => {
+        return computed(() => {
+            const layout = carouselService()?.state()?.slidesInfo.layout();
+            const activeIndex = carouselService()?.state().activeIndex?.() ?? 0
+            const cardIndex = index()
+            if (!layout || activeIndex === undefined) return 'center'
+            const slidesPerView = layout.slidesPerView;
+            return getCardOriginClass(cardIndex,activeIndex, slidesPerView)
+        });
+    }
+
+    const getCardOriginClass = (index: number, activeIndex: number, slidesPerView: number): 'start' | 'center' | 'end' => {
+        const lastCard = activeIndex + (slidesPerView - 1)
+        if (slidesPerView === 1) return 'center';
+        if (index === activeIndex) return 'start';
+        if (index === lastCard) return 'end';
+        return 'center';
     }
 
     const animateScroll = (el: HTMLElement, from: number, to: number, duration: number) => {
@@ -157,6 +175,7 @@ export function useSlideExpansion() {
         createChunks,
         trackByChunk,
         cardClassesMovies,
+        cardClassMovies,
         getCardOriginClass,
         isScrollableContainer
     }
