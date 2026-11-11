@@ -1,19 +1,17 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, contentChild, effect, ElementRef, inject, input, output, TemplateRef, untracked, viewChild, viewChildren } from '@angular/core';
-import { CarouselService } from '../../../core/services/test/carousel/carousel-service';
+import { CarouselService } from '../../../core/services/carousel/carousel-service';
 import { AnyLoader } from '../../utils/data-loaders/types';
 import { CarouselOptions } from '../../../core/interfaces/shared/carousel-interface';
-import { CarouselNavigationComponent } from './carousel-navigation/test/carousel-navigation.component';
 import { fade } from '../../animations/animations';
-import { CdkDragPlaceholder } from "@angular/cdk/drag-drop";
-import { CarouselHeaderComponent } from "./carousel-header/carousel-header.component";
 import { canLoadDetails } from '../../utils/data-loaders/enhancers/with-details';
 import { useIntersectionObserver } from '../../utils/use-intersection-observer';
-import { Serie } from '../../../core/interfaces/serie/serie.interface';
+import { InViewDirective } from '../../../core/directives/in-view/in-view.directive';
+import { CarouselNavigationComponent } from './carousel-navigation/carousel-navigation.component';
 
 @Component({
   selector: 'app-carousel',
-  imports: [NgTemplateOutlet, CarouselNavigationComponent, CdkDragPlaceholder, CarouselHeaderComponent],
+  imports: [NgTemplateOutlet, CarouselNavigationComponent, InViewDirective],
   providers: [CarouselService],
   templateUrl: './carousel.component.html',
   styleUrl: './carousel.component.css',
@@ -40,7 +38,7 @@ export class CarouselComponent {
   //view queries
   private readonly carouselContainer = viewChild<ElementRef<HTMLElement>>('carousel')
   private readonly slides = viewChildren<ElementRef<HTMLElement>>('slides')
-  private readonly sentinels = viewChildren<ElementRef<HTMLElement>>('sentinels')
+  view = viewChild(InViewDirective)
 
   readonly isVertical = computed(() => this.carouselService.state().slidesInfo.direction() === 'vertical')
 
@@ -96,22 +94,13 @@ export class CarouselComponent {
     })
   })
 
-  initInfiniteScroll = effect((onCleanup) => {
-    const loader = this.loader()
-    const sentinels = this.sentinels()
-    const container = this.carouselContainer()
-
-    if (!loader || sentinels.length === 0 || !container) return
-    untracked(() => {
-      const cleanup = loader.setupInfiniteScroll?.(sentinels, container)
-      if (cleanup) onCleanup(cleanup);
-    })
-  })
-
   translate = effect(() => {
-    const shoulScroll = this.carouselService.state().currentPosition?.() !== this.carouselService.state().finalScrollPosition()
-    if (!shoulScroll) return
+    const position = this.carouselService.state().currentPosition?.()
+    if (position === undefined) return
+    console.log('effect translate', position, 'userSettling', this.carouselService.state().isScrollSnapping())
     untracked(() => {
+      if (this.carouselService.state().isScrollSnapping()) return
+      console.log('trasladando')
       this.carouselService.navigation.translateToCurrentPosition()
     })
   })
@@ -124,8 +113,6 @@ export class CarouselComponent {
       console.log('effect elements', elements)
       const elementsHtml = elements.map(ref => ref.nativeElement);
       this.intersection.observeElements(elementsHtml);
-
-
     })
   })
 
@@ -159,11 +146,11 @@ export class CarouselComponent {
       const zIndex = Math.max(0, 20 - Math.round(slideProgress * 5));
       let opacity = 100
 
-      let  translate = Math.max(0, slideProgress - 1) * 30;
+      let translate = Math.max(0, slideProgress - 1) * 30;
 
       let signedTranslate = -Math.sign(signedProgress) * translate;
 
-       if (slideProgress > visibleRange) {
+      if (slideProgress > visibleRange) {
         const animationProgress = Math.min(1, Math.max(0, slideProgress - 2));
         opacity = 1 - animationProgress;
         translate = 30 + animationProgress * 110;

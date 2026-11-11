@@ -1,0 +1,176 @@
+<main appBackgroundNavScroll>
+
+    @if(!nowPlayingLoader.isInitialized()){
+    <div class="mb-24">
+        <app-banner-skeleton @fade></app-banner-skeleton>
+    </div>
+    }@else{
+    <div class="mb-24">
+        <app-carousel [loader]="nowPlayingLoader" [carouselOptions]="bannerMoviesOptions">
+
+            <ng-template let-data #cardTemplate>
+                <div class="min-h-screen h-full ">
+                    <app-banner-movie-details [movie]="data.media" [carouselService]="data.carouselService"
+                        [index]="data.index">
+                    </app-banner-movie-details>
+                </div>
+            </ng-template>
+
+            <ng-template let-data #skeletonTemplate>
+                <app-banner-skeleton [carouselService]="data.carouselService"></app-banner-skeleton>
+            </ng-template>
+        </app-carousel>
+    </div>
+    }
+
+    <!-- popular movies carousel -->
+    @defer(on viewport){
+    <div class="mb-16">
+        <app-carousel [loader]="popularMoviesloader" [carouselOptions]="carouselOptions">
+            <ng-template #headerTemplate>
+                <span class="text-subtitle-carousel"> lo más esperado</span>
+                <h2 class="text-title-carousel"> Películas populares</h2>
+            </ng-template>
+
+            <ng-template let-data #cardTemplate>
+                <app-card-movie [movie]="data.media" [carouselService]="data.carouselService"
+                    [index]="data.index"></app-card-movie>
+            </ng-template>
+
+            <ng-template let-data #skeletonTemplate>
+                <app-carousel-movies-skeleton [hasHeader]="false" [carouselService]="data.carouselService">
+
+                </app-carousel-movies-skeleton>
+            </ng-template>
+        </app-carousel>
+    </div>
+    }@loading{
+    <app-carousel-movies-skeleton [slidesConfig]="carouselOptions.slidesConfig" @fade></app-carousel-movies-skeleton>
+    }@placeholder {
+    <app-carousel-movies-skeleton [slidesConfig]="carouselOptions.slidesConfig"></app-carousel-movies-skeleton>
+    }
+
+    <!-- uncoming movies carousel -->
+    @defer(on viewport){
+    <div class="mb-24">
+        <app-carousel [loader]="uncomingMoviesloader" [carouselOptions]="carouselOptions">
+            <ng-template #headerTemplate>
+                <span class="text-subtitle-carousel"> lo más nuevo</span>
+                <h2 class="text-title-carousel"> Películas recientes</h2>
+            </ng-template>
+
+            <ng-template let-data #cardTemplate>
+                <app-card-movie [movie]="data.media" [carouselService]="data.carouselService"
+                    [index]="data.index"></app-card-movie>
+            </ng-template>
+
+            <ng-template let-data #skeletonTemplate>
+                <app-carousel-movies-skeleton [slidesConfig]="carouselOptions.slidesConfig" [hasHeader]="false"
+                    [carouselService]="data.carouselService" @fade></app-carousel-movies-skeleton>
+            </ng-template>
+
+        </app-carousel>
+    </div>
+    }@loading {
+    <app-carousel-movies-skeleton [slidesConfig]="carouselOptions.slidesConfig" @fade></app-carousel-movies-skeleton>
+    }@placeholder {
+    <app-carousel-movies-skeleton [slidesConfig]="carouselOptions.slidesConfig"></app-carousel-movies-skeleton>
+    }
+
+    @defer(on viewport){
+    <div class="w-full relative min-h-screen grid grid-cols-1 mb-24 px-4 
+    [grid-template-areas:'info''carousel']
+    md:grid-rows-1 md:items-end md:grid-cols-2 md:[grid-template-areas:'carousel_info'] md:px-0
+    lg:grid-cols-3
+    lg:[grid-template-areas:'carousel_info_info'] justify-items-center">
+
+        <div class="[grid-area:carousel] z-20  px-4 md:px-8 max-w-[450px] md:max-w-none w-full ">
+            <app-carousel [loader]="airingTodayLoader" [carouselOptions]="bannerSeriesOptions"
+                (activeMedia)="onActiveMedia($event)">
+
+                <ng-template let-data #cardTemplate>
+                    <app-slide [serie]="data.media" [carouselService]="data.carouselService" [index]="data.index"
+                        class="w-full self-center"></app-slide>
+                </ng-template>
+
+            </app-carousel>
+        </div>
+
+        @if(activeMedia(); as media){
+        <figure class="backdrop banner-serie">
+            <img [ngSrc]="media.backdrop_path || 'fallback'" fill [loaderParams]="{type:'backdrop'}" sizes="100vw" fill
+                priority [alt]="media.name" class="w-full h-full object-cover object-center ">
+            <div class="overlay"></div>
+        </figure>
+
+        <app-banner-details class="[grid-area:info] justify-self-stretch" [serie]="media"></app-banner-details>
+
+        }
+    </div>
+    }
+    @loading {
+    <div class="mb-24">
+        <app-series-skeleton></app-series-skeleton>
+    </div>
+    }
+    @placeholder {
+    <div class="mb-24">
+        <app-series-skeleton></app-series-skeleton>
+    </div>
+    }
+
+    <!--on the air series carousel -->
+    @defer(on viewport){
+    <div class="mb-16">
+        <app-carousel [loader]="onTheAirLoader" [carouselOptions]="carouselOptions">
+            <ng-template #headerTemplate>
+                <span class="text-subtitle-carousel"> lo más esperado</span>
+                <h2 class="text-title-carousel"> Series al aire</h2>
+            </ng-template>
+
+            <ng-template let-data #cardTemplate>
+                <app-card-serie [serie]="data.media" [carouselService]="data.carouselService"
+                    [cardIndex]="data.index"></app-card-serie>
+            </ng-template>
+
+            <ng-template let-data #skeletonTemplate>
+                <app-carousel-series-skeleton [slidesConfig]="carouselOptions.slidesConfig" [hasHeader]="false"
+                    [carouselService]="data.carouselService" @fade></app-carousel-series-skeleton>
+            </ng-template>
+        </app-carousel>
+    </div>
+    }@loading{
+    <app-carousel-series-skeleton [slidesConfig]="carouselOptions.slidesConfig" @fade></app-carousel-series-skeleton>
+    }@placeholder {
+    <app-carousel-series-skeleton [slidesConfig]="carouselOptions.slidesConfig"></app-carousel-series-skeleton>
+    }
+
+
+    <!--popular series carousel -->
+    @defer(on viewport){
+    <div class="mb-16">
+        <app-carousel [loader]="popularSeriesLoader" [carouselOptions]="carouselOptions">
+            <ng-template #headerTemplate>
+                <span class="text-subtitle-carousel">lo más esperado</span>
+                <h2 class="text-title-carousel"> Series populares</h2>
+            </ng-template>
+
+            <ng-template let-data #cardTemplate>
+                <app-card-serie [serie]="data.media" [carouselService]="data.carouselService"
+                    [cardIndex]="data.index"></app-card-serie>
+            </ng-template>
+
+            <ng-template let-data #skeletonTemplate>
+                <app-carousel-series-skeleton [slidesConfig]="carouselOptions.slidesConfig" [hasHeader]="false"
+                    [carouselService]="data.carouselService" @fade></app-carousel-series-skeleton>
+            </ng-template>
+        </app-carousel>
+    </div>
+    }@loading{
+    <app-carousel-series-skeleton [slidesConfig]="carouselOptions.slidesConfig" @fade></app-carousel-series-skeleton>
+    }@placeholder {
+    <app-carousel-series-skeleton [slidesConfig]="carouselOptions.slidesConfig"></app-carousel-series-skeleton>
+    }
+
+
+</main>

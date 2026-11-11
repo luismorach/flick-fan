@@ -12,7 +12,7 @@ import {
 } from '@angular/cdk/overlay';
 
 import { ComponentPortal } from '@angular/cdk/portal';
-import { TooltipComponent } from '../../../shared/components/elements/tooltip/tooltip.component';
+import { TooltipComponent } from '../../../shared/components/customs-elements/tooltip/tooltip.component';
 
 @Directive({
   selector: '[appTooltip]',

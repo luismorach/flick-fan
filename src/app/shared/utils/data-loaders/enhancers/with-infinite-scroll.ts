@@ -11,6 +11,7 @@ export function withInfiniteScroll<T extends PaginatedMetaData, R extends ArrayK
     const setupInfiniteScroll = (sentinel: readonly ElementRef<HTMLElement>[],
         container?: ElementRef<HTMLElement>) => {
 
+        console.trace('setupInfiniteScroll');
         let io: IntersectionObserver | undefined = undefined
         const containerEl = container?.nativeElement ?? null;
         const sentinelEl = sentinel[0]?.nativeElement
@@ -18,35 +19,6 @@ export function withInfiniteScroll<T extends PaginatedMetaData, R extends ArrayK
         io = createIntersectionObserver(containerEl, pagination)
         io.observe(sentinelEl)
         return () => io.disconnect()
-        /* const destroyRef = inject(DestroyRef);
-
-        const cleanupRef = effect((onCleanup) => {
-            const containerSignal = container?.();
-            const containerEl = containerSignal?.nativeElement ?? null;
-            const sentinelEl = sentinel()?.[0]?.nativeElement
-
-            if (!sentinelEl) {
-                io?.disconnect();
-                io = undefined;
-                return;
-            }
-
-            io?.disconnect()
-            io = createIntersectionObserver(containerEl, pagination)
-            io.observe(sentinelEl)
-            
-            onCleanup(() => {
-                io?.disconnect()
-                io = undefined
-            })
-        })
-
-        destroyRef.onDestroy(() => {
-            cleanupRef.destroy()
-            io?.disconnect()
-            io = undefined
-        })
-    */
     }
 
     pagination.capabilities.add(INFINITE_SCROLL);
@@ -61,12 +33,18 @@ export function withInfiniteScroll<T extends PaginatedMetaData, R extends ArrayK
 
 function createIntersectionObserver<T extends PaginatedMetaData, R extends ArrayKey<T>>
     (root: HTMLElement | null, loader: LoaderWithPagination<T, R>) {
+    console.log('createIntersectionObserver', root)
     return new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
         const entry = entries[0]
         if (!entry) return;
         if (!entry.isIntersecting) return
         if (!loader.canLoadMore()) return
         if (loader.isFetchingMoreData()) return
+        console.log({
+            '¿Está intersectando?': entry.isIntersecting,
+            'Porcentaje visible': entry.intersectionRatio,
+            'Rectángulo del elemento': entry.boundingClientRect
+        });
         loader.loadMoreData()
     },
         {

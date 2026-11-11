@@ -1,5 +1,5 @@
 .btn-navigation {
-  @apply z-30 w-14 h-14 flex justify-center items-center 
+  @apply z-[10000] w-14 h-14 flex justify-center items-center 
   hover:!bg-[#e50914] hover:!border-[#e50914] transition-all duration-500
   hover:cursor-pointer absolute  text-center text-sm 
    text-white rounded-full 

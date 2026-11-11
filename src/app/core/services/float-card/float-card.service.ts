@@ -1,9 +1,9 @@
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { inject, Injectable } from '@angular/core';
-import { CardMoviePreviewComponent } from '../../../shared/components/carousel/carousel-movies/card-movie-preview/card-movie-preview.component';
+import { CardMoviePreviewComponent } from '../../../shared/components/movies/cards/card-movie-preview/card-movie-preview.component';
 import { Movie } from '../../interfaces/movie/movie.interface';
-import { CarouselService } from '../test/carousel/carousel-service';
+import { CarouselService } from '../carousel/carousel-service';
 
 @Injectable({
   providedIn: 'root'

@@ -1,0 +1,58 @@
+.btn-volume{
+    @apply cursor-pointer rounded-full bg-white/5 backdrop-blur-sm transition-all duration-300
+    text-white w-10 h-10 absolute z-[1000] right-[3%] bottom-2 flex justify-center items-center;
+}
+
+.btn-volume:hover{
+    @apply scale-110 text-black bg-white;
+}
+
+.frame-container{
+  @apply w-auto h-auto relative flex justify-center items-center box-border 
+}
+
+
+
+.player-frame {
+  @apply relative shadow-xl z-10 pointer-events-auto transition-all duration-200 ;
+}
+
+.player-float{
+  @apply w-full aspect-video rounded-lg overflow-hidden ;
+}
+
+.player-embed{
+  @apply w-full h-full
+}
+
+
+.player-float--normal { 
+  @apply inset-0 m-auto w-[70vw];
+}
+
+.player-float--normal app-trailer {
+  @apply w-full h-full block
+}
+
+.player-float--mini {
+  @apply  w-96 cursor-pointer z-50 ;
+}
+
+.player-float--mini app-trailer {
+  @apply w-full h-full block
+}
+
+
+
+.frame-player-buttons{
+  @apply absolute top-2 right-2 flex gap-1 z-10;
+}
+
+.player-button{
+  @apply bg-black/60 text-neutral-300 rounded px-2 py-1 text-sm transition-all;
+  @apply hover:scale-110 hover:cursor-pointer
+}
+
+.player {
+  @apply absolute top-0 right-0 bottom-0 left-0 w-full h-full bg-black
+}

@@ -1,0 +1,13 @@
+.title{
+  @apply  text-surface font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl 
+  relative text-left w-full max-h-24 object-contain object-left line-clamp-2;
+}
+
+.buttons{
+  @apply flex justify-start gap-4 text-lg my-4 opacity-0  h-9 sm:h-10 ;
+}
+
+.overview{
+  @apply text-surface/80 pt-2 text-justify max-h-[15vh] line-clamp-3 text-sm lg:text-base ;
+}
+

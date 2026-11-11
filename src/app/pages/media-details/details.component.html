@@ -1,0 +1,11 @@
+<main appBackgroundNavScroll>
+    <app-hero [media]="media()"></app-hero>
+    <app-about [media]="media()" [type]="type()"></app-about>
+    @let item = media();
+    @if(item && !isMovie(item)){
+    <section class="pb-32 ">
+        <app-details-episodes [serie]="item"></app-details-episodes>
+    </section>
+    }
+    <app-recomended [media]="media()"></app-recomended>
+</main>

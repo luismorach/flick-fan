@@ -14,31 +14,16 @@
 
 body,
 html {
-  scroll-behavior: smooth;
   background-color: #0f0f0f;
 }
 
-@supports selector(::-webkit-scrollbar ) {
-  ::-webkit-scrollbar {
-    width: 7px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.2);
-    border-radius: 10px;
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent
-  }
+*{
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.3) transparent;
 }
 
- @supports (scrollbar-width: thin) and (not selector(::-webkit-scrollbar)) {
-  html {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.3) transparent;
-  }
-} 
 
+ 
 
 
 .gradient {
@@ -183,75 +168,22 @@ html {
 
 /* -------------------- TRAILER -------------------- */
 .trailer-overlay {
-  @apply transition-all duration-300 ease-in-out w-screen h-screen !pointer-events-none
-}
-
-.frame-container{
-  @apply w-screen min-h-screen relative flex justify-center items-center box-border
-}
-
-.player-frame {
-  @apply relative shadow-xl z-10 pointer-events-auto transition-all duration-300 ease-in-out;
-}
-
-.player-float{
-  @apply w-full aspect-video rounded-lg overflow-hidden ;
-}
-
-.player-embed{
-  @apply w-full h-full
-}
-
-
-.player-frame--normal { 
-  @apply inset-0 m-auto w-[70vw];
-}
-
-.player-frame--normal app-trailer {
-  @apply w-full h-full block
-}
-
-.player-frame--mini {
-  @apply absolute bottom-5 right-5 w-96 cursor-pointer z-50 ;
-}
-
-.player-frame--mini app-trailer {
-  @apply w-full h-full block
-}
-
-.frame-player-buttons{
-  @apply absolute top-2 right-2 flex gap-1 z-10;
-}
-
-.player-button{
-  @apply bg-black/60 text-neutral-300 rounded px-2 py-1 text-sm transition-all;
-  @apply hover:scale-110 hover:cursor-pointer
-}
-
-.player {
-  @apply absolute top-0 right-0 bottom-0 left-0 w-full h-full bg-black
+  @apply w-auto 
 }
 
 .backdrop-hidden{
   @apply  hidden pointer-events-none !important
-}
+} 
 app-trailer youtube-player-placeholder {
   @apply w-full h-full !important
 }
 app-trailer youtube-player>div{
   @apply block w-full h-full !important;
-}
+} 
 app-trailer youtube-player>div>iframe {
   @apply block w-full h-full !important;
 }
 
-.trailer-fade {
-  @apply opacity-0
-}
-
-.trailer-fade.show {
-  @apply opacity-100 transition-opacity duration-500 ease-in delay-[2s]
-}
 
 
 /* -------------------- CAROUSEL -------------------- */
@@ -260,7 +192,8 @@ app-trailer youtube-player>div>iframe {
 .carousel-container{
     @apply flex overflow-auto w-auto h-full ;
     will-change: transform;           /* ← clave para rendimiento */
-    scrollbar-width: none
+    scrollbar-width: none;
+     overflow-anchor: none !important;
 }
 
 .carousel-item {

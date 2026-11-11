@@ -1,6 +1,6 @@
 import { APP_INITIALIZER, ApplicationConfig, LOCALE_ID } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { IMAGE_LOADER, ImageLoaderConfig, registerLocaleData } from '@angular/common';
+import { IMAGE_CONFIG, IMAGE_LOADER, ImageLoaderConfig, registerLocaleData } from '@angular/common';
 import localeVE from '@angular/common/locales/es-VE'
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
@@ -30,8 +30,15 @@ export const appConfig: ApplicationConfig = {
       multi: true,
     },
     {
+      provide: IMAGE_CONFIG,
+      useValue: {
+        breakpoints: [300, 500, 780, 1280, 1920, 3840]
+      }
+    },
+    {
       provide: IMAGE_LOADER,
       useValue: (config: ImageLoaderConfig) => {
+        breakpoints: [300, 500, 780, 1280, 1920, 3840]
         const type = config.loaderParams?.['type'];
         if (config.src === 'fallback') {
 
@@ -50,12 +57,17 @@ export const appConfig: ApplicationConfig = {
               return '/assets/images/default-placeholder.webp';
           }
         }
-        // 2. Si no hay ancho definido (src base), usamos 'original' o 'w500'
-        const width = config.width && config.width <= 1920 ? `w${config.width}` : 'original';
-
+        // 2. Si no hay ancho definido (src base), usamos 'original' o 'w500' 
+        const width = config.width ?? 3840;
+        let tmdbWidth = 'original'
+        if (width <= 300) tmdbWidth = 'w300';
+        else if (width <= 500) tmdbWidth = 'w500';
+        else if (width <= 780) tmdbWidth = 'w780';
+        else if (width <= 1280) tmdbWidth = 'w1280';
+        else if (width <= 1920) tmdbWidth = 'w1920';
 
         // 3. Retornar la URL construida para TMDB
-        return `https://image.tmdb.org/t/p/${width}${config.src}`;
+        return `https://image.tmdb.org/t/p/${tmdbWidth}${config.src}`;
       }
     },
     provideRouter(routes),

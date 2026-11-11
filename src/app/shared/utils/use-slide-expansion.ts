@@ -1,9 +1,8 @@
 import { Signal, computed } from "@angular/core"
 import { Serie, SerieList } from "../../core/interfaces/serie/serie.interface"
-import { SlidesInfoHook, SlidesInfoLayout } from "./use-slides-info"
 import { Movie } from "../../core/interfaces/movie/movie.interface"
 import { CarouselComponent } from "../components/carousel/carousel.component"
-import { CarouselService } from "../../core/services/test/carousel/carousel-service"
+import { CarouselService } from "../../core/services/carousel/carousel-service"
 
 export function useSlideExpansion() {
     let slideExpandedWidth = 0
@@ -29,7 +28,7 @@ export function useSlideExpansion() {
         currentPosition = position
 
         slideExpandedWidth = slide.offsetLeft + slidesInfo.layout().expandedSlideSize +
-            slidesInfo.layout().spaceBetween
+            slidesInfo.layout().spaceBetween + slidesInfo.layout().peekSize
 
         if ((slideExpandedWidth - currentPosition) > viewportWidth) {
             applyTranslateAdjustment();

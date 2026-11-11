@@ -5,13 +5,12 @@ import {
   input, output, Renderer2
 } from '@angular/core';
 import { TimerManager } from '../../../shared/utils/timer-manager';
-import { SlidesInfoHook } from '../../../shared/utils/use-slides-info';
 import { FloatTrailerService } from '../../services/float-trailer/float-trailer.service';
 import { ApiService } from '../../services/API/api.service';
 import { Serie } from '../../interfaces/serie/serie.interface';
 import { getKeyTrailer } from '../../../shared/utils/helpers';
 import { useSlideExpansion } from '../../../shared/utils/use-slide-expansion';
-import { CarouselService } from '../../services/test/carousel/carousel-service';
+import { CarouselService } from '../../services/carousel/carousel-service';
 
 @Directive({
   selector: '[appHoverSerieExpand]',
@@ -81,7 +80,7 @@ export class HoverSerieExpandDirective {
   private changeWidthSlide(width: number, delay: string) {
     console.log('creciendo',this.cardElement,width,delay)
     this.renderer.setStyle(this.cardElement, 'will-change', 'width')
-    this.renderer.setStyle(this.cardElement, 'transition', `width .4s cubic-bezier(.2,.45,0,1) ${delay}`) 
+    this.renderer.setStyle(this.cardElement, 'transition', `width .3s cubic-bezier(.2,.45,0,1) ${delay}`) 
     this.renderer.setStyle(this.cardElement, 'width', `${width}px`)
     /* this.renderer.setStyle(this.cardElement, 'transform', `scaleX(${width})`) */
   }

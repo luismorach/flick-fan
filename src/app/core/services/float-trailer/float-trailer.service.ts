@@ -2,9 +2,11 @@ import { ComponentRef, DestroyRef, effect, EffectRef, inject, Injectable, INJECT
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { CdkPortalOutlet, ComponentPortal } from '@angular/cdk/portal';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import TrailerComponent from '../../../shared/components/trailer/trailer.component';
+import TrailerComponent from '../../../shared/components/customs-elements/trailer/trailer.component';
 import { getKeyTrailer } from '../../../shared/utils/helpers';
 import { Videos } from '../../interfaces/media/videos.interface';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 
 const OVERLAY_CONFIG = {
   CLASSES: {
@@ -62,9 +64,16 @@ export class FloatTrailerService {
   /** Signal indicating whether the floating trailer is minimized */
   private readonly _isMinimized = signal(false);
   readonly isMinimized = this._isMinimized.asReadonly()
+  router: Router = inject(Router);
 
   constructor() {
     this.portal = new ComponentPortal(TrailerComponent);
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => {
+      this.hideFloatTrailer();
+    });
 
   }
 
@@ -74,25 +83,7 @@ export class FloatTrailerService {
    * Creates a modal overlay with backdrop that can be minimized to bottom-right corner.
    * If an overlay is already active, this method does nothing.
    * 
-   * @param videoKey - YouTube video ID (e.g., 'dQw4w9WgXcQ')
-   * @returns void
-   * 
-   * @example
-   * ```typescript
-   * floatTrailerService.showTrailer('dQw4w9WgXcQ');
-   * ```
    */
-  playFloatTrailer(videoKey: string | undefined) {
-    if (!videoKey?.trim()) return;
-    if (this.overlayRef) return;
-
-    this.videoKey.set(videoKey)
-    this.overlayRef = this.createOverlay()
-    const attachedRef = this.overlayRef.attach(this.portal);
-    attachedRef.instance.videoKey = this.videoKey
-    attachedRef.instance.mode.set('float')
-    this.setupBackdropInteraction()
-  }
 
   register<T extends { videos: Videos }>(owner: object, media: Signal<T | undefined>) {
     if (this.currentOwner === owner) return
@@ -111,6 +102,7 @@ export class FloatTrailerService {
           const keyTrailer = getKeyTrailer(videos)
           if (!this.overlayRef || !this.attachedRef) {
             this.overlayRef = this.createOverlay()
+            this.setupBackdropInteraction()
             this.attachedRef = this.overlayRef.attach(this.portal);
           }
 
@@ -122,11 +114,12 @@ export class FloatTrailerService {
             this.videoKey.set(keyTrailer)
             this.attachedRef.instance.videoKey = this.videoKey
             this.attachedRef.instance.mode.set('float')
-            this.setupBackdropInteraction()
           }
         })
       })
     })
+
+
   }
 
   /**
@@ -169,7 +162,7 @@ export class FloatTrailerService {
       .pipe(
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(() => this.minimizeFloatTrailer());
+      .subscribe(() => { this.minimizeFloatTrailer(); console.log('Backdrop clicked, minimizing trailer') });
   }
 
   /**
@@ -197,17 +190,32 @@ export class FloatTrailerService {
       backdropClass: OVERLAY_CONFIG.CLASSES.BACKDROP,
       scrollStrategy: this.overlay.scrollStrategies.noop(), // permanece fijo con scroll
       panelClass: [OVERLAY_CONFIG.CLASSES.BASE],
+      positionStrategy: this.centeredPosition(),
     });
+  }
+
+  private centeredPosition() {
+    return this.overlay.position().global()
+      .centerHorizontally()
+      .centerVertically();
+  }
+
+  private cornerPosition() {
+    return this.overlay.position().global()
+      .bottom('16px')
+      .right('16px');
   }
 
   private minimizeFloatTrailer(): void {
     this._isMinimized.set(true)
     this.hideBackdrop(true)
+    this.overlayRef?.updatePositionStrategy(this.cornerPosition())
   }
 
   maximizeFloatTrailer(): void {
     this._isMinimized.set(false)
     this.hideBackdrop(false)
+    this.overlayRef?.updatePositionStrategy(this.centeredPosition())
   }
 
   private hideBackdrop(isMinimized: boolean) {
@@ -221,16 +229,16 @@ export class FloatTrailerService {
   hideFloatTrailer(): void {
     if (!this.overlayRef) return;
 
+    this.overlayRef.detach();
     this.overlayRef.dispose();
     this.overlayRef = undefined;
     this._isMinimized.set(false);
     this.videoKey.set('');
     this.currentEffect?.destroy()
-    this.currentOwner=undefined
+    this.currentOwner = undefined
   }
 
   hasTrailer(): boolean {
     return this.videoKey() !== '';
   }
-  
 }

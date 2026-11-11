@@ -72,7 +72,7 @@ export interface LoaderWithFilter<T extends object, K extends ArrayKey<T>> exten
  export interface LoaderWithInfiniteScroll<T extends object, K extends ArrayKey<T>> extends LoaderCore<T, K> {
     setupInfiniteScroll: (
         sentinel: readonly ElementRef<HTMLElement>[],
-        container: ElementRef<HTMLElement> ,
+        container?: ElementRef<HTMLElement> ,
     ) => void
 };
  

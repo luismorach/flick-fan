@@ -29,14 +29,17 @@
 
 
             @if(loader().canLoadMore?.()){
-            @for(_ of carouselService.state().slidesInfo.skeletonSlideIndexes(); track $index) {
-            <div class="carousel-item" @fade #sentinels
-                [style.width.px]="carouselService.state().slidesInfo.layout().slideMainAxisSize">
+           @for(_ of carouselService.state().slidesInfo.skeletonSlideIndexes(); track $index) {
+            <div class="carousel-item" @fade>
                 @if(skeletonTemplateRef(); as skeletonTemplate){
-                <ng-container [ngTemplateOutlet]="skeletonTemplate"></ng-container>
+                <ng-container [ngTemplateOutlet]="skeletonTemplate"
+                    [ngTemplateOutletContext]="{$implicit:{carouselService}}">
+                </ng-container>
                 }
-            </div>
+            </div> 
             }
+            <div appInView [root]="carousel" rootMargin="0px 30% 0px 0px" (inView)="loader().loadMoreData?.()"  
+            class="shrink-0 w-96 aspect-video self-stretch" aria-hidden="true"></div>
             }
 
         </div>

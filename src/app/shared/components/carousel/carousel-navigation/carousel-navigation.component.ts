@@ -1,10 +1,10 @@
-import { Component, input } from '@angular/core';
+import { Component, effect, input } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { CarouselService } from '../../../../core/services/carousel/carousel-service';
-import { IconComponent } from "../../../icon/icon.component";
+import { IconComponent } from '../../../icon/icon.component';
 
 @Component({
-  selector: 'app-carousel-navigation',
+  selector: 'app-carousel-navigation-test',
   imports: [NgClass, IconComponent],
   templateUrl: './carousel-navigation.component.html',
   styleUrl: './carousel-navigation.component.css'

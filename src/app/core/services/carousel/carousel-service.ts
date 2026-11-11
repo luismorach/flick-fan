@@ -1,12 +1,11 @@
-import { computed, DestroyRef, effect, ElementRef, inject, Injectable, signal, Signal, untracked } from '@angular/core';
+import { computed, DestroyRef, ElementRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { fromEvent } from 'rxjs';
-import { CarouselOptions } from '../../interfaces/shared/carousel-interface';
-import { SlidesInfoHook, useSlidesInfo } from '../../../shared/utils/use-slides-info';
-import { useIntersectionObserver } from '../../../shared/utils/use-intersection-observer';
-import { CarouselController, CarouselNavigationAPI, CarouselStateAPI, useCarouselcontroller } from '../../../shared/utils/use-carousel-controller';
-import { canLoadDetails } from '../../../shared/utils/data-loaders/enhancers/with-details';
+import { animationFrameScheduler, audit, auditTime, fromEvent } from 'rxjs';
 import { LoaderCore } from '../../../shared/utils/data-loaders/types';
+import { CarouselOptions } from '../../interfaces/shared/carousel-interface';
+import { CarouselController, useCarouselcontroller } from './util/use-carousel-controller';
+import { DeviceService } from '../device/device-service.service';
+import { SlidesInfoHook, useSlidesInfo } from './util/use-slides-info';
 
 @Injectable()
 export class CarouselService<T extends Object, R extends keyof T> {
@@ -14,85 +13,57 @@ export class CarouselService<T extends Object, R extends keyof T> {
     // DEPENDENCIES
     // ==========================================
     private readonly destroyRef = inject(DestroyRef);
-    slidesInfo: SlidesInfoHook = useSlidesInfo(signal(undefined), {})
-    private loader?: LoaderCore<T, R>
-    private controller: CarouselController = useCarouselcontroller(signal(undefined), { slidesConfig: {} }, this.loader)
+    private readonly device = inject(DeviceService)
+
+    private slidesInfo: SlidesInfoHook = useSlidesInfo(undefined, {})
+    private controller?: CarouselController
 
     // ==========================================
     // STATE
     // ==========================================
-    private readonly _isHoveredOverCarousel = signal(false);
-    readonly isHoveredOverCarousel = this._isHoveredOverCarousel.asReadonly()
+    private scrollSnapping = false;
+    private readonly scrollPosition = signal(0)
+    private readonly isHoveredOverCarousel = signal(false);
+    private readonly isHoveredOverPreview = signal(false);
+    private readonly showControls = computed(() => this.isHoveredOverCarousel() || this.isHoveredOverPreview());
+    readonly scrollProgress = signal(0)
 
     // ==========================================
     // PUBLIC STATE (READONLY SIGNALS)
     // ==========================================
-    readonly navigation: CarouselNavigationAPI = {
-        next: () => this.controller.next(),
-        prev: () => this.controller.prev(),
-        resetPosition: () => this.controller.resetPosition()
+    readonly navigation = {
+        next: () => this.controller?.next(),
+        prev: () => this.controller?.prev(),
+        translateToCurrentPosition: () => this.controller?.scrollToCurrentPosition(),
+        snapBackIfOverScroller: () => this.controller?.snapBackIfOverscrolled(),
+        resetPosition: () => this.controller?.resetPosition()
     }
 
-    readonly state: Signal<CarouselStateAPI> = computed(() => {
+    readonly state = computed(() => {
         return {
-            activeIndex: this.controller.activeIndex,
-            isAtStart: this.controller.isAtStart,
-            isAtEnd: this.controller.isAtEnd,
-            isAtSkeleton: this.controller.isAtSkeleton,
-            currentElement: this.controller.currentElement,
-            currentPosition: this.controller.currentPosition
+            activeIndex: this.controller?.activeIndex,
+            isAtStart: this.controller?.isAtStart,
+            isAtEnd: this.controller?.isAtEnd,
+            isAtSkeleton: this.controller?.isAtSkeleton,
+            showControls: this.showControls,
+            currentElement: this.controller?.currentElement,
+            currentPosition: this.controller?.currentPosition,
+            scrollPosition: this.scrollPosition.asReadonly(),
+            isScrollSnapping: () => this.scrollSnapping,
+            slidesInfo: this.slidesInfo,
+            scrollProgress: this.scrollProgress,
+            onPreviewMouseEnter: this.onPreviewMouseEnter.bind(this),
+            onPreviewMouseLeave: this.onPreviewMouseLeave.bind(this)
         }
     })
 
-
-    initialize(
-        carouselContainer: Signal<ElementRef<HTMLElement> | undefined>,
-        carouselOptions: CarouselOptions,
+    initialize(carouselContainer: ElementRef<HTMLElement>, carouselOptions: CarouselOptions,
         loader?: LoaderCore<T, R>
     ): void {
-        this.loader = loader
         this.controller = useCarouselcontroller(carouselContainer, carouselOptions, loader)
-        this.slidesInfo = this.controller.slidesInfo
-        this.setupDataLoadedEffect();
-        this.setupCarouselContainerEffect(carouselContainer, carouselOptions);
-    }
+        this.slidesInfo = this.controller?.slidesInfo
+        this.setupEventListeners(carouselContainer)
 
-    private setupDataLoadedEffect(): void {
-        effect(() => {
-            if (this.loader?.dataLength() && this.loader?.isInitialized()) {
-                untracked(() => {
-                    /*  requestAnimationFrame(() => {
-                         this.scrollToCurrentPosition()
-                     }) */
-                    this.controller.snapBackIfOverscrolled()
-                })
-            }
-        });
-    }
-
-    private setupCarouselContainerEffect(
-        carouselContainer: Signal<ElementRef<HTMLElement> | undefined>, carouselOptions: CarouselOptions): void {
-        effect(() => {
-            const container = carouselContainer()
-            if (!container) return
-            untracked(() => {
-                this.initCarousel(container, carouselOptions);
-            })
-        });
-    }
-
-    private initCarousel(carouselContainer: ElementRef<HTMLElement>, carouselOptions: CarouselOptions,): void {
-        try {
-            this.setupEventListeners(carouselContainer)
-
-            /* if (carouselOptions.requiresEnrichment && canLoadDetails(this.loader)) {
-                const cleanup = useIntersectionObserver(carouselContainer,
-                    this.loader.loadDetails.bind(this.loader))
-                this.destroyRef.onDestroy(cleanup)
-            } */
-        } catch (error) {
-            console.log('error inizializando', error)
-        }
     }
 
     private setupEventListeners(carouselContainer: ElementRef<HTMLElement>): void {
@@ -105,20 +76,45 @@ export class CarouselService<T extends Object, R extends keyof T> {
 
     private setupHoverListeners(viewport: HTMLElement): void {
         fromEvent(viewport, 'mouseenter').pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(() => this._isHoveredOverCarousel.set(true));
+            .subscribe(() => this.isHoveredOverCarousel.set(true));
 
         fromEvent(viewport, 'mouseleave').pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(() => this._isHoveredOverCarousel.set(false));
+            .subscribe(() => this.isHoveredOverCarousel.set(false));
     }
 
+    private onPreviewMouseEnter() {
+        this.isHoveredOverPreview.set(true);
+    }
+
+    private onPreviewMouseLeave() {
+        this.isHoveredOverPreview.set(false);
+    }
+
+
+
     private setupScrollListener(carouselContainer: HTMLElement): void {
+        fromEvent(carouselContainer, 'scroll').pipe(
+            auditTime(0, animationFrameScheduler),
+            takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                const isVertical = this.controller?.slidesInfo.direction() === 'vertical'
+                const scrollPosition = isVertical ? carouselContainer.scrollTop : carouselContainer.scrollLeft;
+                const slideSize = this.slidesInfo.layout().slideMainAxisSizeWithGap;
+                if (!slideSize) return;
+
+                this.scrollProgress.set(scrollPosition / slideSize);
+            });
+
         fromEvent(carouselContainer, 'scrollend').pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => this.handleScroll(carouselContainer));
     }
 
-    private handleScroll(carouselContainer: HTMLElement): void {
-        console.log('posicion antes de adjustscroll',carouselContainer.scrollLeft) 
-        this.controller?.adjustScrollToNearestIndex()
 
+    private handleScroll(carouselContainer: HTMLElement): void {
+        if (this.device.device() === 'desktop') return;
+        this.scrollSnapping = true;
+        this.controller?.adjustScrollToNearestIndex();
+        this.controller?.scrollToCurrentPosition();
+        this.scrollSnapping = false;
     }
 }

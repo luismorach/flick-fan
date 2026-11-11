@@ -34,6 +34,7 @@ export class ApiService {
     recomended_movies: this.getRecomendedMovies.bind(this),
     details_movie: this.getDetailsMovie.bind(this),
     search_movies: this.searchMovie.bind(this),
+    credits_movie:this.getCreditsMovie.bind(this),
 
     popular_series: this.getPopularSeries.bind(this),
     airing_today_series: this.getAiringTodaySeries.bind(this),
@@ -43,6 +44,7 @@ export class ApiService {
     recomended_series: this.getRecomendedSeries.bind(this),
     details_serie: this.getDetailsSerie.bind(this),
     search_series: this.searchSerie.bind(this),
+    credits_serie:this.getCreditsSerie.bind(this),
 
   };
 
@@ -201,25 +203,7 @@ export class ApiService {
       params: this.buildParams(),
     })
   }
-  private enrichSerieWithSeasons(serie: Serie, serieId: number): Observable<Serie> {
-    if (!serie.seasons || serie.seasons.length === 0) {
-      return of(serie);
-    }
-
-    const seasonRequests = serie.seasons.map((season) =>
-      this.http
-        .get<any>(`${this.API_BASE}/tv/${serieId}/season/${season.season_number}`, {
-          params: this.buildParams(),
-        })
-    );
-
-    return forkJoin(seasonRequests).pipe(
-      map((seasons) => ({
-        ...serie,
-        seasons,
-      }))
-    );
-  }
+  
 
   // ==================== GENRES ====================
 
@@ -273,6 +257,27 @@ export class ApiService {
     const details: T = await lastValueFrom(
       apiMethod(params));
     return details as T
+  }
+
+  async getMediaList<T>(params: ParamsApi) {
+    const type = params.type
+    if (!type) return
+    const apiMethod = this.methodMap[type];
+    if (!apiMethod) throw new Error(`Unknown data type: ${type}`);
+
+    const mediaList: T = await lastValueFrom(apiMethod(params));
+    return mediaList as T
+  }
+
+  async getCredits<T>(params: ParamsApi) {
+    const type = params.type
+    if (!type) return
+    (type.includes('movie')) ? params.type = 'credits_movie' : params.type = 'credits_serie'
+    const apiMethod = this.methodMap[params.type];
+    if (!apiMethod) throw new Error(`Unknown data type: ${type}`);
+
+    const credits: T = await lastValueFrom(apiMethod(params));
+    return credits as T
   }
 
 

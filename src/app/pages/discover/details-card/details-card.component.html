@@ -1,0 +1,70 @@
+<div class="w-[26rem] h-[calc(100vh-9rem)] bg-[#151414] rounded-tl-xl overflow-hidden sticky top-36 ">
+  @let item = selectedItem();
+  @if(item){
+  <section class="px-10 pt-7 pb-4 relative z-10 flex flex-col h-full">
+    <header class="w-full flex flex-col flex-1 overflow-y-auto ">
+
+      @if(titleImage(); as urlImage){
+      <figure class="h-24 w-auto min-h-24 flex relative">
+        <img [ngSrc]="urlImage" alt="{{urlImage}}" sizes="15rem" class="w-full object-contain" fill>
+      </figure>
+
+      }@else {
+      <h1 class="title">{{title()}}</h1>
+      }
+
+      <div class="flex justify-between text-white/90 text-lg font-semibold mt-4">
+        @if(isMovie(item)){
+        <p class="my-4 mx-2">{{item.runtime | minutesToTime}}</p>
+        <p class="my-4 mx-2"> {{item.release_date | date:'yyyy'}}</p>
+        }@else {
+        <p class="my-4 mx-2"> {{item.first_air_date | date:'yyyy'}} -
+          {{item.last_air_date | date:'yyyy'}}</p>
+        }
+
+        <div class="flex gap-1 items-center my-4 mx-2">
+          <app-icon name="star" color="text-red-600" backgroundColor="#e50914" size="w-5 h-5"> </app-icon>
+          <p> {{item.vote_average| number:'1.1-1' :'en-US'}}</p>
+        </div>
+      </div>
+
+      <p class="text-white/90 mt-4 leading-7 font-light ">{{item.overview}}</p>
+
+      <div class="text-white/90 text-base  mt-4">
+        <h1 class="text-white/30">GENEROS</h1>
+        <div class="flex gap-2 mt-2 flex-wrap">
+          @for(genre of selectedItem()?.genres;track genre.id){
+          <span class="backdrop-blur-sm bg-white/5 rounded-full px-5 py-1 cursor-pointer hover:bg-white/15"
+            (click)="selectGenre(genre)">
+            {{genre.name}}
+          </span>
+          }
+        </div>
+      </div>
+    </header>
+
+    <section class="flex text-white/90 gap-6 mt-2 h-14">
+
+      <button appTooltip="Tráiler" (click)="playTrailer()" [disabled]="!currentTrailerKey()"
+        class="btn-primary h-full aspect-square" [attr.aria-label]="`Reproducir avance de  ${title()}`" tabindex="0"
+        type="button">
+        <app-icon name="clapperboard" size="w-6 h-6"></app-icon>
+      </button>
+
+      <a [routerLink]="[link()]" appTooltip="Más información" class="btn-primary h-full aspect-square">
+        <app-icon name="info" size="w-6 h-6"></app-icon>
+      </a>
+
+      <a class="btn-primary px-6 flex-1 !font-sans">
+        <app-icon name="play" size="w-6 h-6"></app-icon>
+        Ver ahora
+      </a>
+    </section>
+  </section>
+  }
+  <figure class="absolute top-0 w-full aspect-[2/3]  opacity-30 blur-[10px] z-0 ">
+    <img [ngSrc]="selectedItem()?.poster_path || 'fallback'" alt="" [loaderParams]="{type:'poster'}" sizes="25rem"
+      class="aspect-[2/3] bg-cover bg-center detail" fill priority>
+  </figure>
+
+</div>
