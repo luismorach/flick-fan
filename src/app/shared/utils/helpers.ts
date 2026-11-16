@@ -1,13 +1,9 @@
-import { effect, ElementRef, signal, Signal } from "@angular/core"
+import { computed, effect, ElementRef, signal, Signal } from "@angular/core"
 import { Movie } from "../../core/interfaces/movie/movie.interface";
-import { Serie } from "../../core/interfaces/serie/serie.interface";
 import { video, Videos } from "../../core/interfaces/media/videos.interface";
-import { ListReleaseDates } from "../../core/interfaces/shared/release-dates.interface";
-import { MediaItem, PaginatedMetaData } from "../../core/interfaces/shared/generic.interface";
+import { MediaItem } from "../../core/interfaces/shared/generic.interface";
+import { Serie } from "../../core/interfaces/serie/serie.interface";
 
-export function waitForAnimationFrame(): Promise<void> {
-    return new Promise(resolve => requestAnimationFrame(() => resolve()))
-}
 
 export function getKeyTrailer(videos: Videos): string | undefined {
     if (!videos?.results || !Array.isArray(videos.results)) {
@@ -64,18 +60,60 @@ export function getHeightContainer(container: Signal<ElementRef<HTMLElement> | u
     return height.asReadonly()
 }
 
-export function getReleaseDate<T extends MediaItem>(data: T | undefined) {
+export function getComputedCertification<T extends MediaItem>(data: Signal<T | undefined>) {
+    return computed(() => {
+        const currentData = data()
+        return getCertification(currentData)
+    })
+}
+
+export function getCertification<T extends MediaItem>(data: T | undefined) {
     const media = data
     if (!media) return
     const list = media.release_dates.results.filter((element) => element.iso_3166_1 === 'US')
-    if(list.length === 0) return
-    const release_dates = list[0].release_dates.filter((element) => element.certification !== '')
-    if(!release_dates) return
-    return release_dates[0]
+    if (list.length === 0) return
+    const certification = list[0].release_dates.filter((element) => element.certification !== '')
+    if (!certification) return
+    return certification[0]
 }
 
 export function isMovie(item: any): item is Movie {
-    return 'title' in item 
-  }
+    return 'title' in item
+}
 
 
+
+export function getComputedTitleImageUrl(media: Signal<Movie | Serie | undefined>) {
+    return computed(() => {
+        const currentMedia = media()
+        const logos = currentMedia?.images?.logos;
+        if (!logos?.length) return undefined
+        return logos[0].file_path
+    })
+}
+
+export function getComputedTitle(media: Signal<Movie | Serie | undefined>) {
+    return computed(() => {
+        const currentMedia = media();
+        return getTitle(currentMedia)
+    })
+}
+
+export function getTitle(media: Movie | Serie | undefined) {
+    if (!media) return 'Unknown title'
+    if (isMovie(media)) return media.title
+    return media.name
+}
+
+export function getComputedReleaseDate(media: Signal<Movie | Serie | undefined>) {
+    return computed(() => {
+        const currentMedia = media();
+        return getReleaseDate(currentMedia)
+    })
+}
+
+export function getReleaseDate(media: Movie | Serie | undefined) {
+    if (!media) return undefined
+    if (isMovie(media)) return media.release_date
+    return media.first_air_date
+}

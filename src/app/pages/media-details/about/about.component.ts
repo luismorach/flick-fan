@@ -1,7 +1,7 @@
 import { Component, computed, ElementRef, inject, input, viewChild } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { combineLatest, filter, switchMap } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { Movie } from '../../../core/interfaces/movie/movie.interface';
 import { Credits, Crew } from '../../../core/interfaces/people/credits.interface';
 import { Serie } from '../../../core/interfaces/serie/serie.interface';
@@ -21,13 +21,16 @@ export class AboutComponent {
 
   private readonly sinopsysContainer = viewChild<ElementRef<HTMLElement>>('sinopsysContainer')
 
+  params = computed(() => ({
+    id: this.media()?.id,
+    type: this.type()
+  }));
+
   credits = toSignal(
-    combineLatest([
-      toObservable(this.media),
-      toObservable(this.type)
-    ]).pipe(
-      filter(([media, type]) => !!media?.id && !!type),
-      switchMap(([media,type]) => this.api.getCredits<Credits>({ dataId: media?.id, type: type }))
+      toObservable(this.params)
+    .pipe(
+      filter(({id, type}) => !!id && !!type),
+      switchMap(({id, type}) => this.api.getCredits<Credits>({ dataId: id, type: type }))
     ),
     { initialValue: undefined }
   );

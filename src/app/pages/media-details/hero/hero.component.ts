@@ -1,11 +1,11 @@
 import { DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, untracked } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { Movie } from '../../../core/interfaces/movie/movie.interface';
 import { Serie } from '../../../core/interfaces/serie/serie.interface';
 import { MinutesToTimePipe } from '../../../shared/pipes/minutes-to-time/minutes-to-time.pipe';
-import { isMovie, getReleaseDate } from '../../../shared/utils/helpers';
+import { isMovie,  getComputedTitle, getCertification, getComputedCertification } from '../../../shared/utils/helpers';
 
 @Component({
   selector: 'app-hero',
@@ -16,13 +16,18 @@ import { isMovie, getReleaseDate } from '../../../shared/utils/helpers';
 export class HeroComponent {
   media = input.required<Movie | Serie | undefined>();
   isMovie = isMovie;
-  title = computed(() => {
+  title = getComputedTitle(this.media)
+  releaseDate = getComputedCertification(this.media)
+
+
+  link = computed(() => {
     const media = this.media()
-    if (isMovie(media)) return media.title
-    return media?.name ?? 'Unknown title'
+     if (!media) return ''
+      const id = media.id
+      if (!id) return ''
+      if (isMovie(media)) return `/watch/movie/${id}`
+      return `/watch/serie/${id}/1/1`
   })
 
-  link = computed(() => `/watch-${isMovie(this.media()) ? 'movie' : 'serie'}/${this.media()?.id}`)
-  releaseDate = computed(() => getReleaseDate(this.media()))
  
 }

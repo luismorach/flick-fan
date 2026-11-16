@@ -8,9 +8,9 @@ import { Serie, SerieList } from '../../../core/interfaces/serie/serie.interface
 import { CarouselOptions } from '../../../core/interfaces/shared/carousel-interface';
 import { ApiService } from '../../../core/services/API/api.service';
 import { CarouselComponent } from '../../../shared/components/carousel/carousel.component';
-import { withInfiniteScroll } from '../../../shared/utils/data-loaders/enhancers/with-infinite-scroll';
 import { useDataLoader } from '../../../shared/utils/data-loaders/use-data-loader';
-import { isMovie } from '../../../shared/utils/helpers';
+import { getTitle, isMovie } from '../../../shared/utils/helpers';
+import { withPagination } from '../../../shared/utils/data-loaders/enhancers/with-pagination';
 
 @Component({
   selector: 'app-recomended',
@@ -25,13 +25,14 @@ export class RecomendedComponent {
   private readonly router = inject(Router);
   private carousel = viewChild(CarouselComponent)
   isMovie = isMovie;
+  getTitle = getTitle
 
   extraargs = computed(() => {
     const media = this.media()
     if (!media) return { dataId: undefined, type: '' }
     const type = isMovie(media) ? 'recomended_movies' : 'recomended_series'
     return { dataId: media?.id, type: type }
-  });
+  }); 
 
   recomended = toSignal(
     toObservable(this.extraargs).pipe(
@@ -42,7 +43,7 @@ export class RecomendedComponent {
   );
 
   readonly recomendedLoader = useDataLoader<MovieList | SerieList, 'results'>('results', this.recomended, this.extraargs)
-    .with(withInfiniteScroll)
+    .with(withPagination)
     .build();
 
   readonly carouselOptions: CarouselOptions = {
@@ -66,22 +67,12 @@ export class RecomendedComponent {
     }
   }
 
-  constructor() {
-  }
-
-  getTitle(data: Movie | Serie) {
-    if (!data) return ''
-    if (isMovie(data)) return data.title
-    return data.name
-  }
-
   getReleaseDate(data: Movie | Serie) {
     if (isMovie(data)) return data.release_date
     return data.first_air_date
   }
 
   redirect(id: number) {
-    console.log('redirecting')
     this.router.navigate(['/details/', isMovie(this.media()) ? 'movie' : 'serie', id])
     document.scrollingElement?.scrollTo({ top: 0, behavior: 'smooth' })
     this.carousel()?.carouselService.navigation.resetPosition()

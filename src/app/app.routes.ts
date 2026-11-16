@@ -12,14 +12,13 @@ export const routes: Routes = [
     },
     {
         path: 'details/:type/:id', loadComponent: () => import('./pages/media-details/details.component'),
+        
     },
     {
-        path: 'watch-movie/:id_movie', loadComponent: () => import('./shared/components/movies/play-movie/play-movie.component'),
+        path: 'watch/:type/:id', loadComponent: () => import('./pages/watch/watch.component'),
     },
     {
-        path: 'watch-serie/:id_serie',
-        loadComponent: () => import('./shared/components/series/play-serie/play-serie.component'),
+        path: 'watch/:type/:id/:season_number/:episode_number', loadComponent: () => import('./pages/watch/watch.component'),
     },
-   
     { path: '', redirectTo: 'home', pathMatch: 'full' },
 ];

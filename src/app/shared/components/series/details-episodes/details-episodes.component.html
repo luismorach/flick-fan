@@ -19,7 +19,8 @@
     </ng-template>
 
     <ng-template let-data #cardTemplate>
-        <div class="group cursor-pointer" [style.width.px]="data.carouselService.slidesInfo.layout().slideMainAxisSize">
+        <div class="group cursor-pointer" [style.width.px]="data.carouselService.slidesInfo.layout().slideMainAxisSize"
+        (click)="redirectToWatch(data.media)">
             <div class="relative aspect-video rounded-xl overflow-hidden mb-4 ghost-border">
                 <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     [ngSrc]="data.media.still_path || 'fallback'" [loaderParams]="{type:'backdrop'}" fill

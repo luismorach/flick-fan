@@ -82,7 +82,6 @@ export class HoverSerieExpandDirective {
     this.renderer.setStyle(this.cardElement, 'will-change', 'width')
     this.renderer.setStyle(this.cardElement, 'transition', `width .3s cubic-bezier(.2,.45,0,1) ${delay}`) 
     this.renderer.setStyle(this.cardElement, 'width', `${width}px`)
-    /* this.renderer.setStyle(this.cardElement, 'transform', `scaleX(${width})`) */
   }
 
   private animateImageChange(posterOpacity: number, delay: string) {
@@ -100,7 +99,6 @@ export class HoverSerieExpandDirective {
 
   @HostListener('mouseleave') onMouseLeave() {
     this.timerManager.clearAllTimeouts()
-    this.timerManager.clearAllAnimationFrames()
     this.resetSlide()
   }
 

@@ -8,15 +8,15 @@ import { DatePipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { useDataLoader } from '../../../shared/utils/data-loaders/use-data-loader';
 import { EmptyComponent } from '../../../shared/components/customs-elements/empty/empty.component';
 import { ApiService } from '../../../core/services/API/api.service';
-import { withAutoFillViewport } from '../../../shared/utils/data-loaders/enhancers/with-auto-fill-viewport';
 import { canFilter, withFilter } from '../../../shared/utils/data-loaders/enhancers/with-filter';
-import { withInfiniteScroll } from '../../../shared/utils/data-loaders/enhancers/with-infinite-scroll';
 import { Genre } from '../../../core/interfaces/shared/genre.interface';
 import { slidesConfig } from '../../../core/interfaces/shared/carousel-interface';
 import { Serie, SerieList } from '../../../core/interfaces/serie/serie.interface';
 import { OptionCategory } from '../../../core/interfaces/shared/option_category';
 import { useSlidesInfo } from '../../../core/services/carousel/util/use-slides-info';
 import { InViewDirective } from '../../../core/directives/in-view/in-view.directive';
+import { withPagination } from '../../../shared/utils/data-loaders/enhancers/with-pagination';
+import { getComputedReleaseDate, getComputedTitle, getReleaseDate, getTitle } from '../../../shared/utils/helpers';
 
 @Component({
   selector: 'app-cards-grid',
@@ -41,6 +41,8 @@ export class CardsGridComponent {
 
   private readonly viewport = viewChild<ElementRef<HTMLElement>>('viewport')
   private readonly inView = viewChild<InViewDirective>(InViewDirective)
+  getTitle = getTitle
+  getReleaseDate = getReleaseDate
 
   test = signal({
     page: 1,
@@ -51,9 +53,10 @@ export class CardsGridComponent {
   })
   readonly loader = useDataLoader<MovieList | SerieList, 'results'>('results', this.data)
     .with(withFilter)
-    .with(withInfiniteScroll)
-    .with(withAutoFillViewport)
+    .with(withPagination)
     .build();
+
+  
 
   changeGenreFilter = effect(() => {
     const filter = this.selectedGenre()

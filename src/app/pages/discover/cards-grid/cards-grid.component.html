@@ -26,17 +26,17 @@
     </div>
 
     <div class="absolute bottom-0 left-0 p-4 w-full">
-      @if(mediaTypeSelected() === 'movies'){
+     <!--  @if(mediaTypeSelected() === 'movies'){
       <h6 class="text-white font-bold text-sm line-clamp-2 ">{{data.title}}</h6>
       <div class="flex items-center gap-2 text-xs text-gray-300">
         <span class="text-green-400 font-bold">{{data.release_date | date:'yyyy'}}</span>
       </div>
-      }@else {
-      <h6 class="text-white font-bold text-sm line-clamp-2 ">{{data.name}}</h6>
+      }@else { -->
+      <h6 class="text-white font-bold text-sm line-clamp-2 ">{{getTitle(data)}}</h6>
       <div class="flex items-center gap-2 text-xs text-gray-300">
-        <span class="text-green-400 font-bold">{{data.first_air_date | date:'yyyy'}}</span>
+        <span class="text-green-400 font-bold">{{getReleaseDate(data)| date:'yyyy'}}</span>
       </div>
-      }
+      <!-- } -->
 
     </div>
   </div>

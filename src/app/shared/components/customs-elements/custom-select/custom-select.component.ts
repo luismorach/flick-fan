@@ -11,7 +11,7 @@ import { take } from 'rxjs';
 export class CustomSelectComponent<T extends { name: string, id: number }> {
 
   options = input.required<T[]>()
-  selectedOption = model.required<T>()
+  selectedOption = model.required<T | undefined>()
   @ViewChild('panel') panel?: ElementRef<HTMLElement>;
   @ViewChild('origin', { read: ElementRef }) trigger?: ElementRef<HTMLElement>;
   isOpen = signal(false);
@@ -34,6 +34,9 @@ export class CustomSelectComponent<T extends { name: string, id: number }> {
     this.isOpen.update(v => !v);
   }
 
+  x = effect(()=>{
+    console.log('options',this.options())
+  })
   selectOption(option: T) {
     this.selectedOption.set(option)
     this.isOpen.set(false)

@@ -34,7 +34,7 @@ export default class DiscoverComponent {
   readonly api = inject(ApiService);
   private readonly route = inject(ActivatedRoute)
   selectedItem = signal<Movie | Serie | undefined>(undefined)
-  height = signal(0);
+  selectedMediaType = signal('movies')
 
   readonly query = toSignal(
     this.route.paramMap.pipe(
@@ -47,8 +47,6 @@ export default class DiscoverComponent {
     { name: 'Películas', id: 0, value: 'movies' },
     { name: 'Series', id: 1, value: 'series' }
   ]
-
-  selectedMediaType = signal('movies')
 
   movieCategories: OptionCategory[] = [
     { name: 'En cartelera', id: 0, value: 'now_playing_movies',params:{ page: 1 } },

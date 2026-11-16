@@ -5,7 +5,7 @@ import { DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { MinutesToTimePipe } from '../../../shared/pipes/minutes-to-time/minutes-to-time.pipe';
 import { Genre } from '../../../core/interfaces/shared/genre.interface';
 import { FloatTrailerService } from '../../../core/services/float-trailer/float-trailer.service';
-import { getKeyTrailer } from '../../../shared/utils/helpers';
+import { getComputedTitle, getComputedTitleImageUrl, getKeyTrailer, isMovie } from '../../../shared/utils/helpers';
 import { RouterLink } from '@angular/router';
 import { TooltipDirective } from '../../../core/directives/tooltip/tooltip.directive';
 import { Serie } from '../../../core/interfaces/serie/serie.interface';
@@ -28,6 +28,7 @@ export class DetailsCardComponent {
   readonly selectedItem = input.required<Movie | Serie | undefined>()
   readonly selectedGenre = model.required<Genre>()
   private readonly floatTrailer = inject(FloatTrailerService);
+  isMovie = isMovie
 
   readonly currentTrailerKey = computed(() => {
     const currentItem = this.selectedItem()
@@ -35,18 +36,9 @@ export class DetailsCardComponent {
     return getKeyTrailer(currentItem.videos)
   });
 
-  title = computed(() => {
-    const media = this.selectedItem()
-    if (this.isMovie(media)) return media.title
-    return media?.name ?? 'Unknown title'
-  })
+  title = getComputedTitle(this.selectedItem)
 
-  titleImage = computed(() => {
-    const media = this.selectedItem()
-    const logos = media?.images?.logos;
-    if (!logos?.length) return undefined
-    return logos[0].file_path
-  })
+  titleImage = getComputedTitleImageUrl(this.selectedItem)
 
   link = computed(() => {
     const media = this.selectedItem()
@@ -63,9 +55,7 @@ export class DetailsCardComponent {
     this.floatTrailer.register(this, this.selectedItem)
   }
 
-  isMovie(item: any): item is Movie {
-    return 'title' in item && 'runtime' in item
-  }
+  
 
 
 }

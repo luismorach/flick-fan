@@ -1,1 +1,96 @@
-<p>watch works!</p>
+@let item = media();
+
+<main class=" h-screen w-screen overflow-hidden relative">
+
+    <div class="w-full h-full relative z-10 bg-black" #frame>
+        <iframe [src]="url_media() | urlSafe" class="w-full h-full " allowfullscreen></iframe>
+        @if(!isMovie(item)){
+            <span class="absolute top-[15%] left-10 text-surface font-bold text-xl">
+                {{item?.name | uppercase}} ({{seasonNumber()}} x {{episodeNumber()}})
+            </span>
+        }
+
+        <div class="bg-[#181111] w-28 h-48 absolute top-1/2 -right-16 rounded-[50%] -translate-y-1/2 flex items-center cursor-pointer"
+            (click)="move('0%',$event)">
+            <app-icon name="arrow-left" size="w-20 h-28"
+                class="absolute -left-3 opacity-60 hover:opacity-100 transition-opacity duration-500 ease-in-out"></app-icon>
+        </div>
+
+    </div>
+
+    @if(item){
+    <div class="w-[30rem] absolute top-0 right-0 h-full z-50 rounded-tl-xl rounded-bl-xl bg-[#181111] card" #card>
+
+        <section class=" absolute px-10 pt-7 pb-4 grid grid-rows-2 h-full overflow-y-auto row">
+            <header class="w-full flex flex-col  overflow-y-auto  " [class.row-span-2]="isMovie(item)">
+
+                @if(titleImage(); as urlImage){
+                <figure class="h-24 w-auto min-h-24 flex relative">
+                    <img [ngSrc]="urlImage" alt="{{urlImage}}" sizes="15rem" class="w-full object-contain" fill>
+                </figure>
+
+                }@else {
+                <h1 class="title">{{title()}}</h1>
+                }
+
+                <div class="flex justify-between text-white/90 text-lg font-semibold mt-4">
+                    @if(isMovie(item)){
+                    <p class="my-4 mx-2">{{item.runtime | minutesToTime}}</p>
+                    <p class="my-4 mx-2"> {{item.release_date | date:'yyyy'}}</p>
+                    }@else {
+                    <p class="my-4 mx-2"> {{item.first_air_date | date:'yyyy'}} -
+                        {{item.last_air_date | date:'yyyy'}}</p>
+                    }
+
+                    <div class="flex gap-1 items-center my-4 mx-2">
+                        <app-icon name="star" color="text-red-600" backgroundColor="#e50914" size="w-5 h-5">
+                        </app-icon>
+                        <p> {{item.vote_average| number:'1.1-1' :'en-US'}}</p>
+                    </div>
+                </div>
+
+                <p class="text-white/90 mt-4 leading-7 font-light ">{{item.overview}}</p>
+
+                <div class="text-white/90 text-base  mt-4">
+                    <h1 class="text-white/30">GENEROS</h1>
+                    <div class="flex gap-2 mt-2 flex-wrap">
+                        @for(genre of item.genres;track genre.id){
+                        <span
+                            class="backdrop-blur-sm bg-white/5 rounded-full px-5 py-1 cursor-pointer hover:bg-white/15">
+                            {{genre.name}}
+                        </span>
+                        }
+                    </div>
+                </div>
+            </header>
+            @if(!isMovie(item)){
+            <div class="w-full pt-8  flex flex-col  h-full">
+                <app-custom-select [options]="item.seasons" [(selectedOption)]="selectedSeason">
+                </app-custom-select>
+
+                <div class="flex flex-col gap-4  overflow-y-scroll my-4">
+                    @for(episode of season()?.episodes;track episode.id;let i= $index){
+                    <a [routerLink]="['/watch',type(),id(),selectedSeason()?.season_number,episode.episode_number]"
+                        class="flex gap-4 p-2 mr-1 rounded-md hover:bg-white/10 cursor-pointer">
+                        <figure class=" w-32 h-16 relative rounded-md overflow-hidden">
+                            <img [ngSrc]="episode.still_path" alt="" [loaderParams]="{type:'poster'}" sizes="2rem"
+                                class="aspect-[2/3] bg-cover bg-center detail" fill priority>
+                        </figure>
+
+                        <div class="flex flex-col justify-center text-surface">
+                            <h1 class="grow mb-4">{{i+1}}- {{episode.name}}</h1>
+                            <p class="text-[.8rem] font-medium opacity-40 pt-1">{{episode.air_date | date:'d MMM y'}}
+                            </p>
+                        </div>
+
+                    </a>
+                    }
+                </div>
+            </div>
+            }
+        </section>
+    </div>
+    }
+
+    <div class="w-full h-full  absolute top-0 z-0" (click)="move('100%',$event)" #backdrop></div>
+</main>

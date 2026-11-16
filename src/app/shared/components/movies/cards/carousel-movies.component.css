@@ -1,8 +1,0 @@
-.show-overflow{
-   @apply has-[.card-base:hover]:-my-96 has-[.card-base:hover]:py-96
-}
-
-.show-overflow:not(.show-overflow:has(.card-base:hover)){
-  @apply transition-all duration-300;
-}
-

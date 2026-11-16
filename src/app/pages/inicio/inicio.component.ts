@@ -9,10 +9,9 @@ import { Observable } from 'rxjs';
 import { ParamsApi } from '../../core/interfaces/shared/params-http.interface';
 import { CarouselComponent } from "../../shared/components/carousel/carousel.component";
 import { useDataLoader } from '../../shared/utils/data-loaders/use-data-loader';
-import { withInfiniteScroll } from '../../shared/utils/data-loaders/enhancers/with-infinite-scroll';
 import { CarouselOptions } from '../../core/interfaces/shared/carousel-interface';
 import { CardMovieComponent } from "../../shared/components/movies/cards/card-movie/card-movie.component";
-import { NgClass, NgIf, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { CarouselMoviesSkeletonComponent } from "../../shared/components/movies/cards/carousel-skeleton/carousel-movies-skeleton.component";
 import { CardSerieComponent } from "../../shared/components/series/cards/card-serie/card-serie.component";
 import { CarouselSeriesSkeletonComponent } from "../../shared/components/series/cards/carousel-series-skeleton/carousel-series-skeleton.component";
@@ -22,6 +21,7 @@ import { BannerSkeletonComponent } from '../../shared/components/movies/banner/b
 import { BannerDetailsComponent } from '../../shared/components/series/banner/banner-details/banner-details.component';
 import { SlideComponent } from '../../shared/components/series/banner/slide/slide.component';
 import { SkeletonComponent } from '../../shared/components/series/banner/skeleton/skeleton.component';
+import { withPagination } from '../../shared/utils/data-loaders/enhancers/with-pagination';
 
 interface Loader<T> {
   call: () => Observable<T>;
@@ -50,29 +50,29 @@ export default class InicioComponent {
   activeMedia: WritableSignal<Serie | undefined> = signal(undefined)
 
   readonly nowPlayingLoader = useDataLoader<MovieList, 'results'>('results', this.nowPlaying)
-    .with(withInfiniteScroll)
+    .with(withPagination)
     .with(WithDetails)
     .build();
   readonly airingTodayLoader = useDataLoader<SerieList, 'results'>('results', this.airingToday)
-    .with(withInfiniteScroll)
+    .with(withPagination)
     .with(WithDetails)
     .build();
 
   readonly popularMoviesloader = useDataLoader<MovieList, 'results'>('results', this.popularMovies)
-    .with(withInfiniteScroll)
+    .with(withPagination)
     .build();
 
   readonly uncomingMoviesloader = useDataLoader<MovieList, 'results'>('results', this.upcomingMovies)
-    .with(withInfiniteScroll)
+    .with(withPagination)
     .build();
 
   readonly onTheAirLoader = useDataLoader<SerieList, 'results'>('results', this.onTheAir)
-    .with(withInfiniteScroll)
+    .with(withPagination)
     .with(WithDetails)
     .build()
 
   readonly popularSeriesLoader = useDataLoader<SerieList, 'results'>('results', this.popularSeries)
-    .with(withInfiniteScroll)
+    .with(withPagination)
     .build()
 
    readonly bannerSeriesOptions: CarouselOptions = {

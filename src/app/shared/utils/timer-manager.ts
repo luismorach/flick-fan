@@ -17,29 +17,10 @@ export class TimerManager {
     return id;
   }
 
-  addAnimationFrame(callback: () => void): number {
-    const id = window.requestAnimationFrame(() => {
-      try {
-        callback();
-      } finally {
-        this.animationFrames.delete(id);
-      }
-    });
-    this.animationFrames.add(id);
-    return id;
-  }
-
   clearTimeout(id: number): void {
     if (this.timeouts.has(id)) {
       window.clearTimeout(id);
       this.timeouts.delete(id);
-    }
-  }
-
-  clearAnimationFrame(id: number): void {
-    if (this.animationFrames.has(id)) {
-      window.cancelAnimationFrame(id);
-      this.animationFrames.delete(id);
     }
   }
 
@@ -48,17 +29,7 @@ export class TimerManager {
     this.timeouts.clear();
   }
 
-  clearAllAnimationFrames(): void {
-    this.animationFrames.forEach(id => window.cancelAnimationFrame(id));
-    this.animationFrames.clear();
-  }
-
-  clearAll(): void {
-    this.clearAllTimeouts();
-    this.clearAllAnimationFrames();
-  }
-
   ngOnDestroy(): void {
-    this.clearAll();
+    this.clearAllTimeouts()
   }
 }
