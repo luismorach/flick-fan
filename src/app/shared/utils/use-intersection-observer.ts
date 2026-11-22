@@ -41,38 +41,6 @@ export function useIntersectionObserver() {
             observed.add(el);
         });
     }
-
-    /*  const observeInitialElements = () => {
-         requestAnimationFrame(() => {
-             console.log('elementos a observar para cargar detalles', root.querySelectorAll<HTMLElement>('[data-id]'))
- 
-             root.querySelectorAll<HTMLElement>('[data-id]').forEach((el) => {
-                 if (observed.has(el)) return;
-                 io.observe(el);
-                 observed.add(el);
-             });
-         })
- 
-     } */
-
-    //observeInitialElements()
-
-    /* const mo = new MutationObserver(mutations => {
-        for (const mutation of mutations) {
-            mutation.addedNodes.forEach(node => {
-                if (node.nodeType !== Node.ELEMENT_NODE) return;
- 
-                const added = node as HTMLElement;
-                if (added.dataset['id'] && !observed.has(added)) {
-                    io.observe(added)
-                    observed.add(added);
-                }
-            });
-        }
-    });
- 
-    mo.observe(root, { childList: true, subtree: true }) */
-
     const destroy = () => {
         io?.disconnect();
     }

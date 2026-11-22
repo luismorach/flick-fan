@@ -1,6 +1,6 @@
 import { Component, computed, ElementRef, inject, input, viewChild, viewChildren } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { combineLatest, filter, map, switchMap } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 import { Movie, MovieList } from '../../../core/interfaces/movie/movie.interface';
@@ -47,7 +47,6 @@ export class RecomendedComponent {
     .build();
 
   readonly carouselOptions: CarouselOptions = {
-    requiresEnrichment: false,
     orientation: 'horizontal',
     requireSnapMandatory: true,
     slidesConfig: {

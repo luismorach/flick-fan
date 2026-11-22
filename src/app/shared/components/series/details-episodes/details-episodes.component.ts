@@ -68,7 +68,6 @@ export class DetailsEpisodesComponent {
   })
 
   readonly carouselOptions: CarouselOptions = {
-    requiresEnrichment: false,
     orientation: 'horizontal',
     requireSnapMandatory: true,
     slidesConfig: {

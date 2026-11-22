@@ -68,7 +68,6 @@ export default class InicioComponent {
 
   readonly onTheAirLoader = useDataLoader<SerieList, 'results'>('results', this.onTheAir)
     .with(withPagination)
-    .with(WithDetails)
     .build()
 
   readonly popularSeriesLoader = useDataLoader<SerieList, 'results'>('results', this.popularSeries)
@@ -76,7 +75,6 @@ export default class InicioComponent {
     .build()
 
    readonly bannerSeriesOptions: CarouselOptions = {
-    requiresEnrichment: true,
     requireAnimation:true,
     slidesPerGroup: 1,
     orientation: 'vertical',
@@ -101,14 +99,12 @@ export default class InicioComponent {
   }
 
   readonly bannerMoviesOptions: CarouselOptions = {
-    requiresEnrichment: true,
     slidesPerGroup: 1,
     orientation: 'horizontal',
     slidesConfig: {}
   }
 
   readonly carouselOptions: CarouselOptions = {
-    requiresEnrichment: false,
     orientation: 'horizontal',
     slidesConfig: {
       slidesPerView: 1,

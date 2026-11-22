@@ -5,7 +5,6 @@ export type Breakpoints<T> = {
 
 export interface CarouselOptions {
     slidesConfig: slidesConfig;
-    requiresEnrichment?: boolean;
     orientation?: 'horizontal' | 'vertical';
     slidesPerGroup?: number;
     requireSnapMandatory?: boolean

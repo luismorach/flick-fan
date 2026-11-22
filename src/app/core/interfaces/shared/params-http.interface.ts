@@ -3,5 +3,5 @@ export interface ParamsApi {
     type?:string;
     genreId?: number;
     query?: string;
-    dataId?: number;
+    dataId?: number | string;
 }

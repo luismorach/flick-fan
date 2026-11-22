@@ -3,11 +3,12 @@
 <main class=" h-screen w-screen overflow-hidden relative">
 
     <div class="w-full h-full relative z-10 bg-black" #frame>
-        <iframe [src]="url_media() | urlSafe" class="w-full h-full " allowfullscreen></iframe>
-        @if(!isMovie(item)){
-            <span class="absolute top-[15%] left-10 text-surface font-bold text-xl">
-                {{item?.name | uppercase}} ({{seasonNumber()}} x {{episodeNumber()}})
-            </span>
+        <video  class="w-full h-full" controls #video> </video>
+        <!-- <iframe [src]="url_media() | urlSafe" class="w-full h-full " allowfullscreen></iframe> -->
+        @if(item && !isMovie(item)){
+        <span class="absolute top-[15%] left-10 text-surface font-bold text-xl">
+            {{item?.name | uppercase}} ({{seasonNumber()}} x {{episodeNumber()}})
+        </span>
         }
 
         <div class="bg-[#181111] w-28 h-48 absolute top-1/2 -right-16 rounded-[50%] -translate-y-1/2 flex items-center cursor-pointer"
@@ -21,8 +22,8 @@
     @if(item){
     <div class="w-[30rem] absolute top-0 right-0 h-full z-50 rounded-tl-xl rounded-bl-xl bg-[#181111] card" #card>
 
-        <section class=" absolute px-10 pt-7 pb-4 grid grid-rows-2 h-full overflow-y-auto row">
-            <header class="w-full flex flex-col  overflow-y-auto  " [class.row-span-2]="isMovie(item)">
+        <section class=" absolute px-10 pt-7 pb-4 grid grid-rows-2 h-full w-full">
+            <header class="w-full flex flex-col  overflow-y-auto ">
 
                 @if(titleImage(); as urlImage){
                 <figure class="h-24 w-auto min-h-24 flex relative">
@@ -63,6 +64,19 @@
                     </div>
                 </div>
             </header>
+
+            <div class="w-full pt-8 flex flex-col">
+                <h1 class="text-surface">torrents </h1>
+                <div class="flex flex-col gap-4 overflow-y-scroll my-4 w-25[rem]">
+                    @for(stream of torrents()?.streams;track $index;let i=$index){
+                        <p class="text-surface mt-4 leading-7 font-light break-all rounded-md hover:bg-white/10 
+                        cursor-pointer py-2 px-4 mr-1" (click)="getStream(stream)">
+                            {{stream.title}}
+                        </p>
+                    }
+                </div>
+            </div>
+
             @if(!isMovie(item)){
             <div class="w-full pt-8  flex flex-col  h-full">
                 <app-custom-select [options]="item.seasons" [(selectedOption)]="selectedSeason">

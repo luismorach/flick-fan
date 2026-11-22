@@ -40,6 +40,8 @@ export default class DetailsComponent {
     { initialValue: undefined }
   );
 
+  x = effect(()=>console.log(this.id()))
+
   
 
 }

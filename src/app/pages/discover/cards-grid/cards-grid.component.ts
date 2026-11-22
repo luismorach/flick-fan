@@ -100,10 +100,6 @@ export class CardsGridComponent {
 
   protected slidesInfo = useSlidesInfo(undefined, {})
 
-
-  constructor() {
-    // this.loader.setupAutoFill(this.sentinels)
-  }
   async cargar() {
     console.log('cargar', document.querySelector('html')?.scrollTop)
     await this.loader.loadMoreData()

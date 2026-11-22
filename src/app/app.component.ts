@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavBarComponent } from './shared/components/nav-bar/nav-bar.component';
 @Component({
@@ -11,7 +11,6 @@ import { NavBarComponent } from './shared/components/nav-bar/nav-bar.component';
 export class AppComponent {
 
   title = 'flick-fan';
- 
 }
 
 

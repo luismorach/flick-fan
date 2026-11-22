@@ -88,7 +88,7 @@ export class CarouselComponent {
 
     untracked(() => {
       this.carouselService.initialize(container, options, loader)
-      if (this.carouselOptions().requiresEnrichment && canLoadDetails(loader)) {
+      if (canLoadDetails(loader)) {
         this.intersection.initialize(container, loader.loadDetails.bind(loader))
       }
     })
@@ -109,7 +109,7 @@ export class CarouselComponent {
     const elements = this.slides()
     const loader = this.loader()
     untracked(() => {
-      if (!elements || !loader || !this.carouselOptions().requiresEnrichment && !canLoadDetails(loader)) return
+      if (!elements || !loader || !canLoadDetails(loader)) return
       console.log('effect elements', elements)
       const elementsHtml = elements.map(ref => ref.nativeElement);
       this.intersection.observeElements(elementsHtml);
